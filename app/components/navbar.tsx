@@ -23,7 +23,7 @@ const navigationLinks = [
 
 export default function Navbar() {
   return (
-    <header className="border-b px-4 md:px-6">
+    <header className="border-b px-4 md:px-6 sticky top-0">
       <div className="flex h-16 justify-between gap-4">
         {/* Left side */}
         <section className="flex gap-2">
@@ -81,7 +81,7 @@ export default function Navbar() {
           {/* Main nav */}
           <div className="flex items-center gap-6">
             <Link to="/" className="text-primary hover:text-primary/90">
-              <Vault className="w-12 h-12" />
+              <Vault className="w-10 h-10" color="#8191df" />
             </Link>
             {/* Navigation menu */}
             <NavigationMenu className="h-full *:h-full max-md:hidden">
