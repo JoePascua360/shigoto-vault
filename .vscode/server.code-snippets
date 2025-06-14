@@ -1,0 +1,30 @@
+{
+  /*
+
+   To use these snippets, type the prefix name in the new file
+   and press enter. It will automatically create the snippet
+   ready to be changed.
+
+   */
+
+  "Node.js Router Template (POST)": {
+    "prefix": "serverRouterPost",
+    "body": [
+      "import express from 'express';",
+      "",
+      "export default const ${1:router} = express.Router();",
+      "",
+      "${1:router}.{$2:post}('/', async (req, res) => {",
+      "  try {",
+      "    $0",
+      "   return res.status(200).json({message: '${3:Updated successfully!}'});",
+      "  } catch (error) {",
+      "    console.log(error);",
+      "    return res.status(500).json({message: `Internal Server Error! ${error.message}`});",
+      "  }",
+      "});",
+      ""
+    ],
+    "description": "Template for server Router using ES6 (POST)"
+  }
+}

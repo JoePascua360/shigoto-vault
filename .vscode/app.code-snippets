@@ -1,0 +1,56 @@
+{
+  /*
+
+   To use these snippets, type the prefix name in the new file
+   and press enter. It will automatically create the snippet
+   ready to be changed.
+
+   */
+  "Client Side Components Snippet": {
+    "prefix": "appComponentSnippet",
+    "body": [
+      "import { useState, ${2:useEffect} } from 'react';",
+      "",
+      "export default function ${1:Component}() {",
+      "      return (",
+      "         <>",
+      "           $0",
+      "         </>",
+      "       );",
+      "}"
+    ],
+    "description": "Template for app components"
+  },
+
+  "Client Side Route Snippet": {
+    "prefix": "appRouterSnippet",
+    "body": [
+      "import { NavLink } from 'react-router';",
+      "import type { Route } from './+types/$0';",
+      "",
+      "export function meta({}: Route.MetaArgs) {",
+      "  return [",
+      "        { title: '${1:App}' },",
+      "        { name: '$2', content: '$3' },",
+      "     ];",
+      "}",
+
+      "",
+
+      "export function loader({context}: Route.LoaderArgs) {",
+      "     return { message: context.VALUE_FROM_EXPRESS };",
+      "}",
+
+      "",
+
+      "export default function ${1:App}({ loaderData }: Route.ComponentProps) {",
+      "    return (",
+      " <>",
+      "",
+      " </>",
+      ");",
+      "}"
+    ],
+    "description": "Template for new router component"
+  }
+}

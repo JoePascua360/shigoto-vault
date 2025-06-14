@@ -1,0 +1,34 @@
+{
+  /*
+
+   To use these snippets, type the prefix name in the new file
+   and press enter. It will automatically create the snippet
+   ready to be changed.
+
+   */
+  "Export Helper Function with Try Catch": {
+    "prefix": "tryCatchHelperFunction",
+    "body": [
+      "export const ${1:helperFunction} = ${2:async} () => {",
+      "  try {",
+      "    $0",
+      "  } catch (error) {",
+      "    console.log('Error!', error.message);",
+      "  }",
+      "};",
+      ""
+    ],
+    "description": "Create a helper function with export and try-catch block"
+  },
+
+  "Default Export Helper Function ": {
+    "prefix": "defaultHelperFunction",
+    "body": [
+      "export const ${1:helperFunction} = ${2:async} () => {",
+      "$0",
+      "};",
+      ""
+    ],
+    "description": "Create a helper function with export and try-catch block"
+  }
+}

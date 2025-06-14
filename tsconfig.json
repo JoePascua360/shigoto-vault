@@ -1,0 +1,19 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.vite.json" }
+  ],
+  "compilerOptions": {
+    "paths": {
+      // need this path for installing new shadcn components
+      "@/*": ["./app/*"]
+    },
+    "checkJs": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "noEmit": true
+  }
+}
