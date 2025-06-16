@@ -18,7 +18,7 @@ import { Link, NavLink } from "react-router";
 const navigationLinks = [
   { href: "/", label: "Home", active: true },
   { href: "/about", label: "About" },
-  { href: "/app-guide", label: "App Guide" },
+  { href: "/app-guide", label: "Guide" },
 ];
 
 export default function Navbar() {
@@ -59,9 +59,9 @@ export default function Navbar() {
                   </svg>
                 </Button>
               </PopoverTrigger>
-              <PopoverContent align="start" className="w-36 p-1 md:hidden">
+              <PopoverContent align="start" className="w-36 p-1 md:hidden ">
                 <NavigationMenu className="max-w-none *:w-full">
-                  <NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
+                  <NavigationMenuList className="flex-col items-start gap-0 md:gap-2  font-sub-text">
                     {navigationLinks.map((link, index) => (
                       <NavigationMenuItem key={index} className="w-full">
                         <NavigationMenuLink
@@ -87,7 +87,10 @@ export default function Navbar() {
             <NavigationMenu className="h-full *:h-full max-md:hidden">
               <NavigationMenuList className="h-full gap-2">
                 {navigationLinks.map((link, index) => (
-                  <NavigationMenuItem key={index} className="h-full">
+                  <NavigationMenuItem
+                    key={index}
+                    className="h-full font-sub-text"
+                  >
                     <NavigationMenuLink
                       active={link.active}
                       className="text-muted-foreground hover:text-primary border-b-primary hover:border-b-primary data-[active]:border-b-primary h-full justify-center rounded-none border-y-2 border-transparent py-1.5 font-medium hover:bg-transparent data-[active]:bg-transparent!"
@@ -103,10 +106,13 @@ export default function Navbar() {
         </section>
         {/* Right side */}
         <section className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="text-sm">
+          <Button
+            variant="secondary"
+            size="lg"
+            className="text-sm cursor-pointer"
+          >
             Sign In
           </Button>
-
           <ModeToggle />
         </section>
       </div>

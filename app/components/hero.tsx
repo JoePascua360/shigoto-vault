@@ -3,6 +3,7 @@ import { ArrowBigRight, ArrowRight, ChevronRight } from "lucide-react";
 import heroVault from "@/assets/hero-vault.jpg";
 import { motion } from "motion/react";
 import { LettersPullUp } from "@/components/letters-pull-up";
+import { Link } from "react-router";
 
 export default function Hero() {
   return (
@@ -47,13 +48,14 @@ export default function Hero() {
         <Button
           variant="default"
           className="h-14 font-secondary-header text-xl shadow-md shadow-vault-purple group w-50 cursor-pointer"
+          asChild
         >
-          Get Started
-          <ArrowRight className="group-hover:translate-x-1 transition-all ease-in-out" />
+          <Link to="dashboard">
+            Get Started
+            <ArrowRight className="group-hover:translate-x-1 transition-all ease-in-out" />
+          </Link>
         </Button>
       </aside>
-      {/* small sphere at the bottom */}
-      <div className="absolute -bottom-5 -left-20 z-50 bg-linear-65 from-amber-500 to-red-500 rounded-full opacity-80 h-50 w-50"></div>
     </section>
   );
 }
