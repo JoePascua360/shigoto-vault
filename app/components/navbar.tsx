@@ -106,9 +106,7 @@ export default function Navbar() {
           <Button variant="ghost" size="sm" className="text-sm">
             Sign In
           </Button>
-          <Button size="sm" className="text-sm">
-            Get Started
-          </Button>
+
           <ModeToggle />
         </section>
       </div>

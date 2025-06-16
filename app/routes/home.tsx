@@ -18,6 +18,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
       <nav className="flex flex-col gap-5 justify-between ">
         <Navbar />
+
         <main className="h-[90dvh]">
           <Hero />
         </main>

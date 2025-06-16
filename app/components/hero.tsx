@@ -2,55 +2,58 @@ import { Button } from "@/components/ui/button";
 import { ArrowBigRight, ArrowRight, ChevronRight } from "lucide-react";
 import heroVault from "@/assets/hero-vault.jpg";
 import { motion } from "motion/react";
-import { cn } from "@/lib/utils";
+import { LettersPullUp } from "@/components/letters-pull-up";
 
 export default function Hero() {
   return (
-    <section className="flex justify-center items-center h-full">
-      <div className="flex gap-10 justify-between items-center">
-        <aside>
-          <div className="flex justify-center flex-col gap-5 items-center">
-            <h1 className="text-xl md:text-5xl font-extrabold font-secondary-header">
-              Track Your{" "}
-              <span className="text-vault-purple">Job Applications</span>{" "}
-              Easily!
-            </h1>
+    <section className="grid md:grid-cols-2 gap-10 sm:gap-5 h-full justify-items-center items-center mx-5">
+      {/* Hero Image */}
+      <aside className="md:order-2">
+        <motion.div
+          className="shadow-lg/90 shadow-vault-purple rounded-xl w-[35dvh] sm:w-[50dvh] md:w-[40dvh] lg:w-[60dvh] xl:w-[80dvh]"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            duration: 0.8,
+            delay: 0.2,
+            ease: [0, 0.71, 0.2, 1.01],
+          }}
+        >
+          <img
+            src={heroVault}
+            alt="Vault Image"
+            className="object-cover sm:object-contain rounded-xl"
+          />
+        </motion.div>
+      </aside>
+      {/* Hero Content */}
 
-            <div className="flex gap-5 justify-between items-center">
-              <h2 className="text-md md:text-3xl font-content">
-                No login needed.{" "}
-                <span
-                  className={`border border-amber-500 p-2 rounded-lg font-medium`}
-                >
-                  Jump right in!
-                </span>
-              </h2>
-            </div>
-            <Button>
-              <ArrowBigRight />
-              Get Started!
-            </Button>
-          </div>
-        </aside>
-        <aside>
-          <motion.div
-            className="shadow-lg/90 shadow-vault-purple rounded-xl"
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{
-              duration: 0.8,
-              delay: 0.2,
-              ease: [0, 0.71, 0.2, 1.01],
-            }}
-          >
-            <img
-              src={heroVault}
-              alt="Vault Image"
-              className="h-[80dvh] w-auto rounded-xl"
+      <aside className="md:order-1 flex flex-col gap-10 lg:gap-20 items-center w-full z-50">
+        {/* prettier-ignore */}
+        <h1 className="text-center text-4xl sm:text-3xl leading-[1.1] md:text-4xl xl:text-6xl font-extrabold font-secondary-header break-words">
+          Keep Track of Your {" "} <br className="hidden lg:inline" />
+          <span className="text-vault-purple">Job Applications</span>!
+        </h1>
+
+        <div className="flex gap-2 justify-between items-center font-content">
+          <h2 className="text-base md:text-xl lg:text-2xl">No login needed.</h2>
+          <div className={`border border-amber-500 p-2 rounded-lg font-medium`}>
+            <LettersPullUp
+              text="Jump right in!"
+              className="text-sm sm:text-xl md:text-xl lg:text-2xl "
             />
-          </motion.div>
-        </aside>
-      </div>
+          </div>
+        </div>
+        <Button
+          variant="default"
+          className="h-14 font-secondary-header text-xl shadow-md shadow-vault-purple group w-50 cursor-pointer"
+        >
+          Get Started
+          <ArrowRight className="group-hover:translate-x-1 transition-all ease-in-out" />
+        </Button>
+      </aside>
+      {/* small sphere at the bottom */}
+      <div className="absolute -bottom-5 -left-20 z-50 bg-linear-65 from-amber-500 to-red-500 rounded-full opacity-80 h-50 w-50"></div>
     </section>
   );
 }
