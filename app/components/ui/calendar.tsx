@@ -72,7 +72,7 @@ function Calendar({
           defaultClassNames.dropdown_root
         ),
         dropdown: cn(
-          "absolute inset-0 opacity-0 text-black dark:text-white",
+          "absolute inset-0 opacity-0 text-black dark:text-white dark:bg-gray-900 ",
           defaultClassNames.dropdown
         ),
         caption_label: cn(

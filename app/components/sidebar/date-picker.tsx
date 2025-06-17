@@ -7,9 +7,10 @@ export function DatePicker() {
       <SidebarGroupContent>
         <Calendar
           mode="single"
+          className="rounded-md border shadow-sm "
           selected={new Date()}
-          className="rounded-md border shadow-sm"
-          captionLayout="dropdown"
+          // return null, calendar is only for display
+          onSelect={() => null}
         />
       </SidebarGroupContent>
     </SidebarGroup>
