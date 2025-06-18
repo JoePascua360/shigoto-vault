@@ -9,5 +9,6 @@ export default [
   index("routes/home.tsx"),
   layout("./layouts/sidebar-layout.tsx", [
     route("dashboard", "./routes/dashboard.tsx"),
+    route("*", "./routes/404Page.tsx"),
   ]),
 ] satisfies RouteConfig;
