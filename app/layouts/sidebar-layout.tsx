@@ -13,10 +13,28 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Link, NavLink, Outlet } from "react-router";
+import { Link, NavLink, Outlet, useLocation } from "react-router";
 import { ModeToggle } from "@/themes/mode-toggle";
 
+/**
+ * Contains the list of valid routes defined in [routes.ts](../../routes.ts).
+ *
+ * For invalid paths, it will get 404 error page.
+ */
+const validPaths: string[] = [
+  "/dashboard",
+  // "/vault-tutorial",
+  // "/job-applications",
+  // "/company-list",
+  // "/charts/job-applications",
+  // "/charts/company",
+];
+
 export default function SidebarLayout() {
+  const location = useLocation();
+
+  const isValidPath = validPaths.includes(location.pathname);
+
   return (
     <>
       <SidebarProvider>
@@ -38,22 +56,27 @@ export default function SidebarLayout() {
                     </BreadcrumbLink>
                   </BreadcrumbItem>
 
-                  <BreadcrumbSeparator className="hidden md:block" />
+                  <BreadcrumbSeparator />
 
                   <BreadcrumbItem>
                     <BreadcrumbLink>
                       <NavLink
-                        to="/dashboard"
+                        to={location.pathname}
                         className={({ isActive }) =>
                           isActive ? "text-vault-purple" : ""
                         }
                       >
-                        Dashboard
+                        {isValidPath ? (
+                          <p className="capitalize">
+                            {/* For other paths, fix the string format. */}
+                            {location.pathname.replace("/", "")}
+                          </p>
+                        ) : (
+                          "Not Found"
+                        )}
                       </NavLink>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
-
-                  <BreadcrumbItem className="ml-auto"></BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
             </aside>

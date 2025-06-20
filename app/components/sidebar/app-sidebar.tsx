@@ -1,6 +1,12 @@
 import * as React from "react";
-import { Minus, Plus } from "lucide-react";
-import { NavLink, useMatch } from "react-router";
+import { Building, Minus, Plus } from "lucide-react";
+import {
+  Link,
+  NavLink,
+  useLocation,
+  useMatch,
+  useRouteError,
+} from "react-router";
 import {
   Sidebar,
   SidebarContent,
@@ -28,6 +34,10 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { MdBusinessCenter, MdStackedBarChart } from "react-icons/md";
+import { PiStepsDuotone } from "react-icons/pi";
+import { BsFillInfoCircleFill } from "react-icons/bs";
+import { FaChartPie } from "react-icons/fa";
 
 const data = {
   user: {
@@ -43,24 +53,28 @@ const data = {
         {
           title: "Job Vault Tutorial 101",
           url: "/vault-tutorial",
+          icon: <BsFillInfoCircleFill />,
         },
       ],
     },
     {
       title: "Vault Section",
-      url: "#",
+      url: "/",
       items: [
         {
           title: "Job Applications",
           url: "/job-applications",
+          icon: <MdBusinessCenter />,
         },
         {
           title: "Company List",
-          url: "#",
+          url: "/company-list",
+          icon: <Building />,
         },
         {
           title: "Rounds List",
-          url: "#",
+          url: "/rounds-list",
+          icon: <PiStepsDuotone />,
         },
       ],
     },
@@ -69,12 +83,14 @@ const data = {
       url: "#",
       items: [
         {
-          title: "Job Application Insights",
-          url: "#",
+          title: "Application Insights",
+          url: "/charts/job-applications",
+          icon: <FaChartPie />,
         },
         {
           title: "Company Insights",
-          url: "#",
+          url: "/charts/company",
+          icon: <MdStackedBarChart />,
         },
       ],
     },
@@ -114,7 +130,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {data.navMain.map((item, index) => (
               <Collapsible
                 key={item.title}
-                defaultOpen={index === 1}
+                defaultOpen={index >= 1}
                 className="group/collapsible"
               >
                 <SidebarMenuItem>
@@ -134,7 +150,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                               asChild
                               // isActive={item.isActive}
                             >
-                              <a href={item.url}>{item.title}</a>
+                              <Link to={item.url}>
+                                {item.icon}
+                                {item.title}
+                              </Link>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
                         ))}
@@ -151,8 +170,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton>
-              <Plus />
-              <span>New Calendar</span>
+              {/* Add something here if a footer is needed */}
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

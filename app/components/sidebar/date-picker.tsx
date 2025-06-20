@@ -3,7 +3,7 @@ import { SidebarGroup, SidebarGroupContent } from "@/components/ui/sidebar";
 
 export function DatePicker() {
   return (
-    <SidebarGroup className="px-1">
+    <SidebarGroup className="px-4 md:px-1">
       <SidebarGroupContent>
         <Calendar
           mode="single"
