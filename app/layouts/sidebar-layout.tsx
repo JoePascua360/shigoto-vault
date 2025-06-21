@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Link, NavLink, Outlet, useLocation } from "react-router";
 import { ModeToggle } from "@/themes/mode-toggle";
+import { formatPathName } from "@/utils/format-pathname";
 
 /**
  * Contains the list of valid routes defined in [routes.ts](../../routes.ts).
@@ -24,7 +25,7 @@ import { ModeToggle } from "@/themes/mode-toggle";
 const validPaths: string[] = [
   "/dashboard",
   // "/vault-tutorial",
-  // "/job-applications",
+  "/job-applications",
   // "/company-list",
   // "/charts/job-applications",
   // "/charts/company",
@@ -68,8 +69,7 @@ export default function SidebarLayout() {
                       >
                         {isValidPath ? (
                           <p className="capitalize">
-                            {/* For other paths, fix the string format. */}
-                            {location.pathname.replace("/", "")}
+                            {formatPathName(location.pathname)}
                           </p>
                         ) : (
                           "Not Found"
