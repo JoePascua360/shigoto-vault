@@ -52,30 +52,26 @@ export default function SidebarLayout() {
                 {/* Shows the current route of the user */}
                 <BreadcrumbList>
                   <BreadcrumbItem>
-                    <BreadcrumbLink>
-                      <Link to="/">Home</Link>
-                    </BreadcrumbLink>
+                    <Link to="/">Home</Link>
                   </BreadcrumbItem>
 
                   <BreadcrumbSeparator />
 
                   <BreadcrumbItem>
-                    <BreadcrumbLink>
-                      <NavLink
-                        to={location.pathname}
-                        className={({ isActive }) =>
-                          isActive ? "text-vault-purple" : ""
-                        }
-                      >
-                        {isValidPath ? (
-                          <p className="capitalize">
-                            {formatPathName(location.pathname)}
-                          </p>
-                        ) : (
-                          "Not Found"
-                        )}
-                      </NavLink>
-                    </BreadcrumbLink>
+                    <NavLink
+                      to={location.pathname}
+                      className={({ isActive }) =>
+                        isActive ? "text-vault-purple" : ""
+                      }
+                    >
+                      {isValidPath ? (
+                        <p className="capitalize">
+                          {formatPathName(location.pathname)}
+                        </p>
+                      ) : (
+                        "Not Found"
+                      )}
+                    </NavLink>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>

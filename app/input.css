@@ -45,10 +45,10 @@
   --color-vault-purple: #8191df;
 
   /* custom fonts */
-  --font-primary-header: "Bebas Neue";
-  --font-secondary-header: "Inter";
-  --font-content: "Montserrat";
-  --font-sub-text: "Roboto";
+  --font-primary-header: "Bebas Neue", "sans-serif";
+  --font-secondary-header: "Inter", "sans-serif";
+  --font-content: "Montserrat", "serif", "system-ui";
+  --font-sub-text: "Roboto", "serif", "system-ui";
 }
 
 :root {
