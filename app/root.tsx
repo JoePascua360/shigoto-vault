@@ -12,6 +12,10 @@ import type { Route } from "./+types/root";
 import "./input.css";
 import { ThemeProvider } from "@/themes/theme-provider";
 import Spinner from "@/components/spinner";
+import { Toaster } from "./components/ui/sonner";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+export const queryClient = new QueryClient();
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -65,7 +69,12 @@ export default function App() {
     <>
       {/*  Theme provider context for dark/light mode  */}
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-        <Outlet />
+        {/* Tanstack Query Client */}
+        <QueryClientProvider client={queryClient}>
+          {/* Toaster for rendering notifications */}
+          <Toaster position="bottom-right" richColors closeButton />
+          <Outlet />
+        </QueryClientProvider>
       </ThemeProvider>
     </>
   );

@@ -4,44 +4,48 @@ import {
   type Payment,
 } from "@/features/job-applications/job-application-columns";
 import { DataTable } from "@/components/data-table";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { Input } from "@/components/ui/input";
 
-export function loader({ params }: Route.LoaderArgs) {}
+import { useDialog } from "@/hooks/use-dialog";
+
+import AddJobApplication from "@/features/job-applications/add-job-application";
+
+import Spinner from "@/components/spinner";
+import { useQuery } from "@tanstack/react-query";
+
+async function getJobApplications() {
+  try {
+    const response = await fetch("/api/v1/loadJobApplicationData", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const { data } = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message);
+    }
+
+    return data.rows;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(error.message);
+      throw new Error(error.message);
+    }
+  }
+}
 
 export default function JobApplication({ loaderData }: Route.ComponentProps) {
-  const data: Payment[] = [
-    {
-      id: "728ed52f",
-      name: "Nice",
-      location: "Dasma",
-      email: "m@example.com",
-      flag: "PH",
-      balance: 900,
-      department: "ADMIN",
-      joinDate: "2024-05-20",
-      lastActive: "today",
-      performance: "Good",
-      role: "Developer",
-      status: "Active",
-    },
-    {
-      id: "728ed52f2",
-      name: "Niceasdasd",
-      location: "Dasma",
-      email: "masdasd@example.com",
-      flag: "PH",
-      balance: 900,
-      department: "ADMIN",
-      joinDate: "2024-05-20",
-      lastActive: "today",
-      performance: "Good",
-      role: "Developer",
-      status: "Active",
-    },
-    // ...
-  ];
+  const query = useQuery({
+    queryKey: ["job-applications"],
+    queryFn: getJobApplications,
+    staleTime: 60 * 1000, // will not refetch until 1 minute passed after initial fetch
+  });
+
+  const addDialog = useDialog();
+
+  if (query.isLoading) return <Spinner isLoading={query.isLoading} />;
 
   return (
     <>
@@ -49,12 +53,9 @@ export default function JobApplication({ loaderData }: Route.ComponentProps) {
         <main>
           <DataTable
             columns={jobApplicationColumns}
-            data={data}
+            data={query?.data}
             dropdownChildButton={
-              <Button>
-                <Plus />
-                Add Job Application
-              </Button>
+              <AddJobApplication dialogProps={addDialog.dialogProps} />
             }
           />
         </main>

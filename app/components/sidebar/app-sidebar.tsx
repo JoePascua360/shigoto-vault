@@ -17,11 +17,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSubItem,
   SidebarRail,
   SidebarFooter,
   SidebarSeparator,
   SidebarMenuSub,
-  SidebarMenuSubItem,
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import { NavUser } from "./nav-user";
@@ -49,7 +49,7 @@ const data = {
     {
       title: "Getting Started",
       url: "/",
-      items: [
+      subItems: [
         {
           title: "Job Vault Tutorial 101",
           url: "/vault-tutorial",
@@ -60,7 +60,7 @@ const data = {
     {
       title: "Vault Section",
       url: "/",
-      items: [
+      subItems: [
         {
           title: "Job Applications",
           url: "/job-applications",
@@ -81,7 +81,7 @@ const data = {
     {
       title: "Charts Section",
       url: "#",
-      items: [
+      subItems: [
         {
           title: "Application Insights",
           url: "/charts/job-applications",
@@ -100,6 +100,8 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const match = useMatch("/dashboard");
 
+  const location = useLocation();
+
   return (
     <Sidebar {...props}>
       <SidebarHeader className="border-sidebar-border h-16 border-b">
@@ -113,13 +115,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenu>
             <SidebarMenuButton
               asChild
-              isActive={!!match}
-              className="dark:data-[active=true]:bg-vault-purple data-[active=true]:bg-vault-purple"
+              isActive={location.pathname === "/dashboard"}
+              className="data-[active=true]:bg-vault-purple"
             >
-              <NavLink to="/dashboard">
+              <Link to="/dashboard">
                 <MdSpaceDashboard />
                 Dashboard
-              </NavLink>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenu>
         </SidebarGroup>
@@ -127,32 +129,33 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarGroup>
           <SidebarGroupLabel>Main Menu</SidebarGroupLabel>
           <SidebarMenu>
-            {data.navMain.map((item, index) => (
+            {data.navMain.map((sidebarItem, index) => (
               <Collapsible
-                key={item.title}
+                key={sidebarItem.title}
                 defaultOpen={index >= 1}
                 className="group/collapsible"
               >
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton>
-                      {item.title}{" "}
+                      {sidebarItem.title}{" "}
                       <Plus className="ml-auto group-data-[state=open]/collapsible:hidden" />
                       <Minus className="ml-auto group-data-[state=closed]/collapsible:hidden" />
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
-                  {item.items?.length ? (
+                  {sidebarItem.subItems?.length ? (
                     <CollapsibleContent>
                       <SidebarMenuSub>
-                        {item.items.map((item) => (
-                          <SidebarMenuSubItem key={item.title}>
+                        {sidebarItem.subItems.map((subItem) => (
+                          <SidebarMenuSubItem key={subItem.title}>
                             <SidebarMenuSubButton
                               asChild
-                              // isActive={item.isActive}
+                              className="data-[active=true]:bg-vault-purple"
+                              isActive={location.pathname === subItem.url}
                             >
-                              <Link to={item.url}>
-                                {item.icon}
-                                {item.title}
+                              <Link to={subItem.url}>
+                                {subItem.icon}
+                                {subItem.title}
                               </Link>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>

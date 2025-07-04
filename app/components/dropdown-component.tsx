@@ -26,7 +26,7 @@ export default function DropdownMenuComponent({
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger>
+        <DropdownMenuTrigger asChild>
           <Button size={triggerSize} variant="secondary">
             {icon}
             {triggerText}
