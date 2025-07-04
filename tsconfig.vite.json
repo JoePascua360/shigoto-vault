@@ -5,7 +5,8 @@
     "app/**/*",
     "app/**/.server/**/*",
     "app/**/.client/**/*",
-    "server/**/*"
+    "server/**/*",
+    "shared/schema/features/job-applications/job-application-schema.ts"
   ],
   "compilerOptions": {
     "composite": true,
