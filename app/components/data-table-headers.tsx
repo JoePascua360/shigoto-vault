@@ -60,11 +60,9 @@ export default function DataTableHeaders<TData>({
           contentAlignment={children ? "start" : "end"}
           icon={<Columns />}
           triggerText={isMobile ? "" : "Hide Columns"}
-          className="font-sub-text"
+          className="font-sub-text h-96"
         >
           <>
-            <DropdownMenuLabel>Columns</DropdownMenuLabel>
-            <DropdownMenuSeparator />
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
