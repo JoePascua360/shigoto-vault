@@ -6,7 +6,7 @@
     "app/**/.server/**/*",
     "app/**/.client/**/*",
     "server/**/*",
-    "shared/schema/features/job-applications/job-application-schema.ts"
+    "shared/**/*"
   ],
   "compilerOptions": {
     "composite": true,
@@ -20,10 +20,12 @@
     "baseUrl": ".",
     "rootDirs": [".", "./.react-router/types"],
     "paths": {
-      // app (client side path)
+      // app (frontend side path)
       "@/*": ["./app/*"],
       // server (backend side path)
-      "~/*": ["./server/*"]
+      "~/*": ["./server/*"],
+      // shared path (both backend and frontend)
+      "#/*": ["./shared/*"]
     },
     "esModuleInterop": true,
     "resolveJsonModule": true,

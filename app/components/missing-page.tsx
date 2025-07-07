@@ -13,11 +13,7 @@ export default function MissingPage() {
       <meta property="og:title" content="Page Not Found" />
       <meta name="description" content="Missing Page!" />
 
-      <main
-        className={`flex justify-center items-center ${
-          isInsideApp ? "h-full" : "h-dvh"
-        }`}
-      >
+      <main className={`flex justify-center items-center h-full`}>
         <section className="grid grid-cols-1 xl:grid-cols-2 justify-items-center gap-5 w-full">
           <aside className="flex flex-col gap-10 justify-center items-center">
             <div>

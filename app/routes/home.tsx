@@ -16,13 +16,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       <meta property="og:title" content="Shigoto Vault" />
       <meta name="description" content="Welcome to Shigoto Vault!" />
 
-      <nav className="flex flex-col gap-5 justify-between ">
-        <Navbar />
-
-        <main className="h-[90dvh]">
-          <Hero />
-        </main>
-      </nav>
+      <Hero />
     </>
   );
 }

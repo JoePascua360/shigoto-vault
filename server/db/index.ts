@@ -3,7 +3,7 @@ import { GlobalConfigs } from "~/config/global-config";
 /**
  * @param {number} port - port of postgres image in compose.yaml
  */
-const pool = new Pool({
+export const pool = new Pool({
   user: GlobalConfigs.dbConfig.DB_USER,
   password: GlobalConfigs.dbConfig.DB_PASSWORD,
   host: GlobalConfigs.dbConfig.DB_HOST,

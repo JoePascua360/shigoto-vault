@@ -3,7 +3,8 @@ import { createRequestHandler } from "@react-router/express";
 import express from "express";
 import { setupRouters } from "~/routers/setup-routers";
 import * as db from "~/db/index";
-import type { QueryResult } from "pg";
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "#/lib/auth";
 
 declare module "react-router" {
   interface AppLoadContext {
@@ -14,8 +15,12 @@ declare module "react-router" {
 
 export const app = express();
 
+app.all("/api/auth/{*any}", toNodeHandler(auth));
+
 app.use(express.json());
+
 // call routes before request handler to avoid pending errors
+
 setupRouters();
 
 app.use(

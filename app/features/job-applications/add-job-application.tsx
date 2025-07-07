@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   jobApplicationSchema,
   type jobApplicationData,
-} from "shared/schema/features/job-applications/job-application-schema";
+} from "#/schema/features/job-applications/job-application-schema";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
