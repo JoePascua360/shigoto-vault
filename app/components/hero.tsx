@@ -50,7 +50,7 @@ export default function Hero() {
           className="h-14 font-secondary-header text-xl shadow-md shadow-vault-purple group w-50 cursor-pointer"
           asChild
         >
-          <Link to="dashboard">
+          <Link to="app/dashboard">
             Get Started
             <ArrowRight className="group-hover:translate-x-1 transition-all ease-in-out" />
           </Link>

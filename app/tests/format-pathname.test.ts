@@ -1,9 +1,10 @@
 import { expect, test } from "vitest";
 import { formatPathName } from "@/utils/format-pathname";
 
-test("remove '/' from path and remove '-' separator", () => {
+test("remove '/' from path and remove '-' word separator", () => {
   expect(formatPathName("/job-applications")).toBe("job applications");
-  expect(formatPathName("/format-path-name")).toBe("format path name");
-  expect(formatPathName("-test string")).toBe("");
+  expect(formatPathName("/app/job-applications")).toBe("job applications");
+  expect(formatPathName("/app/path-1/path2/path-3")).toBe("path 1");
+  expect(formatPathName("-test string")).toBe("test string");
   expect(formatPathName("/test")).toBe("test");
 });

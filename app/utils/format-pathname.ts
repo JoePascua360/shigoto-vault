@@ -1,20 +1,18 @@
 export function formatPathName(path: string): string {
-  if (path.includes("-") && path.includes("/")) {
-    const removedSlash = path.replace("/", "");
+  const removedAppPath = path.replace("/app/", "");
 
-    /**
-     * Splits the string starting in the '-' character, transforms it into array and joined as a string.
-     *
-     * @example
-     * // (eg. job-applications becomes ["job", "applications"])
-     * // Then join the array into string = job applications
-     */
-    const formattedPath = removedSlash.split("-").join(" ");
+  // replace '/' and '-' characters with a whitespace
+  const convertToOnePath = removedAppPath.replace(/[/-]/g, " ");
 
-    return formattedPath;
-  } else if (path.includes("/")) {
-    return path.replace("/", "");
+  const trimmedPath = convertToOnePath.trim();
+
+  const splitArr = trimmedPath.split(" ");
+
+  //  remove the excess elements so that only 1 path is returned
+  if (splitArr.length > 2) {
+    splitArr.splice(2, splitArr.length);
+    return splitArr.join(" ");
   } else {
-    return "";
+    return trimmedPath;
   }
 }

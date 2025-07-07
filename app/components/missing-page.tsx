@@ -1,17 +1,23 @@
-import { Link } from "react-router";
-import type { Route } from "./+types/404Page";
+import { Link, useLocation } from "react-router";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import notFoundImg from "@/assets/not-found-bg.jpg";
 
-export default function NotFoundPage({}: Route.ComponentProps) {
+export default function MissingPage() {
+  const location = useLocation();
+
+  const isInsideApp = location.pathname.includes("/app/");
   return (
     <>
       <title>Page Not Found | Shigoto Vault</title>
       <meta property="og:title" content="Page Not Found" />
       <meta name="description" content="Missing Page!" />
 
-      <main className="flex justify-center items-center h-full">
+      <main
+        className={`flex justify-center items-center ${
+          isInsideApp ? "h-full" : "h-dvh"
+        }`}
+      >
         <section className="grid grid-cols-1 xl:grid-cols-2 justify-items-center gap-5 w-full">
           <aside className="flex flex-col gap-10 justify-center items-center">
             <div>
@@ -27,7 +33,7 @@ export default function NotFoundPage({}: Route.ComponentProps) {
                 Sorry, the page you're looking for does not exist.
               </p>
               <Button asChild>
-                <Link to="/dashboard">
+                <Link to={isInsideApp ? "/app/dashboard" : "/"}>
                   <ArrowLeft />
                   Go back home
                 </Link>

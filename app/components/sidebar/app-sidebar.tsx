@@ -52,7 +52,7 @@ const data = {
       subItems: [
         {
           title: "Job Vault Tutorial 101",
-          url: "/vault-tutorial",
+          url: "/app/vault-tutorial",
           icon: <BsFillInfoCircleFill />,
         },
       ],
@@ -63,17 +63,17 @@ const data = {
       subItems: [
         {
           title: "Job Applications",
-          url: "/job-applications",
+          url: "/app/job-applications",
           icon: <MdBusinessCenter />,
         },
         {
           title: "Company List",
-          url: "/company-list",
+          url: "/app/company-list",
           icon: <Building />,
         },
         {
           title: "Rounds List",
-          url: "/rounds-list",
+          url: "/app/rounds-list",
           icon: <PiStepsDuotone />,
         },
       ],
@@ -84,12 +84,12 @@ const data = {
       subItems: [
         {
           title: "Application Insights",
-          url: "/charts/job-applications",
+          url: "/app/charts/job-applications",
           icon: <FaChartPie />,
         },
         {
           title: "Company Insights",
-          url: "/charts/company",
+          url: "/app/charts/company",
           icon: <MdStackedBarChart />,
         },
       ],
@@ -98,8 +98,6 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const match = useMatch("/dashboard");
-
   const location = useLocation();
 
   return (
@@ -115,10 +113,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenu>
             <SidebarMenuButton
               asChild
-              isActive={location.pathname === "/dashboard"}
+              isActive={location.pathname === "/app/dashboard"}
               className="data-[active=true]:bg-vault-purple"
             >
-              <Link to="/dashboard">
+              <Link to="/app/dashboard">
                 <MdSpaceDashboard />
                 Dashboard
               </Link>

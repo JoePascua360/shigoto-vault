@@ -23,9 +23,9 @@ import { formatPathName } from "@/utils/format-pathname";
  * For invalid paths, it will get 404 error page.
  */
 const validPaths: string[] = [
-  "/dashboard",
+  "/app/dashboard",
   // "/vault-tutorial",
-  "/job-applications",
+  "/app/job-applications",
   // "/company-list",
   // "/charts/job-applications",
   // "/charts/company",
