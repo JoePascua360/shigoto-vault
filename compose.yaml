@@ -20,3 +20,5 @@ services:
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     ports:
       - "9000:80"
+    volumes:
+      - "./sql/:/var/lib/pgadmin"

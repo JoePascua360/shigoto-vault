@@ -21,12 +21,27 @@
     "description": "Create a helper function with export and try-catch block"
   },
 
-  "Default Export Helper Function ": {
+  "Default Export Helper Function": {
     "prefix": "defaultHelperFunction",
     "body": [
       "export const ${1:helperFunction} = ${2:async} () => {",
       "$0",
       "};",
+      ""
+    ],
+    "description": "Create a helper function with export and try-catch block"
+  },
+
+  "Vitest file template": {
+    "prefix": "testFileTemplate",
+    "body": [
+      "import { expect, test } from 'vitest';",
+      "",
+      "test('${1:}', () => {",
+      "   expect(${2:}).toBe('${0}');",
+      "",
+      "});",
+      "",
       ""
     ],
     "description": "Create a helper function with export and try-catch block"

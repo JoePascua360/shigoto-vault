@@ -14,6 +14,7 @@ import { ThemeProvider } from "@/themes/theme-provider";
 import Spinner from "@/components/spinner";
 import { Toaster } from "./components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { authClient } from "./config/auth-client";
 
 export const queryClient = new QueryClient();
 
@@ -57,14 +58,30 @@ export function Layout({ children }: { children: React.ReactNode }) {
   client loader needed for theme provider
   since it uses local storage which is only for browsers.
 */
-export function clientLoader({ params }: Route.ClientLoaderArgs) {}
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+  try {
+    const { data: session, error } = await authClient.getSession();
+    /*
+       Signs in the user if there is no session.
+       This allows each user to have only one anonymous accounts
+       regardless of page reload.
+    */
+    if (!session?.user.isAnonymous) {
+      await authClient.signIn.anonymous();
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+  }
+}
 
 // HydrateFallback is rendered while the client loader is running
 export function HydrateFallback() {
   return <Spinner isLoading />;
 }
 
-export default function App() {
+export default function App({ loaderData }: Route.ComponentProps) {
   return (
     <>
       {/*  Theme provider context for dark/light mode  */}

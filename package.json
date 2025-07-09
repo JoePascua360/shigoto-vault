@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
-    "dev": "tsx watch --no-warnings --env-file=.env  server.ts",
+    "dev": "tsx watch --no-warnings --env-file=.env --exclude ./sql server.ts",
     "start": "tsx server.ts",
     "typecheck": "react-router typegen && tsc -b",
     "test": "vitest"

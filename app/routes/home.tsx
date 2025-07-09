@@ -2,14 +2,10 @@ import Hero from "@/components/hero";
 import type { Route } from "./+types/home";
 import Navbar from "@/components/navbar";
 import { ModeToggle } from "@/themes/mode-toggle";
-
-export function loader({ context }: Route.LoaderArgs) {
-  return { message: context.VALUE_FROM_EXPRESS };
-}
+import { authClient } from "@/config/auth-client";
+import Spinner from "@/components/spinner";
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const message = loaderData.message;
-
   return (
     <>
       <title>Shigoto Vault</title>

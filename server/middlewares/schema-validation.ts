@@ -1,8 +1,4 @@
-import type {
-  Request,
-  Response,
-  NextFunction,
-} from "express-serve-static-core";
+import type { Request, Response, NextFunction } from "express";
 import { z, ZodError } from "zod/v4";
 import { StatusCodes } from "http-status-codes";
 
@@ -20,10 +16,10 @@ export const schemaValidation = (schema: z.ZodObject) => {
           .status(StatusCodes.BAD_REQUEST)
           .json({ error: "Invalid data found.", details: errorMessages });
         return;
-      } else {
+      } else if (error instanceof Error) {
         res
           .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ error: "Internal Server Error" });
+          .json({ message: `Internal Server Error ${error.message}` });
         return;
       }
     }
