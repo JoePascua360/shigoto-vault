@@ -1,4 +1,4 @@
-import { NavLink, redirect } from "react-router";
+import { NavLink, redirect, useNavigate } from "react-router";
 import type { Route } from "./+types/signup";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -32,21 +32,42 @@ const formSchema = z.object({
 });
 
 export default function SignUp({ loaderData }: Route.ComponentProps) {
+  let navigate = useNavigate();
   const form = useForm({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
   const [isLoading, setIsIsLoading] = useState(false);
 
   const onSubmit = async (value: z.infer<typeof formSchema>) => {
     setIsIsLoading(true);
-    const email = value.email;
-    const password = value.password;
+    try {
+      const email = value.email;
+      const password = value.password;
 
-    const userData = await userSignUp(email, password);
+      await userSignUp(email, password);
 
-    console.log(userData);
-    setIsIsLoading(false);
+      showToast("success", "Account created successfully!");
+
+      // wait for 2s before navigating
+      await new Promise<void>((resolve) => {
+        return setTimeout(() => {
+          resolve();
+        }, 2000);
+      });
+
+      return navigate("/app/dashboard");
+    } catch (error) {
+      if (error instanceof Error) {
+        return showToast("error", error.message);
+      }
+    } finally {
+      setIsIsLoading(false);
+    }
   };
 
   const socialProviders = [
@@ -114,7 +135,11 @@ export default function SignUp({ loaderData }: Route.ComponentProps) {
                   type="submit"
                   className="w-[90%] h-12"
                 >
-                  <FaSpinner className={`${isLoading ? "animate-spin" : ""}`} />
+                  {isLoading && (
+                    <FaSpinner
+                      className={`${isLoading ? "animate-spin" : ""}`}
+                    />
+                  )}
                   Submit
                 </Button>
               </article>

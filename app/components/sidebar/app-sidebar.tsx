@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavUser } from "./nav-user";
 import { DatePicker } from "./date-picker";
+import { authClient } from "@/config/auth-client";
 
 import { MdSpaceDashboard } from "react-icons/md";
 
@@ -39,66 +40,70 @@ import { PiStepsDuotone } from "react-icons/pi";
 import { BsFillInfoCircleFill } from "react-icons/bs";
 import { FaChartPie } from "react-icons/fa";
 
-const data = {
-  user: {
-    name: "Guest",
-    email: "guest@shigotovault.com",
-    avatar: "",
-  },
-  navMain: [
-    {
-      title: "Getting Started",
-      url: "/",
-      subItems: [
-        {
-          title: "Job Vault Tutorial 101",
-          url: "/app/vault-tutorial",
-          icon: <BsFillInfoCircleFill />,
-        },
-      ],
-    },
-    {
-      title: "Vault Section",
-      url: "/",
-      subItems: [
-        {
-          title: "Job Applications",
-          url: "/app/job-applications",
-          icon: <MdBusinessCenter />,
-        },
-        {
-          title: "Company List",
-          url: "/app/company-list",
-          icon: <Building />,
-        },
-        {
-          title: "Rounds List",
-          url: "/app/rounds-list",
-          icon: <PiStepsDuotone />,
-        },
-      ],
-    },
-    {
-      title: "Charts Section",
-      url: "#",
-      subItems: [
-        {
-          title: "Application Insights",
-          url: "/app/charts/job-applications",
-          icon: <FaChartPie />,
-        },
-        {
-          title: "Company Insights",
-          url: "/app/charts/company",
-          icon: <MdStackedBarChart />,
-        },
-      ],
-    },
-  ],
-};
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const location = useLocation();
+
+  const { data: session } = authClient.useSession();
+
+  const data = {
+    user: {
+      name: session?.user.name || "Guest",
+      email: session?.user?.isAnonymous
+        ? "guest@shigotovault.com"
+        : session?.user.email || "",
+      avatar: "",
+    },
+    navMain: [
+      {
+        title: "Getting Started",
+        url: "/",
+        subItems: [
+          {
+            title: "Job Vault Tutorial 101",
+            url: "/app/vault-tutorial",
+            icon: <BsFillInfoCircleFill />,
+          },
+        ],
+      },
+      {
+        title: "Vault Section",
+        url: "/",
+        subItems: [
+          {
+            title: "Job Applications",
+            url: "/app/job-applications",
+            icon: <MdBusinessCenter />,
+          },
+          {
+            title: "Company List",
+            url: "/app/company-list",
+            icon: <Building />,
+          },
+          {
+            title: "Rounds List",
+            url: "/app/rounds-list",
+            icon: <PiStepsDuotone />,
+          },
+        ],
+      },
+      {
+        title: "Charts Section",
+        url: "#",
+        subItems: [
+          {
+            title: "Application Insights",
+            url: "/app/charts/job-applications",
+            icon: <FaChartPie />,
+          },
+          {
+            title: "Company Insights",
+            url: "/app/charts/company",
+            icon: <MdStackedBarChart />,
+          },
+        ],
+      },
+    ],
+  };
 
   return (
     <Sidebar {...props}>

@@ -62,11 +62,11 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   try {
     const { data: session, error } = await authClient.getSession();
     /*
-       Signs in the user if there is no session.
+       Signs in the user anonymously if there is no session.
        This allows each user to have only one anonymous accounts
        regardless of page reload.
     */
-    if (!session?.user.isAnonymous) {
+    if (!session?.user?.id) {
       await authClient.signIn.anonymous();
     }
   } catch (error) {

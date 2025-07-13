@@ -1,6 +1,4 @@
 import { authClient } from "@/config/auth-client";
-import { showToast } from "./show-toast";
-
 /**
  *
  * @param email - User Email Address (validated using zod in the form)
@@ -19,7 +17,6 @@ export async function userSignUp(
     },
     {
       onSuccess: (ctx) => {
-        showToast("success", "Account created successfully!");
         return ctx.data;
       },
       onError: (ctx) => {

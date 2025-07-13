@@ -4,9 +4,9 @@ type JobApplicationsColumn = {
   company_name: string;
   role: string;
   job_description: string;
-  salary: number;
-  qualifications: string;
-  skills: string;
+  min_salary: number;
+  max_salary: number;
+  location: string;
   job_type: string;
   work_schedule: string;
   tag: string[];
@@ -33,8 +33,8 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
     accessorKey: "job_description",
   },
   {
-    header: "Salary",
-    accessorKey: "salary",
+    header: "Min Salary",
+    accessorKey: "min_salary",
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("salary"));
       const formatted = new Intl.NumberFormat("en-US", {
@@ -45,12 +45,16 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
     },
   },
   {
-    header: "Qualifications",
-    accessorKey: "qualifications",
-  },
-  {
-    header: "Skills",
-    accessorKey: "skills",
+    header: "Max Salary",
+    accessorKey: "max_salary",
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("salary"));
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(amount);
+      return formatted;
+    },
   },
   {
     header: "Location",

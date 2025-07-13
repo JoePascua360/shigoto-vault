@@ -52,15 +52,19 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   dropdownChildButton?: React.ReactElement;
+  initialHiddenColumns?: {};
 }
 
 export function DataTable<TData, TValue>({
   data,
   columns,
   dropdownChildButton,
+  initialHiddenColumns,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    initialHiddenColumns || {}
+  );
 
   const table = useReactTable({
     data,
@@ -124,7 +128,7 @@ export function DataTable<TData, TValue>({
                                 header.getContext()
                               )}
                         </span>
-                        {/* Pin/Unpin column controls with enhanced accessibility */}
+                        {/* Pin/Unpin column controls */}
                         {!header.isPlaceholder &&
                           header.column.getCanPin() &&
                           (header.column.getIsPinned() ? (

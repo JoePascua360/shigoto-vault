@@ -19,6 +19,8 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { showToast } from "@/utils/show-toast";
 import { queryClient } from "@/root";
+import { FaSpinner } from "react-icons/fa6";
+import { fetchRequestComponent } from "@/utils/fetch-request-component";
 
 interface AddJobApplicationProps<TDialog> {
   dialogProps: TDialog;
@@ -30,7 +32,8 @@ export default function AddJobApplication<TDialog>({
   const form = useForm<jobApplicationData>({
     resolver: zodResolver(jobApplicationSchema),
     defaultValues: {
-      company_name: "hello",
+      company_name: "Company A",
+      role: "Dev",
     },
   });
 
@@ -40,26 +43,18 @@ export default function AddJobApplication<TDialog>({
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/v1/addJobApplication", {
-        method: "POST",
-        body: JSON.stringify(values),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message);
-      }
+      const response = await fetchRequestComponent(
+        "/addJobApplication",
+        "POST",
+        values
+      );
 
       queryClient.invalidateQueries({
         queryKey: ["job-applications"],
         exact: true,
       });
 
-      return showToast("success", data.message, {
+      return showToast("success", response.message, {
         label: "Undo",
         onClick: () => {
           console.log("Test");
@@ -94,7 +89,7 @@ export default function AddJobApplication<TDialog>({
               name="company_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Company</FormLabel>
                   <FormControl>
                     <Input placeholder="shadcn" {...field} />
                   </FormControl>
@@ -102,7 +97,22 @@ export default function AddJobApplication<TDialog>({
                 </FormItem>
               )}
             />
+            <FormField
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Dev" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <Button disabled={loading} type="submit">
+              {loading && (
+                <FaSpinner className={`${loading ? "animate-spin" : ""}`} />
+              )}
               Submit
             </Button>
           </form>

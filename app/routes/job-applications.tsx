@@ -10,24 +10,16 @@ import Spinner from "@/components/spinner";
 import { useQuery } from "@tanstack/react-query";
 import { isRouteErrorResponse } from "react-router";
 import ErrorPage from "@/components/error-page";
+import { fetchRequestComponent } from "@/utils/fetch-request-component";
 
 async function getJobApplications() {
   try {
-    const response = await fetch("/api/v1/loadJobApplicationData", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetchRequestComponent(
+      "/loadJobApplicationData",
+      "GET"
+    );
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.log(response);
-      throw new Error(data?.message || "Something went wrong!");
-    }
-
-    return data.rows || [];
+    return response.rows || [];
   } catch (error) {
     if (error instanceof Error) {
       const errorMsg = error.message;
@@ -61,6 +53,15 @@ export default function JobApplication({ loaderData }: Route.ComponentProps) {
     staleTime: 60 * 1000, // will not refetch until 1 minute passed after initial fetch
   });
 
+  const initialHiddenColumns = {
+    min_salary: false,
+    max_salary: false,
+    tag: false,
+    rounds: false,
+    created_at: false,
+    applied_at: false,
+  };
+
   const addDialog = useDialog();
 
   if (query.isLoading) return <Spinner isLoading={query.isLoading} />;
@@ -71,6 +72,7 @@ export default function JobApplication({ loaderData }: Route.ComponentProps) {
       <aside className="container mx-auto p-10">
         <main>
           <DataTable
+            initialHiddenColumns={initialHiddenColumns}
             columns={jobApplicationColumns}
             data={query?.data || []}
             dropdownChildButton={

@@ -12,22 +12,32 @@ import {
 } from "@/components/ui/popover";
 import { ModeToggle } from "@/themes/mode-toggle";
 import { LogIn, User2, UserRoundPen, Vault } from "lucide-react";
-import { Link, NavLink, Outlet } from "react-router";
+import { Link, NavLink, Outlet, useLocation } from "react-router";
 import DynamicDialog from "./dynamic-dialog";
 import { useDialog } from "@/hooks/use-dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
 import { DialogClose } from "./ui/dialog";
-
-// Navigation links array to be used in both desktop and mobile menus
-const navigationLinks = [
-  { href: "/", label: "Home", active: true },
-  { href: "/about", label: "About" },
-  { href: "/app-guide", label: "Guide" },
-];
+import { authClient } from "@/config/auth-client";
 
 export default function Navbar() {
+  // Navigation links array to be used in both desktop and mobile menus
+
+  const location = useLocation();
+
+  const { data: session } = authClient.useSession();
+
+  const navigationLinks = [
+    { href: "/", label: "Home", active: location.pathname === "/" },
+    { href: "/about", label: "About", active: location.pathname === "/about" },
+    {
+      href: "/app-guide",
+      label: "Guide",
+      active: location.pathname === "/app-guide",
+    },
+  ];
+
   const signInDialog = useDialog();
 
   return (
@@ -115,42 +125,55 @@ export default function Navbar() {
           </section>
           {/* Right side */}
           <section className="flex items-center gap-2">
-            <DynamicDialog
-              dialog={signInDialog}
-              title="Account Sign In"
-              description="Log in to your account to access more features!"
-              triggerElement={
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  className="text-sm cursor-pointer"
-                >
-                  Sign In
+            <>
+              {!session?.user.isAnonymous ? (
+                <Button variant="secondary" size="lg" className="text-sm">
+                  <User2 />
+                  Hello, {session?.user.email}
                 </Button>
-              }
-            >
-              <main className="grid gap-3 mt-3">
-                <aside>
-                  <Label className="mb-2">Email Address</Label>
-                  <Input />
-                </aside>
+              ) : (
+                <DynamicDialog
+                  dialog={signInDialog}
+                  title="Account Sign In"
+                  description="Log in to your account to access more features!"
+                  triggerElement={
+                    <Button
+                      variant="secondary"
+                      size="lg"
+                      className="text-sm cursor-pointer"
+                    >
+                      Sign In
+                    </Button>
+                  }
+                >
+                  <main className="grid gap-3 mt-3">
+                    <aside>
+                      <Label className="mb-2">Email Address</Label>
+                      <Input />
+                    </aside>
 
-                <aside>
-                  <Label className="mb-2">Password</Label>
-                  <Input type="password" />
-                </aside>
+                    <aside>
+                      <Label className="mb-2">Password</Label>
+                      <Input type="password" />
+                    </aside>
 
-                <aside>
-                  Don't have an account yet? Create one{" "}
-                  <DialogClose asChild>
-                    <Link to="/signup" className="underline text-vault-purple">
-                      here
-                    </Link>
-                  </DialogClose>
-                  .
-                </aside>
-              </main>
-            </DynamicDialog>
+                    <aside>
+                      Don't have an account yet? Create one{" "}
+                      <DialogClose asChild>
+                        <Link
+                          to="/signup"
+                          className="underline text-vault-purple"
+                        >
+                          here
+                        </Link>
+                      </DialogClose>
+                      .
+                    </aside>
+                  </main>
+                </DynamicDialog>
+              )}
+            </>
+
             <ModeToggle />
           </section>
         </div>

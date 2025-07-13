@@ -7,7 +7,7 @@ type dbConfig = {
 };
 
 export class GlobalConfigs {
-  static apiVersion: string = process.env.API_VERSION || "v1";
+  static apiVersion: string = process.env.VITE_API_VERSION || "v1";
   static dbConfig: dbConfig = {
     DB_USER: process.env.DB_USER,
     DB_PASSWORD: process.env.DB_PASSWORD,
