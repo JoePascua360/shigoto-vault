@@ -20,4 +20,8 @@ export const auth = betterAuth({
   advanced: {
     cookiePrefix: "shigoto-vault",
   },
+  trustedOrigins: [
+    process.env.BETTER_AUTH_URL || "",
+    process.env.BETTER_AUTH_LOCAL_IP || "",
+  ],
 });

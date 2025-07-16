@@ -21,6 +21,10 @@ import { showToast } from "@/utils/show-toast";
 import { queryClient } from "@/root";
 import { FaSpinner } from "react-icons/fa6";
 import { fetchRequestComponent } from "@/utils/fetch-request-component";
+import MultiStepFormWrapper from "@/components/multi-step-form-wrapper";
+import { addJobApplicationFormElements } from "./add-job-application-form-elements";
+import { z } from "zod/v4";
+import { Textarea } from "@/components/ui/textarea";
 
 interface AddJobApplicationProps<TDialog> {
   dialogProps: TDialog;
@@ -34,10 +38,20 @@ export default function AddJobApplication<TDialog>({
     defaultValues: {
       company_name: "Company A",
       role: "Dev",
+      job_description: "Seeking devs",
+      min_salary: 50000,
+      max_salary: 100000,
+      location: "WFH",
+      job_type: "Full-time",
+      work_schedule: "8am to 5pm",
+      tag: ["ideal job", "top company"],
+      rounds: ["1st round", "2nd round"],
+      status: "applied",
+      applied_at: new Date(),
     },
   });
 
-  const [loading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (values: jobApplicationData) => {
     setIsLoading(true);
@@ -85,36 +99,31 @@ export default function AddJobApplication<TDialog>({
       >
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
-            <FormField
-              name="company_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Company</FormLabel>
-                  <FormControl>
-                    <Input placeholder="shadcn" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+            <MultiStepFormWrapper<keyof jobApplicationData>
+              formArray={addJobApplicationFormElements}
+              isLoading={isLoading}
+              validateStep={async (step) => {
+                setIsLoading(true);
+                try {
+                  const isValid = await form.trigger(
+                    addJobApplicationFormElements[step - 1]?.fieldNameArray,
+                    {
+                      shouldFocus: true,
+                    }
+                  );
+
+                  return isValid;
+                } catch (error) {
+                  if (error instanceof Error) {
+                    return false;
+                  } else {
+                    return false;
+                  }
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
             />
-            <FormField
-              name="role"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Role</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Dev" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button disabled={loading} type="submit">
-              {loading && (
-                <FaSpinner className={`${loading ? "animate-spin" : ""}`} />
-              )}
-              Submit
-            </Button>
           </form>
         </Form>
       </DynamicDialog>

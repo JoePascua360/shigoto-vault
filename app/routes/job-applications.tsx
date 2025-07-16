@@ -4,7 +4,7 @@ import { DataTable } from "@/components/data-table";
 
 import { useDialog } from "@/hooks/use-dialog";
 
-import AddJobApplication from "@/features/job-applications/add-job-application";
+import AddJobApplication from "@/features/job-applications/add-job-applications/add-job-application";
 
 import Spinner from "@/components/spinner";
 import { useQuery } from "@tanstack/react-query";
