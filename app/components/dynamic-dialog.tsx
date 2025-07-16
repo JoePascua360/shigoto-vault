@@ -14,6 +14,7 @@ interface DynamicDialogProps<TDialog> {
   dialog: TDialog;
   title?: string;
   description?: string;
+  className?: string;
 }
 
 export default function DynamicDialog<TDialog>({
@@ -22,6 +23,7 @@ export default function DynamicDialog<TDialog>({
   dialog,
   title = "",
   description = "",
+  className = "",
 }: DynamicDialogProps<TDialog>) {
   return (
     <Dialog {...dialog}>
@@ -30,7 +32,7 @@ export default function DynamicDialog<TDialog>({
           {triggerElement}
         </DialogTrigger>
       )}
-      <DialogContent>
+      <DialogContent className={className}>
         <DialogHeader>
           <DialogTitle className="font-secondary-header">{title}</DialogTitle>
           <DialogDescription className="font-content">

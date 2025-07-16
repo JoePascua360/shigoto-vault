@@ -22,8 +22,24 @@ import { showToast } from "@/utils/show-toast";
 import { useState } from "react";
 import { userSignUp } from "@/utils/user-signup";
 
-export function loader({ context }: Route.LoaderArgs) {
-  return { message: context.VALUE_FROM_EXPRESS };
+import { isRouteErrorResponse } from "react-router";
+import ErrorPage from "@/components/error-page";
+
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  if (isRouteErrorResponse(error)) {
+    return (
+      <>
+        <h1>
+          {error.status} {error.statusText}
+        </h1>
+        <p>{error.data}</p>
+      </>
+    );
+  } else if (error instanceof Error) {
+    return <ErrorPage error={error} />;
+  } else {
+    return <h1>Unknown Error</h1>;
+  }
 }
 
 const formSchema = z.object({
