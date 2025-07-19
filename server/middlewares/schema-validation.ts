@@ -12,11 +12,16 @@ export const schemaValidation = (schema: z.ZodObject) => {
         const errorMessages = error.issues.map((issue) => ({
           message: `${issue.path.join(".")} is ${issue.message}`,
         }));
-        res
-          .status(StatusCodes.BAD_REQUEST)
-          .json({ error: "Invalid data found.", details: errorMessages });
+
+        res.status(StatusCodes.BAD_REQUEST).json({
+          message: `Invalid data found. ${errorMessages.map(
+            (text) => `\n${text.message}`
+          )}`,
+          details: errorMessages,
+        });
         return;
       } else if (error instanceof Error) {
+        console.log(error);
         res
           .status(StatusCodes.INTERNAL_SERVER_ERROR)
           .json({ message: `Internal Server Error ${error.message}` });

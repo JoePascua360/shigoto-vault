@@ -70,7 +70,7 @@ export default function NavbarRightSection({}: NavbarRightSectionProps) {
   return (
     <section className="flex items-center gap-2">
       <>
-        {!session?.user.isAnonymous ? (
+        {session?.user && !session?.user.isAnonymous ? (
           <Button variant="secondary" size="lg" className="text-sm">
             <User2 />
             Hello, {session?.user.email}

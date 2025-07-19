@@ -25,7 +25,7 @@ import {
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import { NavUser } from "./nav-user";
-import { DatePicker } from "./date-picker";
+import { DatePicker } from "./current-date-display";
 import { authClient } from "@/config/auth-client";
 
 import { MdSpaceDashboard } from "react-icons/md";

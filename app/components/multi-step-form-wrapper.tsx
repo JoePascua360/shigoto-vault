@@ -13,6 +13,7 @@ interface MultiStepFormWrapperProps<T> {
       text: string;
       className: string;
     };
+    contentClassName: string;
     fieldNameArray: Array<T>;
   }>;
   isLoading: boolean;
@@ -84,7 +85,12 @@ export default function MultiStepFormWrapper<T>({
               </h2>
             </section>
             {/* // steps - 1 since array starts from zero. Step value needs to match it */}
-            <section key={step}>{currentStep?.element}</section>
+            <section
+              key={step}
+              className={`${formArray[step - 1]?.contentClassName}`}
+            >
+              {currentStep?.element}
+            </section>
           </article>
         )}
       </section>
@@ -101,14 +107,17 @@ export default function MultiStepFormWrapper<T>({
         </Button>
 
         {/* check if current step is final step, show the final submit button */}
-        {step === formArray.length ? (
+        {step === formArray.length && (
           <Button disabled={isLoading} type="submit">
             {isLoading && (
               <FaSpinner className={`${isLoading ? "animate-spin" : ""}`} />
             )}
             Submit
           </Button>
-        ) : (
+        )}
+
+        {/* will render as long as current step is not final step */}
+        {step >= 1 && step < formArray.length && (
           <Button
             type="button"
             disabled={isLoading}
@@ -125,6 +134,7 @@ export default function MultiStepFormWrapper<T>({
                 setStep((step) => step + 1);
               } catch (error) {
                 if (error instanceof Error) {
+                  console.log(error);
                   throw new Error(error.message);
                 }
               }

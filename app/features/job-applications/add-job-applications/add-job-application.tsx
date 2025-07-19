@@ -1,59 +1,57 @@
 import DynamicDialog from "@/components/dynamic-dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  jobApplicationSchema,
-  type jobApplicationData,
+  frontendJobApplicationSchema,
+  type FrontendJobApplicationData,
 } from "#/schema/features/job-applications/job-application-schema";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { showToast } from "@/utils/show-toast";
-import { queryClient } from "@/root";
-import { FaSpinner } from "react-icons/fa6";
 import { fetchRequestComponent } from "@/utils/fetch-request-component";
 import MultiStepFormWrapper from "@/components/multi-step-form-wrapper";
-import { addJobApplicationFormElements } from "./add-job-application-form-elements";
-import { z } from "zod/v4";
-import { Textarea } from "@/components/ui/textarea";
+import { addJobApplicationFormElementsHook } from "./add-job-application-form-elements";
+import type { DialogType, useDialog } from "@/hooks/use-dialog";
+import { useQueryClient } from "@tanstack/react-query";
 
-interface AddJobApplicationProps<TDialog> {
-  dialogProps: TDialog;
-}
+export default function AddJobApplication({ dialog }: DialogType) {
+  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-export default function AddJobApplication<TDialog>({
-  dialogProps,
-}: AddJobApplicationProps<TDialog>) {
-  const form = useForm<jobApplicationData>({
-    resolver: zodResolver(jobApplicationSchema),
+  // TODO: fix the applied_at field, schema validation in backend does not work because of it. Date becomes string when sending requests
+  const form = useForm<FrontendJobApplicationData>({
+    resolver: zodResolver(frontendJobApplicationSchema),
     defaultValues: {
-      company_name: "Company A",
-      role: "Dev",
-      job_description: "Seeking devs",
-      min_salary: 50000,
-      max_salary: 100000,
-      location: "WFH",
-      job_type: "Full-time",
-      work_schedule: "8am to 5pm",
-      tag: ["ideal job", "top company"],
-      rounds: ["1st round", "2nd round"],
+      company_name: "",
+      role: "",
+      job_description: "",
+      min_salary: 1,
+      max_salary: 2,
+      location: "",
+      job_type: "",
+      work_schedule: "",
+      tag: [
+        {
+          id: "1",
+          text: "Ideal Job",
+        },
+      ],
+      rounds: [
+        {
+          id: "1",
+          text: "First Round",
+        },
+      ],
       status: "applied",
       applied_at: new Date(),
     },
   });
 
-  const [isLoading, setIsLoading] = useState(false);
+  const addJobApplicationFormElements = addJobApplicationFormElementsHook(form);
 
-  const handleSubmit = async (values: jobApplicationData) => {
+  const handleSubmit = async (values: FrontendJobApplicationData) => {
     setIsLoading(true);
 
     try {
@@ -63,10 +61,12 @@ export default function AddJobApplication<TDialog>({
         values
       );
 
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["job-applications"],
         exact: true,
       });
+
+      dialog.dismiss();
 
       return showToast("success", response.message, {
         label: "Undo",
@@ -76,7 +76,7 @@ export default function AddJobApplication<TDialog>({
       });
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message);
+        console.log(error);
         return showToast("error", error.message);
       }
     } finally {
@@ -93,13 +93,13 @@ export default function AddJobApplication<TDialog>({
             Add Job Applications
           </Button>
         }
-        dialog={dialogProps}
+        dialog={dialog}
         description="You can add new job applications here. "
         title="Add Applications"
       >
-        <Form {...form}>
+        <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
-            <MultiStepFormWrapper<keyof jobApplicationData>
+            <MultiStepFormWrapper<keyof FrontendJobApplicationData>
               formArray={addJobApplicationFormElements}
               isLoading={isLoading}
               validateStep={async (step) => {
@@ -125,7 +125,7 @@ export default function AddJobApplication<TDialog>({
               }}
             />
           </form>
-        </Form>
+        </FormProvider>
       </DynamicDialog>
     </>
   );

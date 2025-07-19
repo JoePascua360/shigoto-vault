@@ -6,27 +6,28 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import type { useDialog } from "@/hooks/use-dialog";
 import type React from "react";
 
-interface DynamicDialogProps<TDialog> {
+interface DynamicDialogProps {
   children: React.ReactElement;
   triggerElement?: React.ReactElement;
-  dialog: TDialog;
+  dialog: ReturnType<typeof useDialog>;
   title?: string;
   description?: string;
   className?: string;
 }
 
-export default function DynamicDialog<TDialog>({
+export default function DynamicDialog({
   children,
   triggerElement,
   dialog,
   title = "",
   description = "",
   className = "",
-}: DynamicDialogProps<TDialog>) {
+}: DynamicDialogProps) {
   return (
-    <Dialog {...dialog}>
+    <Dialog {...dialog.dialogProps}>
       {triggerElement && (
         <DialogTrigger className="font-content" asChild>
           {triggerElement}

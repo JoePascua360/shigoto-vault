@@ -29,3 +29,7 @@ export function useDialog() {
     dismiss,
   };
 }
+
+export type DialogType = {
+  dialog: ReturnType<typeof useDialog>;
+};

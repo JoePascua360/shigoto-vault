@@ -1,7 +1,7 @@
-import type { jobApplicationData } from "#/schema/features/job-applications/job-application-schema";
+import type { FrontendJobApplicationData } from "#/schema/features/job-applications/job-application-schema";
 
 /*
-   keyof jobApplicationData - avoids type error since this
+   keyof FrontendJobApplicationData - avoids type error since this
    ensures that all elements in the array matches the object key
 */
 export type addJobApplicationFormArray = {
@@ -10,5 +10,6 @@ export type addJobApplicationFormArray = {
     text: string;
     className: string;
   };
-  fieldNameArray: Array<keyof jobApplicationData>;
+  contentClassName: string;
+  fieldNameArray: Array<keyof FrontendJobApplicationData>;
 };
