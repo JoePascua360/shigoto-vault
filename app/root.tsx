@@ -16,7 +16,7 @@ import { Toaster } from "./components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { authClient } from "./config/auth-client";
 
-export const queryClient = new QueryClient();
+const queryClient = new QueryClient();
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -61,13 +61,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   try {
     const { data: session, error } = await authClient.getSession();
+
     /*
        Signs in the user anonymously if there is no session.
        This allows each user to have only one anonymous accounts
        regardless of page reload.
     */
-    if (!session?.user?.id) {
-      await authClient.signIn.anonymous();
+    if (!session?.user && !error) {
+      const currentLocation = window.location.href;
+
+      // only sign in a user anonymously when they navigate through /app route
+      if (currentLocation.includes("/app")) {
+        await authClient.signIn.anonymous();
+      }
     }
   } catch (error) {
     if (error instanceof Error) {
@@ -89,7 +95,12 @@ export default function App({ loaderData }: Route.ComponentProps) {
         {/* Tanstack Query Client */}
         <QueryClientProvider client={queryClient}>
           {/* Toaster for rendering notifications */}
-          <Toaster position="bottom-right" richColors closeButton />
+          <Toaster
+            position="bottom-right"
+            richColors
+            closeButton
+            className="whitespace-pre-line"
+          />
           <Outlet />
         </QueryClientProvider>
       </ThemeProvider>

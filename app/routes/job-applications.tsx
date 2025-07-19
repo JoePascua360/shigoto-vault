@@ -75,9 +75,7 @@ export default function JobApplication({ loaderData }: Route.ComponentProps) {
             initialHiddenColumns={initialHiddenColumns}
             columns={jobApplicationColumns}
             data={query?.data || []}
-            dropdownChildButton={
-              <AddJobApplication dialogProps={addDialog.dialogProps} />
-            }
+            dropdownChildButton={<AddJobApplication dialog={addDialog} />}
           />
         </main>
       </aside>

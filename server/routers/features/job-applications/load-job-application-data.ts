@@ -1,3 +1,5 @@
+import { auth } from "#/lib/auth";
+import { fromNodeHeaders } from "better-auth/node";
 import express from "express";
 import { StatusCodes } from "http-status-codes";
 import * as db from "~/db/index";
@@ -6,9 +8,13 @@ const loadJobApplicationData = express.Router();
 
 loadJobApplicationData.get("/loadJobApplicationData", async (req, res) => {
   try {
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
+    });
+
     const createTable = `CREATE TABLE IF NOT EXISTS job_applications
     (
-      job_app_id text, user_id text, company_name text NOT NULL,
+      job_app_id uuid, user_id text not null, company_name text NOT NULL,
       role text NOT NULL, job_description text, min_salary int, max_salary int,
       location text, job_type text NOT NULL, work_schedule text NOT NULL,
       created_at timestamp default current_timestamp, applied_at date,
@@ -19,11 +25,11 @@ loadJobApplicationData.get("/loadJobApplicationData", async (req, res) => {
           references "user"(id)
       );`;
 
-    const query = "SELECT * FROM job_applications";
+    const query = "SELECT * FROM job_applications WHERE user_id = $1";
 
     await db.query(createTable);
 
-    const result = await db.query(query);
+    const result = await db.query(query, [`${session?.user?.id}`]);
 
     const data = result.rows.length === 0 ? [] : result.rows;
 
