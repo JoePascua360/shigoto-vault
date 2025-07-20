@@ -4,10 +4,13 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
-    "dev": "tsx watch --no-warnings --env-file=.env --exclude ./sql server.ts",
+    "dev": "docker compose up -d && npm run dev:restore-db && tsx watch --no-warnings --env-file=.env --exclude ./sql server.ts",
     "start": "tsx server.ts",
     "typecheck": "react-router typegen && tsc -b",
-    "test": "vitest"
+    "test": "vitest",
+    "prod:build": "npm run build && docker build -t shigoto-vault:prod .",
+    "dev:backup-db": "docker exec postgresdb pg_dump shigoto-vault > ./sql/backup.sql",
+    "dev:restore-db": "docker exec postgresdb psql -d shigoto-vault -f /var/lib/postgresql/backup.sql"
   },
   "dependencies": {
     "@headless-tree/core": "^1.2.0",

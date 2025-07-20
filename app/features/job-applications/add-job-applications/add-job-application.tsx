@@ -8,19 +8,37 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { showToast } from "@/utils/show-toast";
 import { fetchRequestComponent } from "@/utils/fetch-request-component";
 import MultiStepFormWrapper from "@/components/multi-step-form-wrapper";
 import { addJobApplicationFormElementsHook } from "./add-job-application-form-elements";
 import type { DialogType, useDialog } from "@/hooks/use-dialog";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { TagInput, type Tag } from "emblor";
+
+const tagsss = [
+  {
+    id: "1",
+    text: "Red",
+  },
+];
 
 export default function AddJobApplication({ dialog }: DialogType) {
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
+  const id = useId();
+  const [exampleTags, setExampleTags] = useState<Tag[]>(tagsss);
+  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
-  // TODO: fix the applied_at field, schema validation in backend does not work because of it. Date becomes string when sending requests
   const form = useForm<FrontendJobApplicationData>({
     resolver: zodResolver(frontendJobApplicationSchema),
     defaultValues: {

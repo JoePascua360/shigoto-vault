@@ -16,7 +16,7 @@ export default defineConfig(({ isSsrBuild }) => ({
   server: {
     port: 3000,
     watch: {
-      ignored: ["**/sql/**"],
+      ignored: ["**/sql/**", "**/server/**"],
     },
   },
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],

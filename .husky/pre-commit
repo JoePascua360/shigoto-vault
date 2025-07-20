@@ -1,2 +1,8 @@
+# runs all test files
 npm test
+# perform typescript typecheck for all .ts files
 npm run typecheck
+# ensures that the production build and docker image is up to date every commit
+npm run prod:build
+# create a postgres backup in ./sql directory in local machine
+npm run dev:backup-db

@@ -1,4 +1,5 @@
 import { type ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 
 type JobApplicationsColumn = {
   company_name: string;
@@ -83,9 +84,17 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
   {
     header: "Created At",
     accessorKey: "created_at",
+    cell: ({ row }) => {
+      const formatted = format(row.original.created_at, "yyyy-MM-dd hh:mm a");
+      return formatted;
+    },
   },
   {
     header: "Applied At",
     accessorKey: "applied_at",
+    cell: ({ row }) => {
+      const formatted = format(row.original.applied_at, "yyyy-MM-dd");
+      return formatted;
+    },
   },
 ];

@@ -12,7 +12,6 @@
     "checkJs": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
-    "esModuleInterop": true,
     "strict": true,
     "noEmit": true
   }
