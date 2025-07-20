@@ -20,11 +20,19 @@ addJobApplication.post("/addJobApplication", async (req, res) => {
 
     const applied_at = data.applied_at;
 
+    // needs to convert it into JSON format to avoid JSON type error in postgres
+    const tag = JSON.stringify(data.tag);
+    const rounds = JSON.stringify(data.rounds);
+
+    data.tag = tag;
+    data.rounds = rounds;
     data.applied_at = format(new Date(applied_at), "yyyy-MM-dd");
 
     const session = await auth.api.getSession({
       headers: fromNodeHeaders(req.headers),
     });
+
+    console.log("hello", data, `hey: ${typeof data.tag}`);
 
     const userID = session?.session.userId || null;
 
@@ -47,9 +55,7 @@ addJobApplication.post("/addJobApplication", async (req, res) => {
 
     const values = [uuidv4(), userID, ...Object.values(data)];
 
-    const result = await db.query(queryCmd, values);
-
-    console.log(result.rows[0]);
+    await db.query(queryCmd, values);
 
     res.status(StatusCodes.OK).json({ message: "Inserted successfully!" });
     return;

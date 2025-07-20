@@ -15,29 +15,10 @@ import MultiStepFormWrapper from "@/components/multi-step-form-wrapper";
 import { addJobApplicationFormElementsHook } from "./add-job-application-form-elements";
 import type { DialogType, useDialog } from "@/hooks/use-dialog";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { TagInput, type Tag } from "emblor";
-
-const tagsss = [
-  {
-    id: "1",
-    text: "Red",
-  },
-];
 
 export default function AddJobApplication({ dialog }: DialogType) {
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
-  const id = useId();
-  const [exampleTags, setExampleTags] = useState<Tag[]>(tagsss);
-  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   const form = useForm<FrontendJobApplicationData>({
     resolver: zodResolver(frontendJobApplicationSchema),

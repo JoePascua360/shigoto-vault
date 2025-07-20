@@ -18,7 +18,7 @@ loadJobApplicationData.get("/loadJobApplicationData", async (req, res) => {
       role text NOT NULL, job_description text, min_salary int, max_salary int,
       location text, job_type text NOT NULL, work_schedule text NOT NULL,
       created_at timestamp default current_timestamp, applied_at date,
-      tag text[], status text, rounds text[],
+      tag JSON, status text, rounds JSON,
       primary key(job_app_id),
       CONSTRAINT fk_user
         foreign key(user_id)

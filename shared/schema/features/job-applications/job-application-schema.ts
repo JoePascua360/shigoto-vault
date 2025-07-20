@@ -37,7 +37,7 @@ export const baseJobApplicationSchema = z.object({
         text: z.string(),
       })
     )
-    .min(1, "Rounds must contain at lesast 1 item"),
+    .min(1, "Rounds must contain at least 1 item"),
 });
 
 // Frontend schema - expects Date objects
