@@ -254,7 +254,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns?.length}
+                  colSpan={table.getTotalSize()}
                   className="h-24 text-center"
                 >
                   No results.

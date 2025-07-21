@@ -8,12 +8,23 @@ import {
 } from "@/components/ui/form";
 import type { UseFormReturn } from "react-hook-form";
 import type { FrontendJobApplicationData } from "#/schema/features/job-applications/job-application-schema";
-
 import { Input } from "@/components/ui/input";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+let renderCount = 0;
 
 export default function JobApplicationStep2FormElement(
   form: UseFormReturn<FrontendJobApplicationData>
 ) {
+  console.log("renderCount:", renderCount++);
+
   return (
     <>
       <section className="grid grid-cols-2 gap-2 mt-3">
@@ -46,7 +57,7 @@ export default function JobApplicationStep2FormElement(
         <FormField
           control={form.control}
           name="max_salary"
-          render={({ field }) => (
+          render={({ field, formState }) => (
             <FormItem>
               <FormLabel>Max Salary</FormLabel>
               <FormControl>
@@ -77,12 +88,19 @@ export default function JobApplicationStep2FormElement(
           render={({ field }) => (
             <FormItem>
               <FormLabel>Job Type</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Full-time, Contractual, Part-time etc.."
-                  {...field}
-                />
-              </FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Job Type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="Full-Time">Full-Time</SelectItem>
+                  <SelectItem value="Contractual">Contractual</SelectItem>
+                  <SelectItem value="Part-Time">Part-Time</SelectItem>
+                  <SelectItem value="Internship">Internship</SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

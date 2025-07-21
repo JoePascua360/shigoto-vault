@@ -8,12 +8,9 @@ export const baseJobApplicationSchema = z.object({
     .number()
     .gte(1, "Minimum Salary cannot be lower than 1!")
     .transform((val) => Number(val)),
-  max_salary: z
-    .number()
-    .gte(1, "Maximum Salary cannot be lower than 1!")
-    .transform((val) => Number(val)),
+  max_salary: z.number().gte(1, "Max salary cannot be lower than 1!"),
   location: z.string().min(1, "Location is required!"),
-  job_type: z.string().min(1, "Job Type is required"),
+  job_type: z.enum(["Full-Time", "Contractual", "Part-Time", "Internship"]),
   work_schedule: z.string().min(1, "Work Schedule is required"),
   tag: z
     .array(
@@ -23,7 +20,7 @@ export const baseJobApplicationSchema = z.object({
       })
     )
     .min(1, "Tags must contain at least 1 item"),
-  status: z.literal([
+  status: z.enum([
     "employed",
     "rejected",
     "applied",

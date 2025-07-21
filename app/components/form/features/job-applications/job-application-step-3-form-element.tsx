@@ -69,6 +69,7 @@ export default function JobApplicationStep3FormElement(
                       },
                     }}
                     maxTags={10}
+                    showCounter
                     activeTagIndex={activeTagIndex}
                     setActiveTagIndex={setActiveTagIndex}
                   />

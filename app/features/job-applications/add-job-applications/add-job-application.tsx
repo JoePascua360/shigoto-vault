@@ -29,7 +29,7 @@ export default function AddJobApplication({ dialog }: DialogType) {
       min_salary: 1,
       max_salary: 2,
       location: "",
-      job_type: "",
+      job_type: "Full-Time",
       work_schedule: "",
       tag: [
         {
@@ -104,6 +104,18 @@ export default function AddJobApplication({ dialog }: DialogType) {
               validateStep={async (step) => {
                 setIsLoading(true);
                 try {
+                  // values from input tags is a string, need to convert it to a number
+                  // to avoid the zod type error
+                  form.setValue(
+                    "min_salary",
+                    Number(form.getValues("min_salary"))
+                  );
+
+                  form.setValue(
+                    "max_salary",
+                    Number(form.getValues("max_salary"))
+                  );
+
                   const isValid = await form.trigger(
                     addJobApplicationFormElements[step - 1]?.fieldNameArray,
                     {
