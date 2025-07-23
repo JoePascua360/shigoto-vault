@@ -5,6 +5,5 @@ import { GlobalConfigs } from "~/config/global-config";
 export const setupRouters = () => {
   const apiVersion = GlobalConfigs.apiVersion;
   // call routers here
-  // app.use(`/api/${apiVersion}`, jobApplicationRouters);
   jobApplicationRouters(apiVersion);
 };

@@ -1,3 +1,5 @@
+import { GoogleGenAI } from "@google/genai";
+
 type dbConfig = {
   DB_USER: string | undefined;
   DB_PASSWORD: string | undefined;
@@ -14,5 +16,10 @@ export class GlobalConfigs {
     DB_HOST: process.env.DB_HOST,
     DB_PORT: Number(process.env.DB_PORT),
     DB_NAME: process.env.DB_NAME,
+  };
+  static geminiConfig = {
+    ai: new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+    }),
   };
 }

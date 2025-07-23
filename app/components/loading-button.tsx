@@ -24,6 +24,7 @@ export default function LoadingButton({
     <>
       <Button
         type={type}
+        disabled={isLoading}
         className={`font-content ${
           isLoading ? "cursor-not-allowed" : "cursor-pointer"
         } ${className}`}

@@ -12,18 +12,25 @@
     "body": [
       "import express from 'express';",
       "",
-      "export default const ${1:router} = express.Router();",
+      "const ${1:router} = express.Router();",
       "",
-      "${1:router}.{$2:post}('/', async (req, res) => {",
+      "${1:router}.${2:post}('${1:router}', async (req, res) => {",
       "  try {",
       "    $0",
-      "   return res.status(200).json({message: '${3:Updated successfully!}'});",
+      "   res.status(200).json({message: '${3:Updated successfully!}'});",
+      "   return;",
       "  } catch (error) {",
+      "    if(error instanceof Error) {",
+      "    ",
       "    console.log(error);",
-      "    return res.status(500).json({message: `Internal Server Error! ${error.message}`});",
+      "    ",
+      "    res.status(500).json({message: `Internal Server Error! ${error.message}`});",
+      "    return;",
+      "  }",
       "  }",
       "});",
-      ""
+      "",
+      "export default ${1:router};"
     ],
     "description": "Template for server Router using ES6 (POST)"
   }

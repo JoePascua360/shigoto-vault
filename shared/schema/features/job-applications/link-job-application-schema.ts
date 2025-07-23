@@ -1,7 +1,5 @@
 import { z } from "zod/v4";
 
-// const URL =
-
 export const linkJobApplicationSchema = z.object({
   url: z
     .array(

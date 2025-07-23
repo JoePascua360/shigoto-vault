@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { useDialog } from "@/hooks/use-dialog";
+import { fetchRequestComponent } from "@/utils/fetch-request-component";
 import { showToast } from "@/utils/show-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Ban, Delete, Plus, Trash } from "lucide-react";
@@ -54,7 +55,14 @@ export default function ImportLinkJobApplication({
     setIsLoading(true);
     try {
       console.log(values.url);
-      return showToast("success", "Import successfully!");
+
+      const response = await fetchRequestComponent(
+        "/importLinkJobApplication",
+        "POST",
+        values
+      );
+
+      return showToast("success", response.message);
     } catch (error) {
       if (error instanceof Error) {
         console.log(error);
@@ -67,7 +75,11 @@ export default function ImportLinkJobApplication({
 
   return (
     <>
-      <DynamicDialog dialog={dialog} title="Import Through Links">
+      <DynamicDialog
+        dialog={dialog}
+        title="Import Through Links"
+        description="Please paste the direct link of the job post URLs here."
+      >
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
@@ -131,7 +143,7 @@ export default function ImportLinkJobApplication({
                   </>
                 ) : (
                   <>
-                    <Plus /> Add More
+                    <Plus /> Add More URL
                   </>
                 )}
               </Button>

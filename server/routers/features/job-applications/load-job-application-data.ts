@@ -6,7 +6,7 @@ import * as db from "~/db/index";
 
 const loadJobApplicationData = express.Router();
 
-loadJobApplicationData.get("/loadJobApplicationData", async (req, res) => {
+loadJobApplicationData.get("/", async (req, res) => {
   try {
     const session = await auth.api.getSession({
       headers: fromNodeHeaders(req.headers),

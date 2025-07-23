@@ -14,7 +14,7 @@ const jobApplicationColumns = `
     tag, status, rounds,  applied_at
   `;
 
-addJobApplication.post("/addJobApplication", async (req, res) => {
+addJobApplication.post("/", async (req, res) => {
   try {
     let data = req.body;
 
