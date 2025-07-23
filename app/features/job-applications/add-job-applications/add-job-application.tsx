@@ -1,5 +1,5 @@
 import DynamicDialog from "@/components/dynamic-dialog";
-import { FormProvider, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   frontendJobApplicationSchema,
@@ -15,6 +15,7 @@ import MultiStepFormWrapper from "@/components/multi-step-form-wrapper";
 import { addJobApplicationFormElementsHook } from "./add-job-application-form-elements";
 import type { DialogType, useDialog } from "@/hooks/use-dialog";
 import { useQueryClient } from "@tanstack/react-query";
+import { Form } from "@/components/ui/form";
 
 export default function AddJobApplication({ dialog }: DialogType) {
   const [isLoading, setIsLoading] = useState(false);
@@ -96,7 +97,7 @@ export default function AddJobApplication({ dialog }: DialogType) {
         description="You can add new job applications here. "
         title="Add Applications"
       >
-        <FormProvider {...form}>
+        <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
             <MultiStepFormWrapper<keyof FrontendJobApplicationData>
               formArray={addJobApplicationFormElements}
@@ -136,7 +137,7 @@ export default function AddJobApplication({ dialog }: DialogType) {
               }}
             />
           </form>
-        </FormProvider>
+        </Form>
       </DynamicDialog>
     </>
   );

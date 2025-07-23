@@ -18,13 +18,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-let renderCount = 0;
-
 export default function JobApplicationStep2FormElement(
   form: UseFormReturn<FrontendJobApplicationData>
 ) {
-  console.log("renderCount:", renderCount++);
-
   return (
     <>
       <section className="grid grid-cols-2 gap-2 mt-3">

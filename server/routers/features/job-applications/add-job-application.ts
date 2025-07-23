@@ -32,8 +32,6 @@ addJobApplication.post("/addJobApplication", async (req, res) => {
       headers: fromNodeHeaders(req.headers),
     });
 
-    console.log("hello", data, `hey: ${typeof data.tag}`);
-
     const userID = session?.session.userId || null;
 
     const valueString: string[] = Object.values(data).map((_, index) => {

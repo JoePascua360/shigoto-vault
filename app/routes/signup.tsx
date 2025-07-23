@@ -4,11 +4,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FaFacebook, FaGithub, FaGoogle, FaSpinner } from "react-icons/fa";
-import { authClient } from "@/config/auth-client";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,

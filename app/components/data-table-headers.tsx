@@ -45,7 +45,8 @@ export default function DataTableHeaders<TData>({
         <DropdownMenuComponent
           contentAlignment="start"
           icon={<Filter />}
-          triggerSize="icon"
+          triggerSize={{ size: "icon" }}
+          triggerVariant={{ variant: "outline" }}
           className="font-sub-text"
         >
           <>
@@ -60,6 +61,7 @@ export default function DataTableHeaders<TData>({
           contentAlignment={children ? "start" : "end"}
           icon={<Columns />}
           triggerText={isMobile ? "" : "Hide Columns"}
+          triggerVariant={{ variant: "outline" }}
           className="font-sub-text h-96"
         >
           <>

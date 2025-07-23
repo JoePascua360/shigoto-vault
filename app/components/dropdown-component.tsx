@@ -3,15 +3,17 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import type { ReactNode } from "react";
+import type { VariantProps } from "class-variance-authority";
 
 interface DropdownComponentProps {
   children?: React.ReactElement;
   icon?: ReactNode;
   className?: string;
   triggerText?: string;
-  triggerSize?: "icon" | "default" | "sm" | "lg";
+  triggerSize?: VariantProps<typeof buttonVariants>;
+  triggerVariant?: VariantProps<typeof buttonVariants>;
   contentAlignment: "center" | "start" | "end";
 }
 
@@ -21,13 +23,14 @@ export default function DropdownMenuComponent({
   icon,
   className,
   triggerText = "",
-  triggerSize = "default",
+  triggerSize,
+  triggerVariant,
 }: DropdownComponentProps) {
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button size={triggerSize} variant="secondary">
+          <Button size={triggerSize?.size} variant={triggerVariant?.variant}>
             {icon}
             {triggerText}
           </Button>

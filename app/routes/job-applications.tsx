@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { isRouteErrorResponse } from "react-router";
 import ErrorPage from "@/components/error-page";
 import { fetchRequestComponent } from "@/utils/fetch-request-component";
+import ImportJobApplication from "@/features/job-applications/import-job-applications/import-job-application";
 
 async function getJobApplications() {
   try {
@@ -75,7 +76,12 @@ export default function JobApplication({ loaderData }: Route.ComponentProps) {
             initialHiddenColumns={initialHiddenColumns}
             columns={jobApplicationColumns}
             data={query?.data || []}
-            dropdownChildButton={<AddJobApplication dialog={addDialog} />}
+            dropdownChildButton={
+              <>
+                <ImportJobApplication />
+                <AddJobApplication dialog={addDialog} />
+              </>
+            }
           />
         </main>
       </aside>
