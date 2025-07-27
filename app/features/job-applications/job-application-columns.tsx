@@ -51,7 +51,11 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
             title="Job Description"
             triggerElement={<Button variant="outline">View Details</Button>}
           >
-            <p className="whitespace-pre-line font-sub-text">{description}</p>
+            <div className="overflow-y-auto h-88">
+              <p className="whitespace-pre-line font-sub-text break-normal text-left">
+                {description}
+              </p>
+            </div>
           </DynamicDialog>
         </div>
       );
@@ -61,6 +65,10 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
     header: "Min Salary",
     accessorKey: "min_salary",
     cell: ({ row }) => {
+      if (!row.getValue("min_salary")) {
+        return <p>Not specified.</p>;
+      }
+
       const amount = parseFloat(row.getValue("min_salary"));
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -73,6 +81,10 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
     header: "Max Salary",
     accessorKey: "max_salary",
     cell: ({ row }) => {
+      if (!row.getValue("max_salary")) {
+        return <p>Not specified.</p>;
+      }
+
       const amount = parseInt(row.getValue("max_salary"));
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -109,13 +121,19 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
             triggerElement={<Button variant="outline">View Tags</Button>}
           >
             <div className="flex gap-2">
-              {tags.map((item, index) => (
-                <div key={index}>
-                  <Badge className="bg-secondary border border-primary text-primary w-full">
-                    {item.text}
-                  </Badge>
-                </div>
-              ))}
+              {tags?.length > 0 ? (
+                <>
+                  {tags?.map((item, index) => (
+                    <div key={index}>
+                      <Badge className="bg-secondary border border-primary text-primary w-full">
+                        {item.text}
+                      </Badge>
+                    </div>
+                  ))}{" "}
+                </>
+              ) : (
+                <p>No tags input.</p>
+              )}
             </div>
           </DynamicDialog>
         </div>
@@ -125,6 +143,13 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
   {
     header: "Status",
     accessorKey: "status",
+    cell: ({ row }) => {
+      if (!row.original.status) {
+        return <p>Not specified.</p>;
+      }
+
+      return <p>{row.original.status}</p>;
+    },
   },
   {
     header: "Rounds",
@@ -142,13 +167,19 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
             triggerElement={<Button variant="outline">View Rounds</Button>}
           >
             <div className="flex gap-2">
-              {rounds.map((item, index) => (
-                <div key={index}>
-                  <Badge className="bg-secondary border border-primary text-primary w-full">
-                    {item.text}
-                  </Badge>
-                </div>
-              ))}
+              {rounds?.length > 0 ? (
+                <>
+                  {rounds?.map((item, index) => (
+                    <div key={index}>
+                      <Badge className="bg-secondary border border-primary text-primary w-full">
+                        {item.text}
+                      </Badge>
+                    </div>
+                  ))}{" "}
+                </>
+              ) : (
+                <p>No rounds input.</p>
+              )}
             </div>
           </DynamicDialog>
         </div>
@@ -167,6 +198,10 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
     header: "Applied At",
     accessorKey: "applied_at",
     cell: ({ row }) => {
+      if (!row.original.applied_at) {
+        return <p>Not specified.</p>;
+      }
+
       const formatted = format(row.original.applied_at, "yyyy-MM-dd");
       return formatted;
     },

@@ -18,6 +18,7 @@ import type { useDialog } from "@/hooks/use-dialog";
 import { fetchRequestComponent } from "@/utils/fetch-request-component";
 import { showToast } from "@/utils/show-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { Ban, Delete, Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -29,6 +30,8 @@ interface ImportLinkJobApplicationProps {
 export default function ImportLinkJobApplication({
   dialog,
 }: ImportLinkJobApplicationProps) {
+  const queryClient = useQueryClient();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<linkJobApplicationData>({
@@ -42,11 +45,11 @@ export default function ImportLinkJobApplication({
     ? form.formState.errors.url?.root?.message
     : "";
 
-  const { fields, append, prepend, remove } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     name: "url",
     control: form.control,
     rules: {
-      maxLength: 10,
+      maxLength: 5,
       minLength: 1,
     },
   });
@@ -54,15 +57,24 @@ export default function ImportLinkJobApplication({
   const handleSubmit = async (values: linkJobApplicationData) => {
     setIsLoading(true);
     try {
-      console.log(values.url);
-
       const response = await fetchRequestComponent(
         "/importLinkJobApplication",
         "POST",
         values
       );
 
-      return showToast("success", response.message);
+      await queryClient.invalidateQueries({
+        queryKey: ["job-applications"],
+        exact: true,
+      });
+
+      dialog.dismiss();
+
+      return showToast(
+        "success",
+        response.message,
+        response.hasSkippedLinks ? Infinity : 4000
+      );
     } catch (error) {
       if (error instanceof Error) {
         console.log(error);
@@ -129,17 +141,17 @@ export default function ImportLinkJobApplication({
                 type="button"
                 variant="outline"
                 onClick={() => {
-                  if (fields.length <= 10) {
+                  if (fields.length <= 5) {
                     append({
                       jobList: "",
                     });
                   }
                 }}
-                disabled={fields.length >= 10}
+                disabled={fields.length >= 5}
               >
-                {fields.length >= 10 ? (
+                {fields.length >= 5 ? (
                   <>
-                    <Ban /> Can't exceed 10.
+                    <Ban /> Can't exceed 5.
                   </>
                 ) : (
                   <>

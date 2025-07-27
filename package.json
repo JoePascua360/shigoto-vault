@@ -5,7 +5,7 @@
   "scripts": {
     "build": "react-router build",
     "dev": "docker compose up -d && tsx watch --no-warnings --env-file=.env --exclude ./sql server.ts",
-    "start": "tsx server.ts",
+    "start": "tsx --env-file=.env server.ts",
     "typecheck": "react-router typegen && tsc -b",
     "test": "vitest",
     "prod:build": "npm run build && docker build -t shigoto-vault:prod .",
@@ -47,6 +47,7 @@
     "morgan": "^1.10.0",
     "motion": "^12.18.1",
     "pg": "^8.16.3",
+    "playwright": "^1.54.1",
     "radix-ui": "^1.4.2",
     "react": "^19.1.0",
     "react-day-picker": "^9.7.0",

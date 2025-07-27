@@ -68,7 +68,7 @@ export default function AddJobApplication({ dialog }: DialogType) {
 
       dialog.dismiss();
 
-      return showToast("success", response.message, {
+      return showToast("success", response.message, 3000, {
         label: "Undo",
         onClick: () => {
           console.log("Test");

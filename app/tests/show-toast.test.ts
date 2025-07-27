@@ -10,5 +10,5 @@ test("showtoast test", () => {
   };
 
   expect(showToast("success", "Success")).toBe(1);
-  expect(showToast("error", "Error", testObject)).toBe(2);
+  expect(showToast("error", "Error", 4000, testObject)).toBe(2);
 });

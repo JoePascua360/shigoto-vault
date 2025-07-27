@@ -10,9 +10,11 @@ type showToastParams = {
 export function showToast(
   type: ToastType,
   message: string,
+  duration = 4000,
   action?: showToastParams
 ) {
   return toast[type](message, {
     action: action,
+    duration: duration,
   });
 }
