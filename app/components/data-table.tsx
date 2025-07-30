@@ -3,6 +3,7 @@ import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   type SortingState,
   useReactTable,
@@ -13,6 +14,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -36,6 +38,7 @@ import {
 import { useState, type CSSProperties } from "react";
 
 import DataTableHeaders from "./data-table-headers";
+import DataTableFooter from "./data-table-footer";
 
 export function getPinningStyles<TData>(column: Column<TData>): CSSProperties {
   const isPinned = column.getIsPinned();
@@ -65,6 +68,12 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
     initialHiddenColumns || {}
   );
+  const [rowSelection, setRowSelection] = useState({});
+
+  const [pagination, setPagination] = useState({
+    pageIndex: 0, //initial page index
+    pageSize: 5, //default page size
+  });
 
   const table = useReactTable({
     data,
@@ -72,11 +81,16 @@ export function DataTable<TData, TValue>({
     state: {
       sorting,
       columnVisibility,
+      rowSelection,
+      pagination,
     },
     columnResizeMode: "onChange",
+    onPaginationChange: setPagination,
+    getPaginationRowModel: getPaginationRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
+    onRowSelectionChange: setRowSelection,
     onColumnVisibilityChange: setColumnVisibility,
   });
 
@@ -84,7 +98,7 @@ export function DataTable<TData, TValue>({
     <>
       <DataTableHeaders table={table}>{dropdownChildButton}</DataTableHeaders>
 
-      <main>
+      <main className="space-y-4">
         <Table
           className="[&_td]:border-border [&_th]:border-border table-fixed border-separate border-spacing-0 [&_tfoot_td]:border-t [&_th]:border-b [&_tr]:border-none [&_tr:not(:last-child)_td]:border-b "
           style={{
@@ -263,6 +277,9 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
+        <footer className="flex justify-between items-center w-full gap-2 ">
+          <DataTableFooter table={table} />
+        </footer>
       </main>
     </>
   );

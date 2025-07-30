@@ -1,12 +1,22 @@
+import DropdownMenuComponent from "@/components/dropdown-component";
 import DynamicDialog from "@/components/dynamic-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { useDialog } from "@/hooks/use-dialog";
 import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import type { Tag } from "emblor";
+import { Clipboard, MoreHorizontal } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { showToast } from "@/utils/show-toast";
 
 type JobApplicationsColumn = {
+  job_app_id: string;
   company_name: string;
   role: string;
   job_description: string;
@@ -24,17 +34,36 @@ type JobApplicationsColumn = {
 
 export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
   {
-    header: "Company",
-    accessorKey: "company_name",
-    cell: ({ row }) => (
-      <div className="truncate font-medium ">
-        {row.getValue("company_name")}
+    header: ({ table }) => (
+      <div className="flex gap-2 justify-between">
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+        <p>Company</p>
       </div>
     ),
+    accessorKey: "company_name",
+    cell: ({ row }) => (
+      <div className="truncate font-medium flex gap-2">
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+        <p>{row.getValue("company_name")}</p>
+      </div>
+    ),
+    minSize: 250,
   },
   {
     header: "Role",
     accessorKey: "role",
+    minSize: 250,
   },
   {
     header: "Job Description",
@@ -72,7 +101,7 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
       const amount = parseFloat(row.getValue("min_salary"));
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: "USD",
+        currency: "PHP",
       }).format(amount);
       return formatted;
     },
@@ -88,7 +117,7 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
       const amount = parseInt(row.getValue("max_salary"));
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: "USD",
+        currency: "PHP",
       }).format(amount);
       return formatted;
     },
@@ -205,5 +234,37 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
       const formatted = format(row.original.applied_at, "yyyy-MM-dd");
       return formatted;
     },
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      const jobID = row.original.job_app_id;
+
+      return (
+        <DropdownMenuComponent
+          icon={<MoreHorizontal />}
+          contentAlignment="start"
+          triggerConfig={{ variant: "ghost", size: "icon" }}
+          triggerTitle="Click to show options"
+        >
+          <>
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
+                navigator.clipboard.writeText(jobID);
+                showToast("success", "Job ID copied successfully!");
+              }}
+            >
+              <Clipboard />
+              Copy Job ID
+            </DropdownMenuItem>
+          </>
+        </DropdownMenuComponent>
+      );
+    },
+    enableHiding: false,
+    maxSize: 150,
   },
 ];

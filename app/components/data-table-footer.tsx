@@ -1,0 +1,152 @@
+import { useState } from "react";
+import type { Table } from "@tanstack/react-table";
+import { Button } from "./ui/button";
+import {
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { showToast } from "@/utils/show-toast";
+
+interface DataTableFooter<TData> {
+  table: Table<TData>;
+}
+
+export default function DataTableFooter<TData>({
+  table,
+}: DataTableFooter<TData>) {
+  const [pageValue, setPageValue] = useState<number>(1);
+
+  return (
+    <div className="text-sm flex justify-between items-center w-full font-sub-text">
+      <section>
+        {table.getFilteredSelectedRowModel().rows.length} of{" "}
+        {table.getFilteredRowModel().rows.length} row(s) selected.
+      </section>
+      <section className="flex gap-5">
+        <article className="flex items-center gap-5">
+          <div className="flex gap-1">
+            <Label htmlFor="go-to-page">Jump to</Label>
+            <Input
+              id="go-to-page"
+              className="w-15"
+              maxLength={3}
+              value={pageValue}
+              onChange={(e) => setPageValue(parseInt(e.target.value) || 0)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  if (pageValue > table.getPageCount()) {
+                    showToast(
+                      "warning",
+                      `Cannot exceed ${table.getPageCount()}!`,
+                      1000
+                    );
+                  } else {
+                    table.setPageIndex(pageValue - 1);
+                  }
+                }
+              }}
+            />
+            <Button
+              size="icon"
+              variant="outline"
+              onClick={() => {
+                if (pageValue > table.getPageCount()) {
+                  showToast(
+                    "warning",
+                    `Cannot exceed ${table.getPageCount()}!`,
+                    1000
+                  );
+                } else {
+                  table.setPageIndex(pageValue - 1);
+                }
+              }}
+              title="Click or press enter to jump to page"
+            >
+              <ArrowUpRight />
+            </Button>
+          </div>
+          <div>
+            <Select
+              onValueChange={(value) => table.setPageSize(parseInt(value))}
+              defaultValue="5"
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Rows" />
+              </SelectTrigger>
+              <SelectContent position="item-aligned">
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="30">30</SelectItem>
+                <SelectItem value="40">40</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+                <SelectItem value="250">250</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount()}
+          </div>
+        </article>
+        <article className="flex gap-2">
+          {/* first page button */}
+          <Button
+            size="icon"
+            variant="outline"
+            disabled={!table.getCanPreviousPage()}
+            onClick={() => table.firstPage()}
+            title="First Page"
+          >
+            <ChevronsLeft />
+          </Button>
+          {/* prev button */}
+          <Button
+            size="icon"
+            variant="outline"
+            disabled={!table.getCanPreviousPage()}
+            onClick={() => table.previousPage()}
+            title="Previous Page"
+          >
+            <ChevronLeft />
+          </Button>
+          {/* next button */}
+          <Button
+            size="icon"
+            variant="outline"
+            disabled={!table.getCanNextPage()}
+            onClick={() => table.nextPage()}
+            title="Next Page"
+          >
+            <ChevronRight />
+          </Button>
+          {/* last page button */}
+          <Button
+            size="icon"
+            variant="outline"
+            disabled={!table.getCanNextPage()}
+            onClick={() => table.lastPage()}
+            title="Last Page"
+          >
+            <ChevronsRight />
+          </Button>
+        </article>
+      </section>
+    </div>
+  );
+}

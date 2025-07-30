@@ -25,7 +25,8 @@ loadJobApplicationData.get("/", async (req, res) => {
           references "user"(id)
       );`;
 
-    const query = "SELECT * FROM job_applications WHERE user_id = $1";
+    const query =
+      "SELECT * FROM job_applications WHERE user_id = $1 ORDER BY created_at";
 
     await db.query(createTable);
 

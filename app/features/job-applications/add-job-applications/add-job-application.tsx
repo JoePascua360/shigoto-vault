@@ -90,7 +90,7 @@ export default function AddJobApplication({ dialog }: DialogType) {
         triggerElement={
           <Button>
             <Plus />
-            Add Job Applications
+            Add Manually
           </Button>
         }
         dialog={dialog}

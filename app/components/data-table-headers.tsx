@@ -35,7 +35,7 @@ export default function DataTableHeaders<TData>({
             <SearchIcon size={16} />
           </div>
           <button
-            className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
             aria-label="Submit search"
             title="Click or press enter to search"
           >
@@ -45,8 +45,8 @@ export default function DataTableHeaders<TData>({
         <DropdownMenuComponent
           contentAlignment="start"
           icon={<Filter />}
-          triggerSize={{ size: "icon" }}
-          triggerVariant={{ variant: "outline" }}
+          triggerConfig={{ size: "icon", variant: "outline" }}
+          triggerTitle="Filter by status"
           className="font-sub-text"
         >
           <>
@@ -61,7 +61,7 @@ export default function DataTableHeaders<TData>({
           contentAlignment={children ? "start" : "end"}
           icon={<Columns />}
           triggerText={isMobile ? "" : "Hide Columns"}
-          triggerVariant={{ variant: "outline" }}
+          triggerConfig={{ variant: "outline" }}
           className="font-sub-text h-96"
         >
           <>

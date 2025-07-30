@@ -22,11 +22,6 @@ export async function jobStreetScrape(
 
     await page.setViewportSize({ width: 1280, height: 2500 });
 
-    const jobDivContainer =
-      "div._32fem00._1nh354wb8._1nh354wb1._1nh354wbq._1nh354wa4._1nh354w9x._1nh354wam";
-
-    const jobPostRemovedDivContainer = "div._32fem00._1nh354w8k._1nh354w9o";
-
     const jobDetailList = [];
     const skippedLinks = [];
 
@@ -34,36 +29,26 @@ export async function jobStreetScrape(
       await page.goto(link);
 
       const jobPostRemoved = await page
-        .waitForSelector(jobPostRemovedDivContainer, { timeout: 10000 })
+        .waitForSelector("[data-automation='expiredJobPage']", {
+          timeout: 10000,
+        })
         .catch(() => null);
 
       if (jobPostRemoved) {
         console.log(`Skipped removed job: ${link}`);
 
-        const removedPostDescription = await page.evaluate(() => {
-          const description =
-            (
-              document.querySelector(
-                `h2._32fem00._1nh354w50.gyz43x0.gyz43xh.gyz43xk._1lwlriv4.gyz43x1t`
-              ) as HTMLElement
-            )?.innerText || "";
-
-          return description;
-        });
-
         skippedLinks.push({
           link: link,
-          description: removedPostDescription,
+          description: "This job is no longer advertised",
         });
         continue;
       }
-      // div that contains all the job information
-      await page.waitForSelector(jobDivContainer);
 
       await page.screenshot({
         path: "./server/scraping/screenshot.png",
-        // fullPage: true,
+        fullPage: true,
       });
+
       console.count("Selector Detected...");
 
       const jobDetails = await page.evaluate(() => {
@@ -74,27 +59,19 @@ export async function jobStreetScrape(
           "job-detail-classifications",
           "job-detail-work-type",
           "job-detail-salary",
-          "job-description",
+          "jobAdDetails",
         ];
 
         const arr: string[] = [];
 
         for (const fields of jobFields) {
-          const jobDescription =
-            (document.querySelector(`div._32fem00.owf1jk0`) as HTMLElement)
-              ?.innerText || "";
-
-          if (fields === "job-description") {
-            arr.push(jobDescription);
-          } else {
-            arr.push(
-              (
-                document.querySelector(
-                  `[data-automation='${fields}']`
-                ) as HTMLElement
-              )?.innerText || "Not Set"
-            );
-          }
+          arr.push(
+            (
+              document.querySelector(
+                `[data-automation='${fields}']`
+              ) as HTMLElement
+            )?.innerText || "Not Set"
+          );
         }
 
         return arr;

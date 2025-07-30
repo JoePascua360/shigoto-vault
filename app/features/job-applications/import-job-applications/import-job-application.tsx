@@ -20,8 +20,7 @@ export default function ImportJobApplication() {
         contentAlignment="start"
         triggerText="Import"
         icon={<ImportIcon />}
-        triggerSize={{ size: "default" }}
-        triggerVariant={{ variant: "secondary" }}
+        triggerConfig={{ size: "default", variant: "secondary" }}
       >
         <>
           <DropdownMenuItem

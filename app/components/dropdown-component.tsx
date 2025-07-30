@@ -12,8 +12,8 @@ interface DropdownComponentProps {
   icon?: ReactNode;
   className?: string;
   triggerText?: string;
-  triggerSize?: VariantProps<typeof buttonVariants>;
-  triggerVariant?: VariantProps<typeof buttonVariants>;
+  triggerConfig?: VariantProps<typeof buttonVariants>;
+  triggerTitle?: string;
   contentAlignment: "center" | "start" | "end";
 }
 
@@ -23,14 +23,19 @@ export default function DropdownMenuComponent({
   icon,
   className,
   triggerText = "",
-  triggerSize,
-  triggerVariant,
+  triggerConfig,
+  triggerTitle = "",
 }: DropdownComponentProps) {
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button size={triggerSize?.size} variant={triggerVariant?.variant}>
+          <Button
+            size={triggerConfig?.size}
+            variant={triggerConfig?.variant}
+            aria-label={triggerTitle}
+            title={triggerTitle}
+          >
             {icon}
             {triggerText}
           </Button>
