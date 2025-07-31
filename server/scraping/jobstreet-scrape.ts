@@ -44,11 +44,6 @@ export async function jobStreetScrape(
         continue;
       }
 
-      await page.screenshot({
-        path: "./server/scraping/screenshot.png",
-        fullPage: true,
-      });
-
       console.count("Selector Detected...");
 
       const jobDetails = await page.evaluate(() => {

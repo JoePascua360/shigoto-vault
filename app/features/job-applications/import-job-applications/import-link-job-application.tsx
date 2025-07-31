@@ -65,7 +65,6 @@ export default function ImportLinkJobApplication({
 
       await queryClient.invalidateQueries({
         queryKey: ["job-applications"],
-        exact: true,
       });
 
       dialog.dismiss();

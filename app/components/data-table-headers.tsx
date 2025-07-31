@@ -8,8 +8,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import DropdownMenuComponent from "./dropdown-component";
 import type { Table } from "@tanstack/react-table";
-import type { ReactElement } from "react";
+import { useState, type ReactElement } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSearchParams } from "react-router";
+import { SelectItem } from "@/components/ui/select";
+import SelectComponent from "./select-component";
 
 interface DataTableHeadersProps<TData> {
   table: Table<TData>;
@@ -22,14 +25,75 @@ export default function DataTableHeaders<TData>({
 }: DataTableHeadersProps<TData>) {
   const isMobile = useIsMobile();
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchValue, setSearchValue] = useState("");
+
+  const [column, setColumn] = useState(
+    localStorage.getItem("jobApplications") || "role"
+  );
+
   return (
     <header className="grid grid-cols-1 sm:grid-cols-2  mb-3 gap-3">
-      <section className="flex gap-2">
-        <div className="relative">
+      <section className="flex">
+        {/* selecting column name */}
+        <article>
+          <SelectComponent
+            selectElementConfig={{
+              placeholder: "Select Column",
+              position: "popper",
+              isForm: false,
+            }}
+            className="rounded-none"
+            state={{
+              value: column,
+              onValueChange(value) {
+                localStorage.setItem("jobApplications", value);
+                setColumn(value);
+              },
+            }}
+          >
+            <div className="overflow-y-auto h-88">
+              {table.getAllColumns().map((column) => {
+                return (
+                  <SelectItem
+                    key={column.id}
+                    value={column.id}
+                    className="capitalize"
+                  >
+                    {column.id}
+                  </SelectItem>
+                );
+              })}
+            </div>
+          </SelectComponent>
+        </article>
+        {/* search input */}
+        <article className="relative">
           <Input
-            className="peer ps-9 pe-9"
+            className="peer ps-9 pe-9 rounded-none border-l-0"
             placeholder="Search..."
             type="search"
+            value={searchValue}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                if (searchValue) {
+                  setSearchParams(
+                    new URLSearchParams({
+                      jobApplication: searchValue,
+                    })
+                  );
+                }
+              }
+            }}
+            onChange={(e) => {
+              // used to specify whether search is enabled since searchParams is empty.
+              if (e.target.value === "") {
+                setSearchParams("");
+                setSearchValue(e.target.value);
+              } else {
+                setSearchValue(e.target.value);
+              }
+            }}
           />
           <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
             <SearchIcon size={16} />
@@ -41,20 +105,23 @@ export default function DataTableHeaders<TData>({
           >
             <ArrowRightIcon size={16} aria-hidden="true" />
           </button>
-        </div>
-        <DropdownMenuComponent
-          contentAlignment="start"
-          icon={<Filter />}
-          triggerConfig={{ size: "icon", variant: "outline" }}
-          triggerTitle="Filter by status"
-          className="font-sub-text"
-        >
-          <>
-            <DropdownMenuLabel>Filter By</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Role</DropdownMenuItem>
-          </>
-        </DropdownMenuComponent>
+        </article>
+        {/* Filters */}
+        <article className="ml-2">
+          <DropdownMenuComponent
+            contentAlignment="start"
+            icon={<Filter />}
+            triggerConfig={{ size: "icon", variant: "outline" }}
+            triggerTitle="Filter by status"
+            className="font-sub-text"
+          >
+            <>
+              <DropdownMenuLabel>Filter By</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Role</DropdownMenuItem>
+            </>
+          </DropdownMenuComponent>
+        </article>
       </section>
       <section className="flex justify-self-center sm:justify-self-end gap-3">
         <DropdownMenuComponent
@@ -74,9 +141,9 @@ export default function DataTableHeaders<TData>({
                     key={column.id}
                     className="capitalize"
                     checked={column.getIsVisible()}
-                    onCheckedChange={(value) => {
-                      column.toggleVisibility(!!value);
-                    }}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
                     onSelect={(event) => event.preventDefault()}
                   >
                     {column.id}
@@ -85,7 +152,6 @@ export default function DataTableHeaders<TData>({
               })}
           </>
         </DropdownMenuComponent>
-
         {children}
       </section>
     </header>

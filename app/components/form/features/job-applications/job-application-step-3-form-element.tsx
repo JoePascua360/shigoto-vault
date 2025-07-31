@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import SelectComponent from "@/components/select-component";
 
 export default function JobApplicationStep3FormElement(
   form: UseFormReturn<FrontendJobApplicationData>
@@ -87,13 +88,17 @@ export default function JobApplicationStep3FormElement(
         render={({ field }) => (
           <FormItem>
             <FormLabel>Status</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Job Application Status" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
+            <SelectComponent
+              selectElementConfig={{
+                placeholder: "Select Job Application Status",
+                isForm: true,
+              }}
+              state={{
+                onValueChange: field.onChange,
+                defaultValue: field.value,
+              }}
+            >
+              <>
                 <SelectItem value="applied">Applied</SelectItem>
                 <SelectItem value="bookmarked">Bookmarked</SelectItem>
                 <SelectItem value="employed">Employed</SelectItem>
@@ -101,8 +106,8 @@ export default function JobApplicationStep3FormElement(
                 <SelectItem value="waiting for result">
                   Waiting for Result
                 </SelectItem>
-              </SelectContent>
-            </Select>
+              </>
+            </SelectComponent>
             <FormMessage />
           </FormItem>
         )}

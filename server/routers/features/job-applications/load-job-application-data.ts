@@ -8,6 +8,13 @@ const loadJobApplicationData = express.Router();
 
 loadJobApplicationData.get("/", async (req, res) => {
   try {
+    const query = req.query;
+
+    const company_name = query.company_name;
+    const tableName = query.colName;
+
+    const searchEnabled = query.searchEnabled === "true";
+
     const session = await auth.api.getSession({
       headers: fromNodeHeaders(req.headers),
     });
@@ -25,12 +32,22 @@ loadJobApplicationData.get("/", async (req, res) => {
           references "user"(id)
       );`;
 
-    const query =
-      "SELECT * FROM job_applications WHERE user_id = $1 ORDER BY created_at";
+    let queryCmd = "";
+
+    const values = [];
+
+    if (searchEnabled) {
+      queryCmd = `SELECT * FROM job_applications WHERE user_id = $1 AND ${tableName} ILIKE $2 ORDER BY created_at desc`;
+      values.push(session?.user?.id, `%${company_name}%`);
+    } else {
+      queryCmd =
+        "SELECT * FROM job_applications WHERE user_id = $1 ORDER BY created_at desc";
+      values.push(session?.user?.id);
+    }
 
     await db.query(createTable);
 
-    const result = await db.query(query, [`${session?.user?.id}`]);
+    const result = await db.query(queryCmd, values);
 
     const data = result.rows.length === 0 ? [] : result.rows;
 

@@ -39,6 +39,7 @@ import { useState, type CSSProperties } from "react";
 
 import DataTableHeaders from "./data-table-headers";
 import DataTableFooter from "./data-table-footer";
+import TableSkeletonLoader from "./loaders/table-skeleton-loader";
 
 export function getPinningStyles<TData>(column: Column<TData>): CSSProperties {
   const isPinned = column.getIsPinned();
@@ -56,6 +57,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   dropdownChildButton?: React.ReactElement;
   initialHiddenColumns?: {};
+  isLoading: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -63,6 +65,7 @@ export function DataTable<TData, TValue>({
   columns,
   dropdownChildButton,
   initialHiddenColumns,
+  isLoading,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
@@ -84,6 +87,7 @@ export function DataTable<TData, TValue>({
       rowSelection,
       pagination,
     },
+    manualFiltering: true,
     columnResizeMode: "onChange",
     onPaginationChange: setPagination,
     getPaginationRowModel: getPaginationRowModel(),
@@ -227,55 +231,60 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody className="font-sub-text">
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    const { column } = cell;
-                    const isPinned = column.getIsPinned();
-                    const isLastLeftPinned =
-                      isPinned === "left" && column.getIsLastColumn("left");
-                    const isFirstRightPinned =
-                      isPinned === "right" && column.getIsFirstColumn("right");
+          {isLoading ? (
+            <TableSkeletonLoader table={table} />
+          ) : (
+            <TableBody className="font-sub-text">
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      const { column } = cell;
+                      const isPinned = column.getIsPinned();
+                      const isLastLeftPinned =
+                        isPinned === "left" && column.getIsLastColumn("left");
+                      const isFirstRightPinned =
+                        isPinned === "right" &&
+                        column.getIsFirstColumn("right");
 
-                    return (
-                      <TableCell
-                        key={cell.id}
-                        className="[&[data-pinned][data-last-col]]:border-border data-pinned:bg-background/90 truncate data-pinned:backdrop-blur-xs [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right][data-last-col=right]]:border-l"
-                        style={{ ...getPinningStyles(column) }}
-                        data-pinned={isPinned || undefined}
-                        data-last-col={
-                          isLastLeftPinned
-                            ? "left"
-                            : isFirstRightPinned
-                            ? "right"
-                            : undefined
-                        }
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    );
-                  })}
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          className="[&[data-pinned][data-last-col]]:border-border data-pinned:bg-background/90 truncate data-pinned:backdrop-blur-xs [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right][data-last-col=right]]:border-l"
+                          style={{ ...getPinningStyles(column) }}
+                          data-pinned={isPinned || undefined}
+                          data-last-col={
+                            isLastLeftPinned
+                              ? "left"
+                              : isFirstRightPinned
+                              ? "right"
+                              : undefined
+                          }
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={table.getTotalSize()}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={table.getTotalSize()}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+              )}
+            </TableBody>
+          )}
         </Table>
         <footer className="flex justify-between items-center w-full gap-2 ">
           <DataTableFooter table={table} />

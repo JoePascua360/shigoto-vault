@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import SelectComponent from "@/components/select-component";
 
 export default function JobApplicationStep2FormElement(
   form: UseFormReturn<FrontendJobApplicationData>
@@ -84,19 +85,23 @@ export default function JobApplicationStep2FormElement(
           render={({ field }) => (
             <FormItem>
               <FormLabel>Job Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Job Type" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
+              <SelectComponent
+                selectElementConfig={{
+                  placeholder: "Select Job Type",
+                  isForm: true,
+                }}
+                state={{
+                  onValueChange: field.onChange,
+                  defaultValue: field.value,
+                }}
+              >
+                <>
                   <SelectItem value="Full-Time">Full-Time</SelectItem>
                   <SelectItem value="Contractual">Contractual</SelectItem>
                   <SelectItem value="Part-Time">Part-Time</SelectItem>
                   <SelectItem value="Internship">Internship</SelectItem>
-                </SelectContent>
-              </Select>
+                </>
+              </SelectComponent>
               <FormMessage />
             </FormItem>
           )}

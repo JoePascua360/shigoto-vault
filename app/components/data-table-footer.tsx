@@ -20,6 +20,7 @@ import {
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { showToast } from "@/utils/show-toast";
+import SelectComponent from "./select-component";
 
 interface DataTableFooter<TData> {
   table: Table<TData>;
@@ -80,14 +81,21 @@ export default function DataTableFooter<TData>({
             </Button>
           </div>
           <div>
-            <Select
-              onValueChange={(value) => table.setPageSize(parseInt(value))}
-              defaultValue="5"
+            <SelectComponent
+              selectElementConfig={{
+                isForm: false,
+                placeholder: "Rows",
+                position: "item-aligned",
+              }}
+              className="rounded-none"
+              state={{
+                defaultValue: "5",
+                onValueChange(value) {
+                  table.setPageSize(parseInt(value));
+                },
+              }}
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Rows" />
-              </SelectTrigger>
-              <SelectContent position="item-aligned">
+              <>
                 <SelectItem value="5">5</SelectItem>
                 <SelectItem value="10">10</SelectItem>
                 <SelectItem value="20">20</SelectItem>
@@ -96,8 +104,8 @@ export default function DataTableFooter<TData>({
                 <SelectItem value="50">50</SelectItem>
                 <SelectItem value="100">100</SelectItem>
                 <SelectItem value="250">250</SelectItem>
-              </SelectContent>
-            </Select>
+              </>
+            </SelectComponent>
           </div>
           <div>
             Page {table.getState().pagination.pageIndex + 1} of{" "}

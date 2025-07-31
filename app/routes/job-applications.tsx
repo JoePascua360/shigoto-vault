@@ -8,15 +8,21 @@ import AddJobApplication from "@/features/job-applications/add-job-applications/
 
 import Spinner from "@/components/spinner";
 import { useQuery } from "@tanstack/react-query";
-import { isRouteErrorResponse } from "react-router";
+import { isRouteErrorResponse, useSearchParams } from "react-router";
 import ErrorPage from "@/components/error-page";
 import { fetchRequestComponent } from "@/utils/fetch-request-component";
 import ImportJobApplication from "@/features/job-applications/import-job-applications/import-job-application";
+import { useEffect } from "react";
 
-async function getJobApplications() {
+async function getJobApplications(searchParams: string, columnName: string) {
   try {
+    const formattedParams = encodeURIComponent(searchParams);
+    const searchEnabled = searchParams !== "" ? true : false;
+
+    console.log(searchEnabled);
+
     const response = await fetchRequestComponent(
-      "/loadJobApplicationData",
+      `/loadJobApplicationData?searchEnabled=${searchEnabled}&colName=${columnName}&company_name=${formattedParams}`,
       "GET"
     );
 
@@ -48,9 +54,21 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 }
 
 export default function JobApplication({ loaderData }: Route.ComponentProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const params = searchParams.get("jobApplication") || "";
+
+  const columnName = localStorage.getItem("jobApplications") || "role";
+
+  useEffect(() => {
+    if (!localStorage.getItem("jobApplications")) {
+      localStorage.setItem("jobApplications", "role");
+    }
+  }, []);
+
   const query = useQuery({
-    queryKey: ["job-applications"],
-    queryFn: getJobApplications,
+    queryKey: ["job-applications", params],
+    queryFn: () => getJobApplications(params, columnName),
     staleTime: 60 * 1000, // will not refetch until 1 minute passed after initial fetch
   });
 
@@ -65,7 +83,6 @@ export default function JobApplication({ loaderData }: Route.ComponentProps) {
 
   const addDialog = useDialog();
 
-  if (query.isLoading) return <Spinner isLoading={query.isLoading} />;
   if (query.isError) return <ErrorPage error={query.error} />;
 
   return (
@@ -82,6 +99,7 @@ export default function JobApplication({ loaderData }: Route.ComponentProps) {
                 <AddJobApplication dialog={addDialog} />
               </>
             }
+            isLoading={query.isLoading}
           />
         </main>
       </aside>
