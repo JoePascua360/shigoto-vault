@@ -39,7 +39,7 @@ import { useState, type CSSProperties } from "react";
 
 import DataTableHeaders from "./data-table-headers";
 import DataTableFooter from "./data-table-footer";
-import TableSkeletonLoader from "./loaders/table-skeleton-loader";
+import TableSkeletonLoader from "../loaders/table-skeleton-loader";
 
 export function getPinningStyles<TData>(column: Column<TData>): CSSProperties {
   const isPinned = column.getIsPinned();
@@ -58,6 +58,7 @@ interface DataTableProps<TData, TValue> {
   dropdownChildButton?: React.ReactElement;
   initialHiddenColumns?: {};
   isLoading: boolean;
+  searchableColumns: string[];
 }
 
 export function DataTable<TData, TValue>({
@@ -66,6 +67,7 @@ export function DataTable<TData, TValue>({
   dropdownChildButton,
   initialHiddenColumns,
   isLoading,
+  searchableColumns,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
@@ -75,7 +77,7 @@ export function DataTable<TData, TValue>({
 
   const [pagination, setPagination] = useState({
     pageIndex: 0, //initial page index
-    pageSize: 5, //default page size
+    pageSize: parseInt(localStorage.getItem("rowsPerPage") || "5") || 5, //default page size
   });
 
   const table = useReactTable({
@@ -100,7 +102,9 @@ export function DataTable<TData, TValue>({
 
   return (
     <>
-      <DataTableHeaders table={table}>{dropdownChildButton}</DataTableHeaders>
+      <DataTableHeaders table={table} searchableColumns={searchableColumns}>
+        {dropdownChildButton}
+      </DataTableHeaders>
 
       <main className="space-y-4">
         <Table

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Table } from "@tanstack/react-table";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import {
   ArrowUpRight,
   ChevronLeft,
@@ -17,10 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import { showToast } from "@/utils/show-toast";
-import SelectComponent from "./select-component";
+import SelectComponent from "../select-component";
 
 interface DataTableFooter<TData> {
   table: Table<TData>;
@@ -89,13 +89,17 @@ export default function DataTableFooter<TData>({
               }}
               className="rounded-none"
               state={{
-                defaultValue: "5",
+                defaultValue: localStorage.getItem("rowsPerPage") || "5",
                 onValueChange(value) {
+                  localStorage.setItem("rowsPerPage", value);
                   table.setPageSize(parseInt(value));
                 },
               }}
             >
-              <>
+              <SelectGroup>
+                <SelectLabel className="font-sub-text">
+                  Rows Per Page
+                </SelectLabel>
                 <SelectItem value="5">5</SelectItem>
                 <SelectItem value="10">10</SelectItem>
                 <SelectItem value="20">20</SelectItem>
@@ -104,7 +108,7 @@ export default function DataTableFooter<TData>({
                 <SelectItem value="50">50</SelectItem>
                 <SelectItem value="100">100</SelectItem>
                 <SelectItem value="250">250</SelectItem>
-              </>
+              </SelectGroup>
             </SelectComponent>
           </div>
           <div>

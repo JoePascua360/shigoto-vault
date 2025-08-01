@@ -1,5 +1,5 @@
 import type { Table } from "@tanstack/react-table";
-import { getPinningStyles } from "../data-table";
+import { getPinningStyles } from "../table/data-table";
 import { Skeleton } from "../ui/skeleton";
 import { TableBody, TableCell, TableRow } from "../ui/table";
 

@@ -6,22 +6,24 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import DropdownMenuComponent from "./dropdown-component";
+import DropdownMenuComponent from "../dropdown-component";
 import type { Table } from "@tanstack/react-table";
 import { useState, type ReactElement } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearchParams } from "react-router";
-import { SelectItem } from "@/components/ui/select";
-import SelectComponent from "./select-component";
+import { SelectGroup, SelectItem, SelectLabel } from "@/components/ui/select";
+import SelectComponent from "../select-component";
 
 interface DataTableHeadersProps<TData> {
   table: Table<TData>;
   children?: ReactElement;
+  searchableColumns: string[];
 }
 
 export default function DataTableHeaders<TData>({
   table,
   children,
+  searchableColumns,
 }: DataTableHeadersProps<TData>) {
   const isMobile = useIsMobile();
 
@@ -52,19 +54,18 @@ export default function DataTableHeaders<TData>({
               },
             }}
           >
-            <div className="overflow-y-auto h-88">
+            <SelectGroup>
+              <SelectLabel>Searchable columns</SelectLabel>
               {table.getAllColumns().map((column) => {
-                return (
-                  <SelectItem
-                    key={column.id}
-                    value={column.id}
-                    className="capitalize"
-                  >
-                    {column.id}
-                  </SelectItem>
-                );
+                if (searchableColumns.includes(column.id)) {
+                  return (
+                    <SelectItem key={column.id} value={column.id}>
+                      {column.id}
+                    </SelectItem>
+                  );
+                }
               })}
-            </div>
+            </SelectGroup>
           </SelectComponent>
         </article>
         {/* search input */}

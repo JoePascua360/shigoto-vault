@@ -11,7 +11,14 @@ import { useDialog } from "@/hooks/use-dialog";
 import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import type { Tag } from "emblor";
-import { Clipboard, MoreHorizontal } from "lucide-react";
+import {
+  ArrowDownAZ,
+  ArrowUpAz,
+  ArrowUpDown,
+  Clipboard,
+  MoreHorizontal,
+  SortAscIcon,
+} from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { showToast } from "@/utils/show-toast";
 
@@ -34,19 +41,36 @@ type JobApplicationsColumn = {
 
 export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
   {
-    header: ({ table }) => (
-      <div className="flex gap-2 justify-between">
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-        <p>Company</p>
-      </div>
-    ),
+    header: ({ table, column }) => {
+      return (
+        <header className="flex items-center gap-2 w-full">
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
+            aria-label="Select all"
+          />
+          <p>Company</p>
+          <Button
+            variant="link"
+            size="icon"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            title="Sort Alphabetically"
+            aria-title="Sort Alphabetically"
+          >
+            {column.getIsSorted() === "asc" && column.getIsSorted() ? (
+              <ArrowDownAZ />
+            ) : (
+              <ArrowUpAz />
+            )}
+          </Button>
+        </header>
+      );
+    },
     accessorKey: "company_name",
     cell: ({ row }) => (
       <div className="truncate font-medium flex gap-2">
@@ -61,7 +85,24 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
     minSize: 250,
   },
   {
-    header: "Role",
+    header: ({ column }) => (
+      <header className="flex items-center gap-2 w-full">
+        <p>Role</p>
+        <Button
+          variant="link"
+          size="icon"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          title="Sort Alphabetically"
+          aria-title="Sort Alphabetically"
+        >
+          {column.getIsSorted() === "asc" && column.getIsSorted() ? (
+            <ArrowDownAZ />
+          ) : (
+            <ArrowUpAz />
+          )}
+        </Button>
+      </header>
+    ),
     accessorKey: "role",
     minSize: 250,
   },
@@ -123,7 +164,24 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
     },
   },
   {
-    header: "Location",
+    header: ({ column }) => (
+      <header className="flex items-center gap-2 w-full">
+        <p>Location</p>
+        <Button
+          variant="link"
+          size="icon"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          title="Sort Alphabetically"
+          aria-title="Sort Alphabetically"
+        >
+          {column.getIsSorted() === "asc" && column.getIsSorted() ? (
+            <ArrowDownAZ />
+          ) : (
+            <ArrowUpAz />
+          )}
+        </Button>
+      </header>
+    ),
     accessorKey: "location",
   },
   {
@@ -131,7 +189,24 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
     accessorKey: "job_type",
   },
   {
-    header: "Work Schedule",
+    header: ({ column }) => (
+      <header className="flex items-center gap-2 w-full">
+        <p>Work Schedule</p>
+        <Button
+          variant="link"
+          size="icon"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          title="Sort Alphabetically"
+          aria-title="Sort Alphabetically"
+        >
+          {column.getIsSorted() === "asc" && column.getIsSorted() ? (
+            <ArrowDownAZ />
+          ) : (
+            <ArrowUpAz />
+          )}
+        </Button>
+      </header>
+    ),
     accessorKey: "work_schedule",
   },
   {

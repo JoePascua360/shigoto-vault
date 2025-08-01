@@ -1,6 +1,6 @@
 import type { Route } from "./+types/job-applications";
 import { jobApplicationColumns } from "@/features/job-applications/job-application-columns";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/table/data-table";
 
 import { useDialog } from "@/hooks/use-dialog";
 
@@ -18,8 +18,6 @@ async function getJobApplications(searchParams: string, columnName: string) {
   try {
     const formattedParams = encodeURIComponent(searchParams);
     const searchEnabled = searchParams !== "" ? true : false;
-
-    console.log(searchEnabled);
 
     const response = await fetchRequestComponent(
       `/loadJobApplicationData?searchEnabled=${searchEnabled}&colName=${columnName}&company_name=${formattedParams}`,
@@ -81,6 +79,15 @@ export default function JobApplication({ loaderData }: Route.ComponentProps) {
     applied_at: false,
   };
 
+  const searchableColumns = [
+    "company_name",
+    "role",
+    "location",
+    "job_type",
+    "status",
+    "work_schedule",
+  ];
+
   const addDialog = useDialog();
 
   if (query.isError) return <ErrorPage error={query.error} />;
@@ -90,6 +97,7 @@ export default function JobApplication({ loaderData }: Route.ComponentProps) {
       <aside className="container mx-auto p-10">
         <main>
           <DataTable
+            searchableColumns={searchableColumns}
             initialHiddenColumns={initialHiddenColumns}
             columns={jobApplicationColumns}
             data={query?.data || []}
