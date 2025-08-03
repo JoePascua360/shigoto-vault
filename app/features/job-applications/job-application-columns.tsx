@@ -2,27 +2,15 @@ import DropdownMenuComponent from "@/components/dropdown-component";
 import DynamicDialog from "@/components/dynamic-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
 import { useDialog } from "@/hooks/use-dialog";
 import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import type { Tag } from "emblor";
-import {
-  ArrowDownAZ,
-  ArrowUpAz,
-  ArrowUpDown,
-  Clipboard,
-  MoreHorizontal,
-  SortAscIcon,
-} from "lucide-react";
+import { ArrowDownAZ, ArrowUpAz } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { showToast } from "@/utils/show-toast";
+import UpdateMultipleJobApplication from "./update-multiple-job-application";
 
-type JobApplicationsColumn = {
+export type JobApplicationsColumn = {
   job_app_id: string;
   company_name: string;
   role: string;
@@ -33,10 +21,23 @@ type JobApplicationsColumn = {
   job_type: "Full-Time" | "Contractual" | "Part-Time" | "Internship";
   work_schedule: string;
   tag: Tag[];
-  status: string;
+  status:
+    | "employed"
+    | "rejected"
+    | "applied"
+    | "bookmarked"
+    | "waiting for result";
   rounds: Tag[];
   created_at: Date;
   applied_at: Date;
+};
+
+export const statusColors = {
+  employed: "bg-green-100 text-green-800 dark:text-green-600",
+  rejected: "bg-red-100 text-red-800 dark:text-red-500",
+  applied: "bg-blue-100 text-blue-800 dark:text-blue-500",
+  bookmarked: "bg-amber-100 text-amber-800 dark:text-amber-600",
+  "waiting for result": "bg-purple-100 text-purple-800 dark:text-purple-500",
 };
 
 export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
@@ -60,7 +61,7 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
             size="icon"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             title="Sort Alphabetically"
-            aria-title="Sort Alphabetically"
+            aria-label="Sort Alphabetically"
           >
             {column.getIsSorted() === "asc" && column.getIsSorted() ? (
               <ArrowDownAZ />
@@ -72,16 +73,18 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
       );
     },
     accessorKey: "company_name",
-    cell: ({ row }) => (
-      <div className="truncate font-medium flex gap-2">
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-        <p>{row.getValue("company_name")}</p>
-      </div>
-    ),
+    cell: ({ row }) => {
+      return (
+        <div className="truncate font-medium flex gap-2">
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+          />
+          <p>{row.getValue("company_name")}</p>
+        </div>
+      );
+    },
     minSize: 250,
   },
   {
@@ -93,7 +96,7 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
           size="icon"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           title="Sort Alphabetically"
-          aria-title="Sort Alphabetically"
+          aria-label="Sort Alphabetically"
         >
           {column.getIsSorted() === "asc" && column.getIsSorted() ? (
             <ArrowDownAZ />
@@ -172,7 +175,7 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
           size="icon"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           title="Sort Alphabetically"
-          aria-title="Sort Alphabetically"
+          aria-label="Sort Alphabetically"
         >
           {column.getIsSorted() === "asc" && column.getIsSorted() ? (
             <ArrowDownAZ />
@@ -197,7 +200,7 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
           size="icon"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           title="Sort Alphabetically"
-          aria-title="Sort Alphabetically"
+          aria-label="Sort Alphabetically"
         >
           {column.getIsSorted() === "asc" && column.getIsSorted() ? (
             <ArrowDownAZ />
@@ -252,7 +255,16 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
         return <p>Not specified.</p>;
       }
 
-      return <p>{row.original.status}</p>;
+      return (
+        <Badge
+          variant="outline"
+          className={`${
+            statusColors[row.original.status]
+          } rounded-full capitalize`}
+        >
+          {row.original.status}
+        </Badge>
+      );
     },
   },
   {
@@ -313,31 +325,8 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => {
-      const jobID = row.original.job_app_id;
-
-      return (
-        <DropdownMenuComponent
-          icon={<MoreHorizontal />}
-          contentAlignment="start"
-          triggerConfig={{ variant: "ghost", size: "icon" }}
-          triggerTitle="Click to show options"
-        >
-          <>
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                navigator.clipboard.writeText(jobID);
-                showToast("success", "Job ID copied successfully!");
-              }}
-            >
-              <Clipboard />
-              Copy Job ID
-            </DropdownMenuItem>
-          </>
-        </DropdownMenuComponent>
-      );
+    cell: ({ table, row }) => {
+      return <UpdateMultipleJobApplication table={table} row={row} />;
     },
     enableHiding: false,
     maxSize: 150,

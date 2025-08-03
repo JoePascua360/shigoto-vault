@@ -5,6 +5,7 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  type Row,
   type SortingState,
   useReactTable,
   type VisibilityState,
@@ -59,6 +60,7 @@ interface DataTableProps<TData, TValue> {
   initialHiddenColumns?: {};
   isLoading: boolean;
   searchableColumns: string[];
+  getRowId: (originalRow: TData, index: number, parent?: Row<TData>) => string;
 }
 
 export function DataTable<TData, TValue>({
@@ -68,6 +70,7 @@ export function DataTable<TData, TValue>({
   initialHiddenColumns,
   isLoading,
   searchableColumns,
+  getRowId,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
@@ -92,6 +95,7 @@ export function DataTable<TData, TValue>({
     manualFiltering: true,
     columnResizeMode: "onChange",
     onPaginationChange: setPagination,
+    getRowId,
     getPaginationRowModel: getPaginationRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),

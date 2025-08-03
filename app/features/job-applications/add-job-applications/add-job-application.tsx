@@ -63,7 +63,6 @@ export default function AddJobApplication({ dialog }: DialogType) {
 
       await queryClient.invalidateQueries({
         queryKey: ["job-applications"],
-        exact: true,
       });
 
       dialog.dismiss();

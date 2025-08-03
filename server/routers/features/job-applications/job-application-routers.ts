@@ -5,6 +5,7 @@ import loadJobApplicationData from "./load-job-application-data";
 import { backendJobApplicationSchema } from "#/schema/features/job-applications/job-application-schema";
 import { linkJobApplicationSchema } from "#/schema/features/job-applications/link-job-application-schema";
 import importLinkJobApplication from "./import-link-job-application";
+import updateJobApplicationStatus from "./update-job-application/updateJobApplicationStatus";
 
 export const jobApplicationRouters = (version: string) => {
   app.use(`/api/${version}/loadJobApplicationData`, loadJobApplicationData);
@@ -19,5 +20,11 @@ export const jobApplicationRouters = (version: string) => {
     `/api/${version}/importLinkJobApplication`,
     schemaValidation(linkJobApplicationSchema),
     importLinkJobApplication
+  );
+
+  // multiple row updates
+  app.use(
+    `/api/${version}/updateJobApplicationStatus`,
+    updateJobApplicationStatus
   );
 };

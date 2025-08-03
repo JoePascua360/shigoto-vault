@@ -1,14 +1,15 @@
 import type { Route } from "./+types/job-applications";
 import { jobApplicationColumns } from "@/features/job-applications/job-application-columns";
 import { DataTable } from "@/components/table/data-table";
-
 import { useDialog } from "@/hooks/use-dialog";
-
 import AddJobApplication from "@/features/job-applications/add-job-applications/add-job-application";
-
 import Spinner from "@/components/spinner";
 import { useQuery } from "@tanstack/react-query";
-import { isRouteErrorResponse, useSearchParams } from "react-router";
+import {
+  isRouteErrorResponse,
+  useLocation,
+  useSearchParams,
+} from "react-router";
 import ErrorPage from "@/components/error-page";
 import { fetchRequestComponent } from "@/utils/fetch-request-component";
 import ImportJobApplication from "@/features/job-applications/import-job-applications/import-job-application";
@@ -54,13 +55,14 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 export default function JobApplication({ loaderData }: Route.ComponentProps) {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const params = searchParams.get("jobApplication") || "";
+  const params = searchParams.get("job-applicationsSearchParams") || "";
 
-  const columnName = localStorage.getItem("jobApplications") || "role";
+  const columnName =
+    localStorage.getItem("job-applicationsSearchColumn") || "role";
 
   useEffect(() => {
-    if (!localStorage.getItem("jobApplications")) {
-      localStorage.setItem("jobApplications", "role");
+    if (!localStorage.getItem("job-applicationsSearchColumn")) {
+      localStorage.setItem("job-applicationsSearchColumn", "role");
     }
   }, []);
 
@@ -97,6 +99,7 @@ export default function JobApplication({ loaderData }: Route.ComponentProps) {
       <aside className="container mx-auto p-10">
         <main>
           <DataTable
+            getRowId={(row) => row.job_app_id}
             searchableColumns={searchableColumns}
             initialHiddenColumns={initialHiddenColumns}
             columns={jobApplicationColumns}

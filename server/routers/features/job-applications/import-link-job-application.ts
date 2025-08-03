@@ -102,9 +102,7 @@ importLinkJobApplication.post("/", async (req, res) => {
       values.push(val);
     }
 
-    const results = await db.query(queryCmd, values.flat());
-
-    console.log(results.rows[0], "hello result");
+    await db.query(queryCmd, values.flat());
 
     res.status(200).json({
       message: `Job application/s saved successfully! ${skipLinksMessage}`,

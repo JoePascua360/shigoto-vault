@@ -31,6 +31,23 @@
     ],
     "description": "Create a helper function with export and try-catch block"
   },
+  "Try Catch Format": {
+    "prefix": "tryCatchFormat",
+    "body": [
+      "try {",
+      "$0",
+      "return showToast('success', 'Updated Successfully!')",
+      "}",
+      "catch(error){",
+      "if(error instanceof Error) {",
+      "console.log(error)",
+      "",
+      "return showToast('error', error.message)",
+      "};",
+      ""
+    ],
+    "description": "Create a helper function with export and try-catch block"
+  },
 
   "Vitest file template": {
     "prefix": "testFileTemplate",

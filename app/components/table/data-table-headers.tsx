@@ -10,7 +10,7 @@ import DropdownMenuComponent from "../dropdown-component";
 import type { Table } from "@tanstack/react-table";
 import { useState, type ReactElement } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useSearchParams } from "react-router";
+import { useLocation, useSearchParams } from "react-router";
 import { SelectGroup, SelectItem, SelectLabel } from "@/components/ui/select";
 import SelectComponent from "../select-component";
 
@@ -27,11 +27,14 @@ export default function DataTableHeaders<TData>({
 }: DataTableHeadersProps<TData>) {
   const isMobile = useIsMobile();
 
+  const location = useLocation();
+  const currentPath = location.pathname.replace("/app/", "");
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchValue, setSearchValue] = useState("");
 
   const [column, setColumn] = useState(
-    localStorage.getItem("jobApplications") || "role"
+    localStorage.getItem(`${currentPath}SearchColumn`) || "role"
   );
 
   return (
@@ -49,21 +52,19 @@ export default function DataTableHeaders<TData>({
             state={{
               value: column,
               onValueChange(value) {
-                localStorage.setItem("jobApplications", value);
+                localStorage.setItem(`${currentPath}SearchColumn`, value);
                 setColumn(value);
               },
             }}
           >
             <SelectGroup>
               <SelectLabel>Searchable columns</SelectLabel>
-              {table.getAllColumns().map((column) => {
-                if (searchableColumns.includes(column.id)) {
-                  return (
-                    <SelectItem key={column.id} value={column.id}>
-                      {column.id}
-                    </SelectItem>
-                  );
-                }
+              {searchableColumns.map((column, index) => {
+                return (
+                  <SelectItem key={index} value={column}>
+                    {column}
+                  </SelectItem>
+                );
               })}
             </SelectGroup>
           </SelectComponent>
@@ -80,7 +81,7 @@ export default function DataTableHeaders<TData>({
                 if (searchValue) {
                   setSearchParams(
                     new URLSearchParams({
-                      jobApplication: searchValue,
+                      [`${currentPath}SearchParams`]: searchValue,
                     })
                   );
                 }

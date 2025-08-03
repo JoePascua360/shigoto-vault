@@ -1,7 +1,7 @@
 /**
  * @param endpoint - request endpoint. only provide the router endpoint (ex. /loadJobApplicationData)
  * @param method - request method
- * @param body - request body. null if method is GET
+ * @param body - request body. null if method is GET. **Always** pass an object, will be invalid JSON if not.
  */
 export async function fetchRequestComponent(
   endpoint: string,
