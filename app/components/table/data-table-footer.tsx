@@ -32,13 +32,13 @@ export default function DataTableFooter<TData>({
   const [pageValue, setPageValue] = useState<number>(1);
 
   return (
-    <div className="text-sm flex justify-between items-center w-full font-sub-text">
+    <div className="text-sm flex flex-col sm:flex-row gap-5 justify-between items-center w-full font-sub-text">
       <section>
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected.
       </section>
-      <section className="flex gap-5">
-        <article className="flex items-center gap-5">
+      <section className="flex flex-col sm:flex-row gap-5">
+        <article className="flex flex-col md:flex-row items-center gap-5">
           <div className="flex gap-1">
             <Label htmlFor="go-to-page">Jump to</Label>
             <Input

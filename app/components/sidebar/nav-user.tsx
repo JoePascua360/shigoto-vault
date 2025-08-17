@@ -23,6 +23,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { authClient } from "@/config/auth-client";
+import { showToast } from "@/utils/show-toast";
 
 export function NavUser({
   user,
@@ -96,7 +98,12 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={async () => {
+                await authClient.signOut();
+                showToast("success", "Successfully logged out!");
+              }}
+            >
               <LogOut />
               Log out
             </DropdownMenuItem>

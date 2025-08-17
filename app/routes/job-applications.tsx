@@ -14,6 +14,33 @@ import ErrorPage from "@/components/error-page";
 import { fetchRequestComponent } from "@/utils/fetch-request-component";
 import ImportJobApplication from "@/features/job-applications/import-job-applications/import-job-application";
 import { useEffect } from "react";
+import { showToast } from "@/utils/show-toast";
+
+export async function clientAction({ request }: Route.ClientActionArgs) {
+  await new Promise((res) => setTimeout(res, 1000));
+  let data = await request.formData();
+  const newValue = data.get("editedValue");
+  const rows = JSON.parse(data.get("rows") as string);
+  const columnName = data.get("columnName");
+
+  //TODO: make a /editTableRow router in backend and update the new value
+  try {
+    // const response = await fetchRequestComponent("/editTableRow", "PATCH", {
+    //   newValue,
+    //   columnName,
+    // });
+
+    showToast("success", "Updated Successfully!");
+    return { ok: true };
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(error);
+
+      showToast("error", error.message);
+      return { ok: false };
+    }
+  }
+}
 
 async function getJobApplications(searchParams: string, columnName: string) {
   try {

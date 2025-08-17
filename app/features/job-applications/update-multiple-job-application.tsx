@@ -82,12 +82,9 @@ export default function UpdateMultipleJobApplication({
                 onValueChange={async (value) => {
                   try {
                     let selectedRows: Row<JobApplicationsColumn>[] | string[] =
-                      [];
-                    if (table.getSelectedRowModel().rows.length === 0) {
-                      selectedRows = [row.original.job_app_id];
-                    } else {
-                      selectedRows = table.getSelectedRowModel().rows;
-                    }
+                      table.getSelectedRowModel().rows.length === 0
+                        ? [row.id]
+                        : table.getSelectedRowModel().rows;
 
                     const response = await fetchRequestComponent(
                       "/updateJobApplicationStatus",

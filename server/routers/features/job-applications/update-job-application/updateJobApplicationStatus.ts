@@ -63,9 +63,7 @@ updateJobApplicationStatus.patch("/", async (req, res) => {
       job_app_val.job_app_id = job_app.job_app_id
       RETURNING *`;
 
-    const result = await db.query(queryCmd, [...values]);
-
-    console.log(result.rows[0]);
+    await db.query(queryCmd, [...values]);
 
     res
       .status(StatusCodes.OK)

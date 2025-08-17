@@ -41,7 +41,7 @@ export default function SidebarLayout() {
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
-          <header className="bg-background sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b px-4 w-full">
+          <header className="bg-background sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b px-4 w-full z-50">
             <aside className="flex items-center gap-3 flex-1">
               <SidebarTrigger className="-ml-1" />
               <Separator

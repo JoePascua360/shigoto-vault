@@ -6,9 +6,21 @@ import { useDialog } from "@/hooks/use-dialog";
 import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import type { Tag } from "emblor";
-import { ArrowDownAZ, ArrowUpAz } from "lucide-react";
+import {
+  ArrowDownAZ,
+  ArrowUpAz,
+  ArrowUpDown,
+  ArrowUpZA,
+  ArrowUpZa,
+  CircleXIcon,
+  Edit2Icon,
+  SaveIcon,
+} from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import UpdateMultipleJobApplication from "./update-multiple-job-application";
+import { Input } from "@/components/ui/input";
+import { useRef, useState } from "react";
+import EditTableRow from "@/components/form/edit-table-row";
 
 export type JobApplicationsColumn = {
   job_app_id: string;
@@ -62,12 +74,11 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             title="Sort Alphabetically"
             aria-label="Sort Alphabetically"
+            className="cursor-pointer"
           >
-            {column.getIsSorted() === "asc" && column.getIsSorted() ? (
-              <ArrowDownAZ />
-            ) : (
-              <ArrowUpAz />
-            )}
+            {!column.getIsSorted() && <ArrowUpDown />}
+            {column.getIsSorted() === "asc" && <ArrowDownAZ />}
+            {column.getIsSorted() === "desc" && <ArrowUpZA />}
           </Button>
         </header>
       );
@@ -97,12 +108,11 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           title="Sort Alphabetically"
           aria-label="Sort Alphabetically"
+          className="cursor-pointer"
         >
-          {column.getIsSorted() === "asc" && column.getIsSorted() ? (
-            <ArrowDownAZ />
-          ) : (
-            <ArrowUpAz />
-          )}
+          {!column.getIsSorted() && <ArrowUpDown />}
+          {column.getIsSorted() === "asc" && <ArrowDownAZ />}
+          {column.getIsSorted() === "desc" && <ArrowUpZA />}
         </Button>
       </header>
     ),
@@ -137,17 +147,23 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
   {
     header: "Min Salary",
     accessorKey: "min_salary",
-    cell: ({ row }) => {
-      if (!row.getValue("min_salary")) {
-        return <p>Not specified.</p>;
-      }
-
+    cell: ({ row, table }) => {
       const amount = parseFloat(row.getValue("min_salary"));
+      const isNan = Number.isNaN(amount);
+
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "PHP",
       }).format(amount);
-      return formatted;
+
+      return (
+        <EditTableRow
+          rowValue={isNan ? undefined : formatted}
+          columnName="min_salary"
+          table={table}
+          row={row}
+        />
+      );
     },
   },
   {
@@ -176,12 +192,11 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           title="Sort Alphabetically"
           aria-label="Sort Alphabetically"
+          className="cursor-pointer"
         >
-          {column.getIsSorted() === "asc" && column.getIsSorted() ? (
-            <ArrowDownAZ />
-          ) : (
-            <ArrowUpAz />
-          )}
+          {!column.getIsSorted() && <ArrowUpDown />}
+          {column.getIsSorted() === "asc" && <ArrowDownAZ />}
+          {column.getIsSorted() === "desc" && <ArrowUpZA />}
         </Button>
       </header>
     ),
@@ -201,12 +216,11 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           title="Sort Alphabetically"
           aria-label="Sort Alphabetically"
+          className="cursor-pointer"
         >
-          {column.getIsSorted() === "asc" && column.getIsSorted() ? (
-            <ArrowDownAZ />
-          ) : (
-            <ArrowUpAz />
-          )}
+          {!column.getIsSorted() && <ArrowUpDown />}
+          {column.getIsSorted() === "asc" && <ArrowDownAZ />}
+          {column.getIsSorted() === "desc" && <ArrowUpZA />}
         </Button>
       </header>
     ),
@@ -260,7 +274,7 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
           variant="outline"
           className={`${
             statusColors[row.original.status]
-          } rounded-full capitalize`}
+          } rounded-full capitalize border-2 border-vault-purple`}
         >
           {row.original.status}
         </Badge>

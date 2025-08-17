@@ -111,7 +111,7 @@ export default function ImportLinkJobApplication({
                             <FormLabel>Job List URL #{index + 1}</FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Must be https:// to make the url work. (ex. https://indeed.com/)"
+                                placeholder="Enter a Jobstreet or LinkedIn URL"
                                 {...field}
                                 tabIndex={index + 1}
                               />
