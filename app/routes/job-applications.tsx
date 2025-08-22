@@ -23,12 +23,18 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   const rows = JSON.parse(data.get("rows") as string);
   const columnName = data.get("columnName");
 
-  //TODO: make a /editTableRow router in backend and update the new value
   try {
-    // const response = await fetchRequestComponent("/editTableRow", "PATCH", {
-    //   newValue,
-    //   columnName,
-    // });
+    const response = await fetchRequestComponent(
+      "/updateJobApplicationRow",
+      "PATCH",
+      {
+        rows,
+        newValue,
+        columnName,
+      }
+    );
+
+    console.log(response);
 
     showToast("success", "Updated Successfully!");
     return { ok: true };
@@ -123,6 +129,10 @@ export default function JobApplication({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
+      <title>Job Applications | Shigoto Vault</title>
+      <meta property="og:title" content="Job Applications | Shigoto Vault" />
+      <meta name="description" content="List of your job applications" />
+
       <aside className="container mx-auto p-10">
         <main>
           <DataTable

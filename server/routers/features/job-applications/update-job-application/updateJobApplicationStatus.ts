@@ -15,7 +15,8 @@ type RequestBody = {
     | "rejected"
     | "applied"
     | "bookmarked"
-    | "waiting for result";
+    | "waiting for result"
+    | "ghosted";
   selectedRows: (string | Row<JobApplicationsColumn>)[];
 };
 

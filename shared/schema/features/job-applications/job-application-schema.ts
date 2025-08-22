@@ -25,6 +25,7 @@ export const baseJobApplicationSchema = z.object({
     "rejected",
     "applied",
     "bookmarked",
+    "ghosted",
     "waiting for result",
   ]),
   rounds: z

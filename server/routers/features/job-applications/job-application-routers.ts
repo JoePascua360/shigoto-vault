@@ -6,6 +6,7 @@ import { backendJobApplicationSchema } from "#/schema/features/job-applications/
 import { linkJobApplicationSchema } from "#/schema/features/job-applications/link-job-application-schema";
 import importLinkJobApplication from "./import-link-job-application";
 import updateJobApplicationStatus from "./update-job-application/updateJobApplicationStatus";
+import updateJobApplicationRow from "./update-job-application/updateJobApplicationRow";
 
 export const jobApplicationRouters = (version: string) => {
   app.use(`/api/${version}/loadJobApplicationData`, loadJobApplicationData);
@@ -27,4 +28,7 @@ export const jobApplicationRouters = (version: string) => {
     `/api/${version}/updateJobApplicationStatus`,
     updateJobApplicationStatus
   );
+
+  // editable input updates go here
+  app.use(`/api/${version}/updateJobApplicationRow`, updateJobApplicationRow);
 };
