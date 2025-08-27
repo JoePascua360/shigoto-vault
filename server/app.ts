@@ -10,10 +10,14 @@ import * as db from "~/db/index";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "#/lib/auth";
 import jobApplicationRoute from "./job-applications/job-application.route";
-import { StatusCodes } from "http-status-codes";
 import { handleError } from "~/errors/handleError";
 import { GlobalConfigs } from "./config/global-config";
 import morgan from "morgan";
+import type { Context } from "./config/Context";
+import { checkUserSession } from "~/middlewares/check-user-session";
+import swaggerDocs from "./utils/swagger";
+const PORT = Number.parseInt(process.env.PORT || "3000");
+
 declare module "react-router" {
   interface AppLoadContext {
     VALUE_FROM_EXPRESS: string;
@@ -21,19 +25,34 @@ declare module "react-router" {
   }
 }
 
+// used to extend express request object
+declare global {
+  namespace Express {
+    interface Request {
+      context: Context;
+    }
+  }
+}
+
 export const app = express();
 
 const apiVersion = GlobalConfigs.apiVersion;
+
+swaggerDocs(app, PORT);
 
 app.all("/api/auth/{*any}", toNodeHandler(auth));
 
 app.use(express.json());
 
-// call routes before request handler to avoid pending errors
-
 // setupRouters();
 
-app.use(`/api/${apiVersion}/`, morgan("dev"), jobApplicationRoute);
+// call routes before request handler to avoid pending errors
+app.use(
+  `/api/${apiVersion}/`,
+  morgan("dev"),
+  checkUserSession,
+  jobApplicationRoute
+);
 
 // catch all error
 app.use(async (err: Error, req: Request, res: Response, next: NextFunction) => {

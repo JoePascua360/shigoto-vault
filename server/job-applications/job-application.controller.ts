@@ -1,29 +1,110 @@
-import { auth } from "#/lib/auth";
-import { fromNodeHeaders } from "better-auth/node";
+import type { linkJobApplicationData } from "#/schema/features/job-applications/link-job-application-schema";
+import { format } from "date-fns";
 import type { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
+import { ApplicationError } from "~/errors/ApplicationError";
 import { jobApplicationService } from "~/job-applications/job-application.service";
+import { jobStreetScrape } from "~/scraping/jobstreet-scrape";
 
 export const jobApplicationController = {
   get: async (req: Request, res: Response) => {
     const query = req.query;
 
-    const company_name = String(query.company_name);
-    const tableName = String(query.colName);
-
+    const queryParam = String(query.queryParam);
+    const columnName = String(query.colName);
     const searchEnabled = query.searchEnabled === "true";
 
-    const session = await auth.api.getSession({
-      headers: fromNodeHeaders(req.headers),
-    });
-
     const data = await jobApplicationService.loadJobApplicationData(
-      company_name,
-      tableName,
+      queryParam,
+      columnName,
       searchEnabled,
-      session
+      req.context.session
     );
 
-    res.status(200).json({ message: "Loaded successfully!", rows: data });
+    res
+      .status(StatusCodes.OK)
+      .json({ message: "Loaded successfully!", rows: data });
+    return;
+  },
+
+  add: async (req: Request, res: Response) => {
+    const jobApplicationColumns = `
+    job_app_id, user_id, company_name, role, job_description,
+    min_salary, max_salary, location, job_type, work_schedule,
+    tag, status, rounds,  applied_at
+    `;
+
+    let data = req.body;
+
+    const applied_at = data.applied_at;
+    // needs to convert it into JSON format to avoid JSON type error in postgres
+    const tag = JSON.stringify(data.tag);
+    const rounds = JSON.stringify(data.rounds);
+
+    data.tag = tag;
+    data.rounds = rounds;
+    data.applied_at = format(new Date(applied_at), "yyyy-MM-dd");
+
+    const { session } = req.context.session;
+
+    const userID = session.userId;
+
+    await jobApplicationService.addJobApplication(
+      data,
+      userID,
+      jobApplicationColumns
+    );
+
+    res
+      .status(StatusCodes.OK)
+      .json({ message: "Job Application Added Successfully!" });
+    return;
+  },
+
+  importLink: async (req: Request, res: Response) => {
+    const data: linkJobApplicationData = req.body;
+
+    const jobListArray: string[] = [];
+
+    for (const item of data.url) {
+      jobListArray.push(item.jobList);
+    }
+
+    const jobDetailObject = await jobStreetScrape(
+      jobListArray,
+      req.context.session
+    );
+
+    const jobDetailsArray = jobDetailObject?.jobDetailList || [];
+    const skippedLinks = jobDetailObject?.skippedLinks || [];
+
+    const skipLinksMessage =
+      skippedLinks.length > 0
+        ? `\n\nLinks skipped: ${skippedLinks.length}\n\n${skippedLinks
+            .map(
+              (item, index) =>
+                `${index + 1}. ${item.link}\n   Reason: ${item.description}`
+            )
+            .join("\n\n")}`
+        : "";
+
+    // if theres no array received from scraping function, stop the router and return a response.
+    if (jobDetailsArray.length <= 0) {
+      throw new ApplicationError(
+        `Provided link is taken down or has issues. ${skipLinksMessage}`,
+        StatusCodes.NOT_FOUND
+      );
+    }
+
+    await jobApplicationService.importLinkJobApplication(
+      jobDetailsArray,
+      req.context.session
+    );
+
+    res.status(StatusCodes.OK).json({
+      message: `Job application/s saved successfully! ${skipLinksMessage}`,
+      hasSkippedLinks: skippedLinks.length > 0,
+    });
     return;
   },
 };

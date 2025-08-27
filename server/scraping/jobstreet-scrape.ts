@@ -1,5 +1,6 @@
 import type { Session } from "@/config/auth-client";
 import { chromium } from "playwright";
+
 /**
  * Scrapes data from jobstreet's /job directory. Works with other locations as well. Not just ph.
  * @param urlLinks - list of urls with format of -(**https://(loc).jobstreet.com/job/859...**)
@@ -18,14 +19,13 @@ export async function jobStreetScrape(
       session?.session.userAgent ||
       "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36";
 
-    const page = await browser.newPage({ userAgent: userAgent });
+    const jobDetailList: string[][] = [];
+    const skippedLinks: { link: string; description: string }[] = [];
 
-    await page.setViewportSize({ width: 1280, height: 2500 });
+    const scrapeData = async (link: string) => {
+      const page = await browser.newPage({ userAgent: userAgent });
+      await page.setViewportSize({ width: 1280, height: 2500 });
 
-    const jobDetailList = [];
-    const skippedLinks = [];
-
-    for (const link of urlLinks) {
       await page.goto(link);
 
       const jobPostRemoved = await page
@@ -41,7 +41,7 @@ export async function jobStreetScrape(
           link: link,
           description: "This job is no longer advertised",
         });
-        continue;
+        return;
       }
 
       console.count("Selector Detected...");
@@ -75,7 +75,9 @@ export async function jobStreetScrape(
       console.count("Page Evaluated...");
 
       jobDetailList.push(jobDetails);
-    }
+    };
+
+    await Promise.all(urlLinks.map((link) => scrapeData(link)));
 
     await browser.close();
 

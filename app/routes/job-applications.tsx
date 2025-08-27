@@ -54,7 +54,7 @@ async function getJobApplications(searchParams: string, columnName: string) {
     const searchEnabled = searchParams !== "" ? true : false;
 
     const response = await fetchRequestComponent(
-      `/loadJobApplicationData?searchEnabled=${searchEnabled}&colName=${columnName}&company_name=${formattedParams}`,
+      `/loadJobApplicationData?searchEnabled=${searchEnabled}&colName=${columnName}&queryParam=${formattedParams}`,
       "GET"
     );
 
