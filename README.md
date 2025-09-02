@@ -8,8 +8,7 @@ Requires no login, ready to start as soon as you are! Sync your progress with yo
 1. Clone the project
 
 ```bash
-git init (optional)
-git clone origin main
+git clone https://github.com/StylePoints420/shigoto-vault.git
 ```
 
 2. Install Dependencies
@@ -40,51 +39,4 @@ npm run start
 
 ## Project Structure
 
-**
-Server Structure
-**
-
-```
-server
-├── app.ts
-├── config
-├── middlewares
-├── routers
-├── schema
-├── tests
-└── utils
-```
-
-**
-Client Structure
-**
-
-```
-app
-├── assets
-│   ├── logo-dark.svg
-│   └── logo-light.svg
-├── components
-│   ├── spinner.tsx
-│   └── ui
-│       └── button.tsx
-├── config
-├── hooks
-├── input.css
-├── lib
-│   └── utils.ts
-├── root.tsx
-├── routes
-│   └── home.tsx
-├── routes.ts
-├── schema
-├── stores
-├── tests
-├── themes
-│   ├── mode-toggle.tsx
-│   └── theme-provider.tsx
-├── types
-└── utils
-```
-
-Structure Reference from [bulletproof-react](https://github.com/alan2207/bulletproof-react/blob/master/docs/project-structure.md)
+View it [here](https://github.com/StylePoints420/shigoto-vault/blob/main/docs/PROJECT_STRUCTURE.md).
