@@ -29,8 +29,7 @@ const jobApplicationRoute = express.Router();
  *           type: string
  *         description: Text to search within the column name selected in `colName` param.
  *     tags:
- *       - name: Job Applications Page
- *         description: List of all endpoints inside `/app/job-applications` page.
+ *       - Job Applications Page
  *     summary: Get the job application data
  *     description: Loads job application data of the currently logged in user.
  *     responses:
@@ -89,8 +88,7 @@ jobApplicationRoute.get(
  * /addJobApplication:
  *   post:
  *     tags:
- *       - name: Job Applications Page
- *         description: List of all endpoints inside `/app/job-applications` page.
+ *       - Job Applications Page
  *     summary: Add Job Application data manually by providing the values directly
  *     description: Add job application data for the user
  *     requestBody:
@@ -150,8 +148,7 @@ jobApplicationRoute.post(
  * /importLinkJobApplication:
  *   post:
  *     tags:
- *       - name: Job Applications Page
- *         description: List of all endpoints inside `/app/job-applications` page.
+ *       - Job Applications Page
  *     summary: Import job applications by providing URLs.
  *     description: Add job application data from Jobstreet/LinkedIn URLs. Maximum of 5 links per request.
  *     requestBody:
@@ -205,6 +202,125 @@ jobApplicationRoute.post(
   "/importLinkJobApplication",
   schemaValidation(linkJobApplicationSchema),
   asyncHandler(jobApplicationController.importLink)
+);
+
+/**
+ * @openapi
+ * /updateJobApplicationStatus:
+ *  patch:
+ *     tags:
+ *       - Job Applications Page
+ *     summary: Update job application status
+ *     description: Update the status of one or more job applications in a single request.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *        application/json:
+ *          schema:
+ *             oneOf:
+ *               - $ref: '#/components/schemas/JobApplicationUpdateStatusRequestSingleRow'
+ *               - $ref: '#/components/schemas/JobApplicationUpdateStatusRequestMultipleRow'
+ *          examples:
+ *            singleRowExample:
+ *              summary: Update one row
+ *              value:
+ *                status: "ghosted"
+ *                selectedRows: [279be88e-b2a8-4083-9095-f241b8a5c79a]
+ *            multipleRowExample:
+ *              summary: Update multiple row
+ *              value:
+ *                status: "bookmarked"
+ *                selectedRows: [{id: 279be88e-b2a8-4083-9095-f241b8a5c79a}, {id: 3fa85f64-5717-4562-b3fc-2c963f66afa6}]
+
+ *     responses:
+ *       200:
+ *         description: Successful Request. Status OK. View the newly added job-application [here](http://localhost:3000/app/job-applications).
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Successful message details
+ *       400:
+ *         description: Invalid data. Please check the value of the provided details carefully.
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Error message details
+ *       401:
+ *         description: Unauthorized Access. User needs to login or visit anything inside `/app` route to perform this action.
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Error message details
+ *       404:
+ *         description: Job Application ID does not exist. Make sure that the ID is correct.
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Error message details
+ *       500:
+ *         description: Internal Server Error. An unexpected error occurred on the server while processing the request.
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Error message details
+ * components:
+ *   schemas:
+ *     JobApplicationStatus:
+ *       type: string
+ *       enum: ["employed", "rejected", "applied", "bookmarked", "ghosted", "waiting for result"]
+ *     JobApplicationUpdateStatusRequestSingleRow:
+ *       type: object
+ *       properties:
+ *         status:
+ *           $ref: '#/components/schemas/JobApplicationStatus'
+ *         selectedRows:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: uuid
+ *
+ *     JobApplicationUpdateStatusRequestMultipleRow:
+ *       type: object
+ *       properties:
+ *         status:
+ *           $ref: '#/components/schemas/JobApplicationStatus'
+ *         selectedRows:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 format: uuid
+ */
+jobApplicationRoute.patch(
+  "/updateJobApplicationStatus",
+  asyncHandler(jobApplicationController.updateStatus)
+);
+
+jobApplicationRoute.patch(
+  "/updateJobApplicationRow",
+  asyncHandler(jobApplicationController.updateRowValue)
 );
 
 export default jobApplicationRoute;

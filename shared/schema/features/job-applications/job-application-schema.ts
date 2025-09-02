@@ -91,8 +91,7 @@ export const frontendJobApplicationSchema = baseJobApplicationSchema.extend({
  *              text:
  *                type: string
  *        status:
- *          type: string
- *          enum: ["employed", "rejected", "applied", "bookmarked", "ghosted", "waiting for result"]
+ *          $ref: '#/components/schemas/JobApplicationStatus'
  *        rounds:
  *          type: array
  *          items:

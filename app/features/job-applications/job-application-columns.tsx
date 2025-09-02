@@ -21,6 +21,7 @@ import UpdateMultipleJobApplication from "./update-multiple-job-application";
 import { Input } from "@/components/ui/input";
 import { useRef, useState } from "react";
 import EditTableRow from "@/components/form/edit-table-row";
+import type { JobApplicationStatus } from "#/types/types";
 
 export type JobApplicationsColumn = {
   job_app_id: string;
@@ -33,13 +34,7 @@ export type JobApplicationsColumn = {
   job_type: "Full-Time" | "Contractual" | "Part-Time" | "Internship";
   work_schedule: string;
   tag: Tag[];
-  status:
-    | "employed"
-    | "rejected"
-    | "applied"
-    | "bookmarked"
-    | "waiting for result"
-    | "ghosted";
+  status: JobApplicationStatus["status"];
   rounds: Tag[];
   created_at: Date;
   applied_at: Date;

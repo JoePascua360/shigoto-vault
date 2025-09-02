@@ -1,10 +1,14 @@
 import type { linkJobApplicationData } from "#/schema/features/job-applications/link-job-application-schema";
+import type { JobApplicationStatus } from "#/types/types";
+import type { JobApplicationsColumn } from "@/features/job-applications/job-application-columns";
+import type { Row } from "@tanstack/react-table";
 import { format } from "date-fns";
 import type { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { ApplicationError } from "~/errors/ApplicationError";
 import { jobApplicationService } from "~/job-applications/job-application.service";
 import { jobStreetScrape } from "~/scraping/jobstreet-scrape";
+import type { JobApplicationTypes } from "./types/job-application.types";
 
 export const jobApplicationController = {
   get: async (req: Request, res: Response) => {
@@ -105,6 +109,61 @@ export const jobApplicationController = {
       message: `Job application/s saved successfully! ${skipLinksMessage}`,
       hasSkippedLinks: skippedLinks.length > 0,
     });
+    return;
+  },
+
+  updateStatus: async (req: Request, res: Response) => {
+    const data: JobApplicationTypes.UpdateStatusRequestBody = req.body;
+
+    const status = data.status || "";
+    const selectedRows = data.selectedRows || [];
+
+    if (selectedRows.length === 0) {
+      res.status(StatusCodes.BAD_REQUEST).json({
+        message: "Missing Job Application ID. Cannot Proceed.",
+      });
+      return;
+    }
+
+    const { session } = req.context.session;
+
+    const values: (JobApplicationStatus | string)[] = [];
+    for (const row of selectedRows) {
+      const jobAppID = typeof row === "string" ? row : row.id;
+      const userID = session.userId || "";
+
+      values.push(status, userID, jobAppID);
+    }
+
+    await jobApplicationService.updateJobApplicationStatus(
+      selectedRows,
+      values
+    );
+
+    res
+      .status(StatusCodes.OK)
+      .json({ message: `Job Application Status updated successfully!` });
+    return;
+  },
+
+  updateRowValue: async (req: Request, res: Response) => {
+    const data: JobApplicationTypes.UpdateRowValueRequestBody = req.body;
+
+    const { session } = req.context.session;
+
+    const values: (number | string)[] = [];
+    for (const row of data.rows) {
+      const jobAppID = typeof row === "string" ? row : row.id;
+      const userID = session.userId || "";
+
+      values.push(data.newValue, userID, jobAppID);
+    }
+
+    await jobApplicationService.updateJobApplicationRow(data, values);
+
+    res
+      .status(StatusCodes.OK)
+      .json({ message: `Job Application Status updated successfully!` });
     return;
   },
 };

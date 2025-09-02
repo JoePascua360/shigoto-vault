@@ -1,5 +1,4 @@
 import type { Session } from "@/config/auth-client";
-import { format } from "date-fns";
 import * as db from "~/db/index";
 import { v4 as uuidv4 } from "uuid";
 import { jobStreetScrape } from "~/scraping/jobstreet-scrape";
@@ -8,6 +7,8 @@ import { StatusCodes } from "http-status-codes";
 import { queryInputArgumentSymbol } from "~/utils/query-input-argument-symbol";
 import { ai } from "~/config/gemini-ai";
 import type { BackendJobApplicationData } from "#/schema/features/job-applications/job-application-schema";
+import type { JobApplicationStatus } from "#/types/types";
+import type { JobApplicationTypes } from "./types/job-application.types";
 
 /**
  * Loads the job-applications table data.
@@ -162,10 +163,90 @@ async function addJobApplication(
 }
 
 /**
+ *
+ * @param selectedRows - list of job application IDs
+ * @param values - array containing status, userID and job application ID
+ * @example
+ * const values: (JobApplicationStatus | string)[] = [
+  'bookmarked',
+  'ZWeJv0AfvShJb8qU0aOzsgWdeADsqCpB',
+  '279be88e-b2a8-4083-9095-f241b8a5c79a',
+]
+ */
+async function updateJobApplicationStatus(
+  selectedRows: JobApplicationTypes.UpdateStatusRequestBody["selectedRows"],
+  values: (JobApplicationStatus | string)[]
+) {
+  const queryCmd = `
+      UPDATE job_applications as job_app
+      SET status = job_app_val.status
+      FROM
+      (SELECT status, user_id, job_app_id::uuid
+      FROM
+      (VALUES ${queryInputArgumentSymbol(
+        selectedRows.length,
+        3,
+        1
+      )}) as t(status, user_id, job_app_id)
+      ) as job_app_val(status, user_id, job_app_id)
+      WHERE
+      job_app_val.user_id = job_app.user_id
+      AND
+      job_app_val.job_app_id = job_app.job_app_id
+      RETURNING *`;
+
+  const results = await db.query(queryCmd, [...values]);
+
+  if (results.rowCount === 0) {
+    throw new ApplicationError(
+      "No matching job applications found.",
+      StatusCodes.NOT_FOUND
+    );
+  }
+
+  return results;
+}
+
+async function updateJobApplicationRow(
+  data: JobApplicationTypes.UpdateRowValueRequestBody,
+  values: (number | string)[]
+) {
+  const queryCmd = `
+    UPDATE job_applications as job_app
+    SET ${data.columnName} = job_app_val.${data.columnName}
+    FROM
+    (
+    SELECT ${data.columnName}, user_id, job_app_id::uuid
+    FROM (VALUES ${queryInputArgumentSymbol(data.rows.length, 3)})
+    as t(${data.columnName}, user_id, job_app_id)
+    )
+    as job_app_val(${data.columnName}, user_id, job_app_id)
+    WHERE
+    job_app_val.user_id = job_app.user_id
+    AND
+    job_app_val.job_app_id = job_app.job_app_id
+    RETURNING *
+    `;
+
+  const results = await db.query(queryCmd, [...values]);
+
+  if (results.rowCount === 0) {
+    throw new ApplicationError(
+      "No matching job applications found.",
+      StatusCodes.NOT_FOUND
+    );
+  }
+
+  return results;
+}
+
+/**
  * Service layer for executing queries and other logic in job-applications page
  */
 export const jobApplicationService = {
   importLinkJobApplication,
   addJobApplication,
   loadJobApplicationData,
+  updateJobApplicationStatus,
+  updateJobApplicationRow,
 };

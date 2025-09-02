@@ -5,7 +5,6 @@ import express, {
   type Request,
   type Response,
 } from "express";
-import { setupRouters } from "~/routers/setup-routers";
 import * as db from "~/db/index";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "#/lib/auth";
@@ -16,7 +15,6 @@ import morgan from "morgan";
 import type { Context } from "./config/Context";
 import { checkUserSession } from "~/middlewares/check-user-session";
 import swaggerDocs from "./utils/swagger";
-const PORT = Number.parseInt(process.env.PORT || "3000");
 
 declare module "react-router" {
   interface AppLoadContext {
@@ -38,7 +36,7 @@ export const app = express();
 
 const apiVersion = GlobalConfigs.apiVersion;
 
-swaggerDocs(app, PORT);
+swaggerDocs(app);
 
 app.all("/api/auth/{*any}", toNodeHandler(auth));
 

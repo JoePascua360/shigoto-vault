@@ -5,7 +5,7 @@
   "version": "1",
   "scripts": {
     "build": "react-router build",
-    "dev": "docker compose up -d && tsx watch --no-warnings --env-file=.env --exclude ./sql server.ts",
+    "dev": "docker compose up -d && tsx watch --no-warnings --env-file=.env --exclude ./sql ./server",
     "start": "tsx --env-file=.env server.ts",
     "typecheck": "react-router typegen && tsc -b",
     "test": "vitest",

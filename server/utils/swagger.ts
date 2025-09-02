@@ -27,7 +27,7 @@ const options: swaggerJsdoc.Options = {
 
 const swaggerSpec = swaggerJsdoc(options);
 
-const swaggerDocs = (app: Express, port: number) => {
+const swaggerDocs = (app: Express) => {
   app.use(
     "/api/docs",
     swaggerUI.serve,
@@ -42,8 +42,6 @@ const swaggerDocs = (app: Express, port: number) => {
     res.send(swaggerSpec);
     return;
   });
-
-  console.log(`REST API Docs available at http://localhost:${port}/api/docs`);
 };
 
 export default swaggerDocs;
