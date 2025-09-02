@@ -2,6 +2,7 @@
 
 ## Client
 
+```bash
 /app
 ├── assets
 │   ├── hero-vault.jpg
@@ -112,9 +113,11 @@
 ├── format-pathname.ts
 ├── show-toast.ts
 └── user-signup.ts
+```
 
 ## Server
 
+```bash
 /server
 ├── app.ts
 ├── config
@@ -145,6 +148,7 @@
 ├── asyncHandler.ts
 ├── query-input-argument-symbol.ts
 └── swagger.ts
+```
 
 ### Structure Reference
 
