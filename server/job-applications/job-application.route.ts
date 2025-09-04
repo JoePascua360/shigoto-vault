@@ -4,6 +4,7 @@ import { asyncHandler } from "~/utils/asyncHandler";
 import { schemaValidation } from "~/middlewares/schema-validation";
 import { backendJobApplicationSchema } from "#/schema/features/job-applications/job-application-schema";
 import { linkJobApplicationSchema } from "#/schema/features/job-applications/link-job-application-schema";
+import { jobApplicationEditableRowSchema } from "#/schema/features/job-applications/job-application-editable-row-schema";
 const jobApplicationRoute = express.Router();
 
 /**
@@ -56,7 +57,7 @@ const jobApplicationRoute = express.Router();
  *                          created_at:
  *                            type: string
  *                            format: date-time
- *                      - $ref: '#/components/schemas/AddJobApplications'
+ *                      - $ref: '#/components/schemas/JobApplicationManualRequest'
  *       401:
  *         description: Unauthorized Access. User needs to login or visit anything inside `/app` route to perform this action.
  *         content:
@@ -217,20 +218,18 @@ jobApplicationRoute.post(
  *       content:
  *        application/json:
  *          schema:
- *             oneOf:
- *               - $ref: '#/components/schemas/JobApplicationUpdateStatusRequestSingleRow'
- *               - $ref: '#/components/schemas/JobApplicationUpdateStatusRequestMultipleRow'
+ *              $ref: '#/components/schemas/JobApplicationUpdateStatusRequestSingleRow'
  *          examples:
  *            singleRowExample:
  *              summary: Update one row
  *              value:
  *                status: "ghosted"
- *                selectedRows: [279be88e-b2a8-4083-9095-f241b8a5c79a]
+ *                selectedRows: ['279be88e-b2a8-4083-9095-f241b8a5c79a']
  *            multipleRowExample:
  *              summary: Update multiple row
  *              value:
  *                status: "bookmarked"
- *                selectedRows: [{id: 279be88e-b2a8-4083-9095-f241b8a5c79a}, {id: 3fa85f64-5717-4562-b3fc-2c963f66afa6}]
+ *                selectedRows: ['3fa85f64-5717-4562-b3fc-2c963f66afa6', '279be88e-b2a8-4083-9095-f241b8a5c79a']
 
  *     responses:
  *       200:
@@ -298,20 +297,6 @@ jobApplicationRoute.post(
  *           items:
  *             type: string
  *             format: uuid
- *
- *     JobApplicationUpdateStatusRequestMultipleRow:
- *       type: object
- *       properties:
- *         status:
- *           $ref: '#/components/schemas/JobApplicationStatus'
- *         selectedRows:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               id:
- *                 type: string
- *                 format: uuid
  */
 jobApplicationRoute.patch(
   "/updateJobApplicationStatus",
@@ -320,6 +305,7 @@ jobApplicationRoute.patch(
 
 jobApplicationRoute.patch(
   "/updateJobApplicationRow",
+  schemaValidation(jobApplicationEditableRowSchema),
   asyncHandler(jobApplicationController.updateRowValue)
 );
 

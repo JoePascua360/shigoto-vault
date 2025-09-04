@@ -182,7 +182,7 @@ export function DataTable<TData, TValue>({
                                 <Button
                                   size="icon"
                                   variant="ghost"
-                                  className="-mr-1 size-7 shadow-none"
+                                  className="mr-1 size-7 shadow-none"
                                   aria-label={`Pin options for ${
                                     header.column.columnDef.header as string
                                   } column`}

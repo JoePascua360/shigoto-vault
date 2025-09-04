@@ -216,7 +216,9 @@ async function updateJobApplicationRow(
     SET ${data.columnName} = job_app_val.${data.columnName}
     FROM
     (
-    SELECT ${data.columnName}, user_id, job_app_id::uuid
+    SELECT ${
+      data.isSalaryColumn ? `${data.columnName}::integer` : data.columnName
+    }, user_id, job_app_id::uuid
     FROM (VALUES ${queryInputArgumentSymbol(data.rows.length, 3)})
     as t(${data.columnName}, user_id, job_app_id)
     )

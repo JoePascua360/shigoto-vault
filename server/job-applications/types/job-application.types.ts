@@ -6,7 +6,7 @@ import type { Row } from "@tanstack/react-table";
  * Types used in each job application controller
  */
 export namespace JobApplicationTypes {
-  export type SelectedRows = (Row<JobApplicationsColumn> | string)[];
+  export type SelectedRows = string[];
 
   export type UpdateStatusRequestBody = {
     status: JobApplicationStatus;
@@ -17,5 +17,6 @@ export namespace JobApplicationTypes {
     newValue: number;
     rows: SelectedRows;
     columnName: string;
+    isSalaryColumn: boolean;
   };
 }

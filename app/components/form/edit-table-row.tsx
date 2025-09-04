@@ -1,18 +1,26 @@
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Edit2Icon, SaveIcon, XIcon } from "lucide-react";
-import { useFetcher } from "react-router";
 import { FaSpinner } from "react-icons/fa6";
 import TooltipWrapper from "../tooltip-wrapper";
 import type { JobApplicationsColumn } from "@/features/job-applications/job-application-columns";
 import type { Row, Table } from "@tanstack/react-table";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  jobApplicationEditableRowSchema,
+  type EditableRowData,
+} from "#/schema/features/job-applications/job-application-editable-row-schema";
+import { fetchRequestComponent } from "@/utils/fetch-request-component";
+import { showToast } from "@/utils/show-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface EditTableRowProps {
   /**
    * @param rowValue - the value from `row.getValue` or `row.original`
    */
-  rowValue: string | undefined;
+  rowValue: number | string | undefined;
   /**
    * @param columnName - column to be updated in the server
    */
@@ -28,8 +36,6 @@ interface EditTableRowProps {
 }
 /**
  * Component for editing the table rows
- *
- * @returns {JSX.Element}
  */
 export default function EditTableRow({
   rowValue,
@@ -37,104 +43,158 @@ export default function EditTableRow({
   table,
   row,
 }: EditTableRowProps) {
-  const [newValue, setNewValue] = useState(
-    rowValue === undefined ? "Not Specified" : rowValue
-  );
-
+  const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const isSalaryColumn = ["min_salary", "max_salary"].includes(columnName);
+  const salaryValue =
+    isSalaryColumn && rowValue !== undefined
+      ? new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "PHP",
+        }).format(typeof rowValue === "string" ? parseInt(rowValue) : rowValue)
+      : "";
 
-  const rows: Row<JobApplicationsColumn>[] | string[] =
+  const defaultRowValue = rowValue === undefined ? "Not Specified" : rowValue;
+
+  const rows: string[] =
     table.getSelectedRowModel().rows.length === 0
       ? [row.id]
-      : table.getSelectedRowModel().rows;
+      : table.getSelectedRowModel().rows.map((row) => row.id);
 
-  let fetcher = useFetcher();
-  let busy = fetcher.state !== "idle";
+  const {
+    handleSubmit,
+    setValue,
+    register,
+    setFocus,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(jobApplicationEditableRowSchema),
+    defaultValues: {
+      newValue: defaultRowValue,
+      columnName: columnName,
+      rows,
+      isSalaryColumn,
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: async (data: EditableRowData) => {
+      try {
+        console.log(typeof data.newValue);
+        await fetchRequestComponent("/updateJobApplicationRow", "PATCH", {
+          ...data,
+        });
+
+        setIsEditing(false);
+
+        return { ...data };
+      } catch (error) {
+        if (error instanceof Error) {
+          console.log(error);
+          throw new Error(error.message);
+        }
+        throw new Error("Unknown error occurred");
+      }
+    },
+    async onSuccess(data) {
+      const length = data.rows.length;
+
+      showToast(
+        "success",
+        `${length} ${length > 1 ? "rows" : "row"} updated successfully!`
+      );
+      await queryClient.invalidateQueries({ queryKey: ["job-applications"] });
+    },
+    onError: (error: Error) => {
+      return showToast("error", error.message);
+    },
+  });
+
+  useEffect(() => {
+    if (isEditing) {
+      setFocus("newValue");
+    }
+  }, [isEditing]);
+
+  useEffect(() => {
+    if (errors.newValue?.message) {
+      showToast("error", errors.newValue.message || "", 1500);
+    }
+  }, [errors]);
 
   return (
-    <fetcher.Form method="POST">
+    <form onSubmit={handleSubmit((data) => mutation.mutate(data))}>
       <div className="flex items-center group gap-2">
-        <div>
-          <Input
-            value={newValue}
-            ref={inputRef}
-            onChange={(e) => {
-              setNewValue(e.target.value);
-              if (
-                e.target.value !== "Not Specified" &&
-                e.target.value !== rowValue
-              ) {
-                setIsEditing(true);
-              } else {
-                setIsEditing(false);
-              }
-            }}
-            name="min_salary"
-            className="border-none shadow-none dark:bg-transparent"
-          />
-          {fetcher.data?.error && (
-            <p className="text-red-500 font-sub-text text-base">
-              {fetcher.data.error}
-            </p>
-          )}
-        </div>
-
         {isEditing ? (
-          <div className="flex gap-2">
-            {busy ? (
-              <FaSpinner size={20} className="animate-spin" />
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  const formData = new FormData();
-                  formData.append("editedValue", newValue);
-                  formData.append("columnName", columnName);
-                  formData.append("rows", JSON.stringify(rows));
+          <>
+            <Input
+              {...register("newValue", {
+                valueAsNumber: isSalaryColumn,
+                onChange(e) {
+                  setValue("newValue", e.target.value);
+                  const val = e.target.value;
 
-                  fetcher.submit(formData, {
-                    method: "POST",
-                  });
-                }}
-              >
-                <SaveIcon
-                  size={20}
-                  className="cursor-pointer"
-                  aria-label="Save Changes"
-                />
-              </button>
-            )}
-
-            <XIcon
-              size={20}
-              className="cursor-pointer"
-              aria-label="Cancel"
-              onClick={() => {
-                setNewValue(
-                  rowValue === undefined ? "Not Specified" : rowValue
-                );
-                setIsEditing(false);
-              }}
+                  if (val !== "Not Specified" && val !== rowValue) {
+                    setIsEditing(true);
+                  } else {
+                    setIsEditing(false);
+                  }
+                },
+              })}
+              type={isSalaryColumn ? "number" : "text"}
+              className="border-none shadow-none dark:bg-transparent"
             />
-          </div>
+
+            <div className="flex gap-2">
+              {mutation.isPending ? (
+                <FaSpinner size={20} className="animate-spin" />
+              ) : (
+                <>
+                  <button type="submit">
+                    <SaveIcon
+                      size={20}
+                      className="cursor-pointer"
+                      aria-label="Save Changes"
+                    />
+                  </button>
+
+                  <XIcon
+                    size={20}
+                    className="cursor-pointer"
+                    aria-label="Cancel"
+                    onClick={() => {
+                      setValue("newValue", defaultRowValue);
+                      setIsEditing(false);
+                    }}
+                  />
+                </>
+              )}
+            </div>
+          </>
         ) : (
-          <TooltipWrapper content="Edit Min Salary" delay={1500}>
-            <Button
-              size="icon"
-              variant="link"
-              className="hidden group-hover:block cursor-pointer"
-              onClick={() => {
-                inputRef.current?.focus();
-              }}
-              title="Edit Min Salary"
-              type="button"
-            >
-              <Edit2Icon />
-            </Button>
-          </TooltipWrapper>
+          <>
+            <p className="truncate">
+              {isSalaryColumn && rowValue !== undefined
+                ? salaryValue
+                : defaultRowValue}
+            </p>
+            <TooltipWrapper content="Edit Min Salary" delay={1500}>
+              <Button
+                size="icon"
+                variant="link"
+                className="hidden group-hover:block cursor-pointer "
+                onClick={() => {
+                  setIsEditing(true);
+                }}
+                title="Edit Min Salary"
+                type="button"
+              >
+                <Edit2Icon />
+              </Button>
+            </TooltipWrapper>
+          </>
         )}
       </div>
-    </fetcher.Form>
+    </form>
   );
 }

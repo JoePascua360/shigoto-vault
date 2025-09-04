@@ -120,6 +120,8 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
 
       return (
         <EditTableRow
+          // component remounts when role value changes
+          key={`${row.id}-${role}`}
           rowValue={role}
           columnName="role"
           table={table}
@@ -167,7 +169,7 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
 
       return (
         <EditTableRow
-          rowValue={isNan ? undefined : formatted}
+          rowValue={isNan ? undefined : amount}
           columnName="min_salary"
           table={table}
           row={row}

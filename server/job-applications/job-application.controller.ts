@@ -11,6 +11,9 @@ import { jobStreetScrape } from "~/scraping/jobstreet-scrape";
 import type { JobApplicationTypes } from "./types/job-application.types";
 
 export const jobApplicationController = {
+  /**
+   * /loadJobApplicationData route | GET
+   */
   get: async (req: Request, res: Response) => {
     const query = req.query;
 
@@ -30,7 +33,9 @@ export const jobApplicationController = {
       .json({ message: "Loaded successfully!", rows: data });
     return;
   },
-
+  /**
+   * /addJobApplication route | POST
+   */
   add: async (req: Request, res: Response) => {
     const jobApplicationColumns = `
     job_app_id, user_id, company_name, role, job_description,
@@ -64,7 +69,9 @@ export const jobApplicationController = {
       .json({ message: "Job Application Added Successfully!" });
     return;
   },
-
+  /**
+   * /importLinkJobApplication route | POST
+   */
   importLink: async (req: Request, res: Response) => {
     const data: linkJobApplicationData = req.body;
 
@@ -111,7 +118,9 @@ export const jobApplicationController = {
     });
     return;
   },
-
+  /**
+   * /updateJobApplicationStatus route | PATCH
+   */
   updateStatus: async (req: Request, res: Response) => {
     const data: JobApplicationTypes.UpdateStatusRequestBody = req.body;
 
@@ -128,8 +137,7 @@ export const jobApplicationController = {
     const { session } = req.context.session;
 
     const values: (JobApplicationStatus | string)[] = [];
-    for (const row of selectedRows) {
-      const jobAppID = typeof row === "string" ? row : row.id;
+    for (const jobAppID of selectedRows) {
       const userID = session.userId || "";
 
       values.push(status, userID, jobAppID);
@@ -145,15 +153,16 @@ export const jobApplicationController = {
       .json({ message: `Job Application Status updated successfully!` });
     return;
   },
-
+  /**
+   * /updateJobApplicationRow route | PATCH
+   */
   updateRowValue: async (req: Request, res: Response) => {
     const data: JobApplicationTypes.UpdateRowValueRequestBody = req.body;
 
     const { session } = req.context.session;
 
     const values: (number | string)[] = [];
-    for (const row of data.rows) {
-      const jobAppID = typeof row === "string" ? row : row.id;
+    for (const jobAppID of data.rows) {
       const userID = session.userId || "";
 
       values.push(data.newValue, userID, jobAppID);
