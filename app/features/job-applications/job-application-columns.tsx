@@ -45,7 +45,7 @@ export const statusColors = {
   rejected: "bg-red-100 text-red-800 dark:text-red-500",
   applied: "bg-blue-100 text-blue-800 dark:text-blue-500",
   bookmarked: "bg-amber-100 text-amber-800 dark:text-amber-600",
-  ghosted: "bg-gray-100 text-gray-800 dark:text-gray-600",
+  ghosted: "bg-gray-300 text-gray-800 dark:text-gray-600",
   "waiting for result": "bg-purple-100 text-purple-800 dark:text-purple-500",
 };
 

@@ -45,21 +45,17 @@ export default function EditTableRow({
 }: EditTableRowProps) {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
-  const isSalaryColumn = ["min_salary", "max_salary"].includes(columnName);
-  const salaryValue =
-    isSalaryColumn && rowValue !== undefined
-      ? new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "PHP",
-        }).format(typeof rowValue === "string" ? parseInt(rowValue) : rowValue)
-      : "";
+  const isSalaryColumn =
+    ["min_salary", "max_salary"].includes(columnName) && rowValue !== undefined;
+
+  const salaryValue = isSalaryColumn
+    ? new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "PHP",
+      }).format(typeof rowValue === "string" ? parseInt(rowValue) : rowValue)
+    : "";
 
   const defaultRowValue = rowValue === undefined ? "Not Specified" : rowValue;
-
-  const rows: string[] =
-    table.getSelectedRowModel().rows.length === 0
-      ? [row.id]
-      : table.getSelectedRowModel().rows.map((row) => row.id);
 
   const {
     handleSubmit,
@@ -71,23 +67,32 @@ export default function EditTableRow({
     resolver: zodResolver(jobApplicationEditableRowSchema),
     defaultValues: {
       newValue: defaultRowValue,
-      columnName: columnName,
-      rows,
+      rows: [row.id],
       isSalaryColumn,
+      columnName,
     },
   });
 
   const mutation = useMutation({
     mutationFn: async (data: EditableRowData) => {
       try {
-        console.log(typeof data.newValue);
-        await fetchRequestComponent("/updateJobApplicationRow", "PATCH", {
+        const rows: string[] =
+          table.getSelectedRowModel().rows.length === 0
+            ? [row.id]
+            : table.getSelectedRowModel().rows.map((row) => row.id);
+
+        const formData = {
           ...data,
+          rows,
+        };
+
+        await fetchRequestComponent("/updateJobApplicationRow", "PATCH", {
+          ...formData,
         });
 
         setIsEditing(false);
 
-        return { ...data };
+        return { ...formData };
       } catch (error) {
         if (error instanceof Error) {
           console.log(error);
@@ -174,9 +179,7 @@ export default function EditTableRow({
         ) : (
           <>
             <p className="truncate">
-              {isSalaryColumn && rowValue !== undefined
-                ? salaryValue
-                : defaultRowValue}
+              {isSalaryColumn ? salaryValue : defaultRowValue}
             </p>
             <TooltipWrapper content="Edit Min Salary" delay={1500}>
               <Button

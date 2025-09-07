@@ -125,7 +125,7 @@ export const jobApplicationController = {
     const data: JobApplicationTypes.UpdateStatusRequestBody = req.body;
 
     const status = data.status || "";
-    const selectedRows = data.selectedRows || [];
+    const selectedRows = data.rows || [];
 
     if (selectedRows.length === 0) {
       res.status(StatusCodes.BAD_REQUEST).json({

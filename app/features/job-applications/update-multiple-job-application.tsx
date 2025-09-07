@@ -27,6 +27,7 @@ import {
 } from "./job-application-columns";
 import { fetchRequestComponent } from "@/utils/fetch-request-component";
 import { useQueryClient } from "@tanstack/react-query";
+import UpdateJobApplicationStatus from "@/components/form/update-job-application-status";
 
 interface UpdateMultipleJobApplicationProps {
   table: Table<JobApplicationsColumn>;
@@ -37,16 +38,6 @@ export default function UpdateMultipleJobApplication({
   table,
   row,
 }: UpdateMultipleJobApplicationProps) {
-  const queryClient = useQueryClient();
-
-  const statusArr: (typeof row.original.status)[] = [
-    "employed",
-    "rejected",
-    "applied",
-    "bookmarked",
-    "waiting for result",
-  ];
-
   const jobAppID = row.original.job_app_id;
 
   return (
@@ -77,49 +68,7 @@ export default function UpdateMultipleJobApplication({
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
-              <DropdownMenuRadioGroup
-                value={row.original.status}
-                onValueChange={async (value) => {
-                  try {
-                    let selectedRows: Row<JobApplicationsColumn>[] | string[] =
-                      table.getSelectedRowModel().rows.length === 0
-                        ? [row.id]
-                        : table.getSelectedRowModel().rows;
-
-                    const response = await fetchRequestComponent(
-                      "/updateJobApplicationStatus",
-                      "PATCH",
-                      { selectedRows: selectedRows, status: value }
-                    );
-
-                    await queryClient.invalidateQueries({
-                      queryKey: ["job-applications"],
-                    });
-
-                    return showToast("success", response.message);
-                  } catch (error) {
-                    if (error instanceof Error) {
-                      console.log(error);
-                      showToast("error", error.message);
-                    }
-                  }
-                }}
-              >
-                {statusArr.map((status, index) => {
-                  const textColor = statusColors[status].split(" ")[1];
-                  const darkTextColor = statusColors[status].split(" ")[2];
-
-                  return (
-                    <DropdownMenuRadioItem
-                      className={`${textColor} focus:${textColor} ${darkTextColor} capitalize`}
-                      key={index}
-                      value={status}
-                    >
-                      {status}
-                    </DropdownMenuRadioItem>
-                  );
-                })}
-              </DropdownMenuRadioGroup>
+              <UpdateJobApplicationStatus row={row} table={table} />
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>

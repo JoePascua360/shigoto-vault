@@ -10,7 +10,7 @@ export namespace JobApplicationTypes {
 
   export type UpdateStatusRequestBody = {
     status: JobApplicationStatus;
-    selectedRows: SelectedRows;
+    rows: SelectedRows;
   };
 
   export type UpdateRowValueRequestBody = {

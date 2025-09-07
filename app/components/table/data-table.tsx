@@ -161,7 +161,7 @@ export function DataTable<TData, TValue>({
                             <Button
                               size="icon"
                               variant="ghost"
-                              className="-mr-1 size-7 shadow-none"
+                              className="mr-0.5 size-7 shadow-none"
                               onClick={() => header.column.pin(false)}
                               aria-label={`Unpin ${
                                 header.column.columnDef.header as string

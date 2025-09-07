@@ -174,7 +174,7 @@ async function addJobApplication(
 ]
  */
 async function updateJobApplicationStatus(
-  selectedRows: JobApplicationTypes.UpdateStatusRequestBody["selectedRows"],
+  selectedRows: JobApplicationTypes.UpdateStatusRequestBody["rows"],
   values: (JobApplicationStatus | string)[]
 ) {
   const queryCmd = `
