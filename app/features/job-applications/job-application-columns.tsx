@@ -63,6 +63,7 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
               table.toggleAllPageRowsSelected(!!value)
             }
             aria-label="Select all"
+            className="size-4.5"
           />
           <p>Company</p>
           <Button
@@ -81,15 +82,25 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
       );
     },
     accessorKey: "company_name",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       return (
-        <div className="truncate font-medium flex gap-2">
+        <div className=" font-medium flex gap-2 items-center p-0.5">
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
             aria-label="Select row"
+            className="size-4.5"
           />
-          <p>{row.getValue("company_name")}</p>
+          <div className="min-w-0 flex-1">
+            <EditTableRow
+              // component remounts when  value changes
+              key={`${row.id}-${row.original.company_name}`}
+              rowValue={row.original.company_name}
+              columnName="company_name"
+              table={table}
+              row={row}
+            />
+          </div>
         </div>
       );
     },
@@ -120,7 +131,7 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
 
       return (
         <EditTableRow
-          // component remounts when role value changes
+          // component remounts when value changes
           key={`${row.id}-${role}`}
           rowValue={role}
           columnName="role"
@@ -162,13 +173,10 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
       const amount = parseFloat(row.getValue("min_salary"));
       const isNan = Number.isNaN(amount);
 
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "PHP",
-      }).format(amount);
-
       return (
         <EditTableRow
+          // component remounts when value changes
+          key={`${row.id}-${amount}`}
           rowValue={isNan ? undefined : amount}
           columnName="min_salary"
           table={table}
@@ -180,17 +188,20 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
   {
     header: "Max Salary",
     accessorKey: "max_salary",
-    cell: ({ row }) => {
-      if (!row.getValue("max_salary")) {
-        return <p>Not specified.</p>;
-      }
+    cell: ({ row, table }) => {
+      const amount = parseFloat(row.getValue("max_salary"));
+      const isNan = Number.isNaN(amount);
 
-      const amount = parseInt(row.getValue("max_salary"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "PHP",
-      }).format(amount);
-      return formatted;
+      return (
+        <EditTableRow
+          // component remounts when role value changes
+          key={`${row.id}-${amount}`}
+          rowValue={isNan ? undefined : amount}
+          columnName="max_salary"
+          table={table}
+          row={row}
+        />
+      );
     },
   },
   {
@@ -212,10 +223,34 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
       </header>
     ),
     accessorKey: "location",
+    cell: ({ row, table }) => {
+      return (
+        <EditTableRow
+          // component remounts when  value changes
+          key={`${row.id}-${row.original.location}`}
+          rowValue={row.original.location}
+          columnName="location"
+          table={table}
+          row={row}
+        />
+      );
+    },
   },
   {
     header: "Job Type",
     accessorKey: "job_type",
+    cell: ({ row, table }) => {
+      return (
+        <EditTableRow
+          // component remounts when  value changes
+          key={`${row.id}-${row.original.job_type}`}
+          rowValue={row.original.job_type}
+          columnName="job_type"
+          table={table}
+          row={row}
+        />
+      );
+    },
   },
   {
     header: ({ column }) => (
@@ -236,6 +271,18 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
       </header>
     ),
     accessorKey: "work_schedule",
+    cell: ({ row, table }) => {
+      return (
+        <EditTableRow
+          // component remounts when  value changes
+          key={`${row.id}-${row.original.work_schedule}`}
+          rowValue={row.original.work_schedule}
+          columnName="work_schedule"
+          table={table}
+          row={row}
+        />
+      );
+    },
   },
   {
     header: "Tags",

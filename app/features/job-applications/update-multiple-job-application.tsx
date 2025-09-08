@@ -18,11 +18,9 @@ import {
   Clipboard,
   ListCheck,
   MoreHorizontal,
-  SortAscIcon,
 } from "lucide-react";
 import type { Row, Table } from "@tanstack/react-table";
 import {
-  statusColors,
   type JobApplicationsColumn,
 } from "./job-application-columns";
 import { fetchRequestComponent } from "@/utils/fetch-request-component";

@@ -13,8 +13,9 @@ import {
   type EditableRowData,
 } from "#/schema/features/job-applications/job-application-editable-row-schema";
 import { fetchRequestComponent } from "@/utils/fetch-request-component";
-import { showToast } from "@/utils/show-toast";
+import { showToast, type showToastParams } from "@/utils/show-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { capitalizeFirstLetter } from "better-auth/react";
 
 interface EditTableRowProps {
   /**
@@ -104,10 +105,52 @@ export default function EditTableRow({
     async onSuccess(data) {
       const length = data.rows.length;
 
+      const rows: string[] =
+        table.getSelectedRowModel().rows.length === 0
+          ? [row.id]
+          : table.getSelectedRowModel().rows.map((row) => row.id);
+
+      const undoObject: showToastParams = {
+        label: "Undo",
+        async onClick() {
+          try {
+            const { columnName, isSalaryColumn } = data;
+
+            // revert back to old row value.
+            await fetchRequestComponent("/updateJobApplicationRow", "PATCH", {
+              newValue: defaultRowValue,
+              columnName,
+              isSalaryColumn,
+              rows,
+            });
+
+            await queryClient.invalidateQueries({
+              queryKey: ["job-applications"],
+            });
+
+            return showToast(
+              "info",
+              `${length} ${
+                length > 1 ? "rows" : "row"
+              } restored to previous value.`
+            );
+          } catch (error) {
+            if (error instanceof Error) {
+              console.log(error);
+
+              return showToast("error", error.message);
+            }
+          }
+        },
+      };
+
       showToast(
         "success",
-        `${length} ${length > 1 ? "rows" : "row"} updated successfully!`
+        `${length} ${length > 1 ? "rows" : "row"} updated successfully!`,
+        6000,
+        undoObject
       );
+
       await queryClient.invalidateQueries({ queryKey: ["job-applications"] });
     },
     onError: (error: Error) => {
@@ -129,7 +172,7 @@ export default function EditTableRow({
 
   return (
     <form onSubmit={handleSubmit((data) => mutation.mutate(data))}>
-      <div className="flex items-center group gap-2">
+      <div className="flex items-center gap-2 group">
         {isEditing ? (
           <>
             <Input
@@ -148,6 +191,7 @@ export default function EditTableRow({
               })}
               type={isSalaryColumn ? "number" : "text"}
               className="border-none shadow-none dark:bg-transparent"
+              tabIndex={1}
             />
 
             <div className="flex gap-2">
@@ -155,23 +199,30 @@ export default function EditTableRow({
                 <FaSpinner size={20} className="animate-spin" />
               ) : (
                 <>
-                  <button type="submit">
+                  <button
+                    type="submit"
+                    className="hover:bg-green-300 dark:hover:bg-green-600 transition-colors delay-100 rounded-full p-1"
+                  >
                     <SaveIcon
                       size={20}
+                      tabIndex={2}
                       className="cursor-pointer"
                       aria-label="Save Changes"
                     />
                   </button>
 
-                  <XIcon
-                    size={20}
-                    className="cursor-pointer"
-                    aria-label="Cancel"
-                    onClick={() => {
-                      setValue("newValue", defaultRowValue);
-                      setIsEditing(false);
-                    }}
-                  />
+                  <div className="hover:bg-red-500 transition-colors delay-100 rounded-full p-1 flex items-center">
+                    <XIcon
+                      size={20}
+                      tabIndex={3}
+                      className="cursor-pointer"
+                      aria-label="Cancel"
+                      onClick={() => {
+                        setValue("newValue", defaultRowValue);
+                        setIsEditing(false);
+                      }}
+                    />
+                  </div>
                 </>
               )}
             </div>
@@ -181,15 +232,18 @@ export default function EditTableRow({
             <p className="truncate">
               {isSalaryColumn ? salaryValue : defaultRowValue}
             </p>
-            <TooltipWrapper content="Edit Min Salary" delay={1500}>
+            <TooltipWrapper
+              content={`Edit ${capitalizeFirstLetter(columnName)}`}
+              delay={1500}
+            >
               <Button
                 size="icon"
                 variant="link"
-                className="hidden group-hover:block cursor-pointer "
+                className="hidden group-hover:flex cursor-pointer hover:bg-primary hover:text-white dark:hover:text-black rounded-full"
                 onClick={() => {
                   setIsEditing(true);
                 }}
-                title="Edit Min Salary"
+                title={`Edit ${capitalizeFirstLetter(columnName)}`}
                 type="button"
               >
                 <Edit2Icon />

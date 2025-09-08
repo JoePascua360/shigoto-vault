@@ -25,7 +25,10 @@ async function loadJobApplicationData(
   searchEnabled: boolean,
   session: Session | null
 ) {
-  const createTable = `CREATE TABLE IF NOT EXISTS job_applications
+  const client = await db.getClient();
+
+  try {
+    const createTable = `CREATE TABLE IF NOT EXISTS job_applications
       (
         job_app_id uuid, user_id text not null, company_name text NOT NULL,
         role text NOT NULL, job_description text, min_salary int, max_salary int,
@@ -38,23 +41,31 @@ async function loadJobApplicationData(
             references "user"(id)
         );`;
 
-  let queryCmd = "";
+    let queryCmd = "";
 
-  const values = [];
-  if (searchEnabled) {
-    queryCmd = `SELECT * FROM job_applications WHERE user_id = $1 AND ${columnName} ILIKE $2 ORDER BY created_at desc`;
-    values.push(session?.user?.id, `%${queryParam}%`);
-  } else {
-    queryCmd =
-      "SELECT * FROM job_applications WHERE user_id = $1 ORDER BY created_at desc";
-    values.push(session?.user?.id);
+    const values = [];
+    if (searchEnabled) {
+      queryCmd = `SELECT * FROM job_applications WHERE user_id = $1 AND ${columnName} ILIKE $2 ORDER BY created_at desc`;
+      values.push(session?.user?.id, `%${queryParam}%`);
+    } else {
+      queryCmd =
+        "SELECT * FROM job_applications WHERE user_id = $1 ORDER BY created_at desc";
+      values.push(session?.user?.id);
+    }
+
+    await client.query(createTable);
+    const result = await client.query(queryCmd, values);
+    const data = result.rows.length === 0 ? [] : result.rows;
+
+    await client.query("COMMIT");
+
+    return data;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
   }
-
-  await db.query(createTable);
-  const result = await db.query(queryCmd, values);
-  const data = result.rows.length === 0 ? [] : result.rows;
-
-  return data;
 }
 
 /**
@@ -70,7 +81,12 @@ async function importLinkJobApplication(
   jobDetailsArray: string[][],
   session: Session
 ) {
-  const prompt = `
+  const client = await db.getClient();
+
+  try {
+    await client.query("BEGIN");
+
+    const prompt = `
       Can you replace the value of these objects according to the list of arrays given? Make it a JSON format according to the schema below:
 
       Fields:
@@ -88,42 +104,50 @@ async function importLinkJobApplication(
       These are the list of array: \n${jobDetailsArray}
       `;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash-lite",
-    contents: prompt,
-    config: {
-      systemInstruction: `
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash-lite",
+      contents: prompt,
+      config: {
+        systemInstruction: `
         The provided array is a list of scraped data from any of the following: Jobstreet, LinkedIn, or Indeed
         Only respond with the JSON schema output, no need for explanations. That's the only response you should give.
         Always make it an Array with JSON schema inside, even if there is only 1 item.
         `,
-    },
-  });
+      },
+    });
 
-  const aiResponse = response.text || "";
+    const aiResponse = response.text || "";
 
-  // remove ```json ``` from the response of AI
-  const cleaned = aiResponse.replace(/```(?:json)?\s*|\s*```$/g, "").trim();
+    // remove ```json ``` from the response of AI
+    const cleaned = aiResponse.replace(/```(?:json)?\s*|\s*```$/g, "").trim();
 
-  const jsonFormat = JSON.parse(cleaned || "");
-  const queryCmd = `insert into job_applications
+    const jsonFormat = JSON.parse(cleaned || "");
+    const queryCmd = `insert into job_applications
     (
       job_app_id, user_id, company_name, role, job_description,
       min_salary, max_salary, location, job_type, work_schedule
     )
     values ${queryInputArgumentSymbol(jsonFormat.length, 10, 1)} RETURNING *`;
 
-  const values = [];
+    const values = [];
 
-  for (const item of jsonFormat) {
-    const value = Object.values(item);
+    for (const item of jsonFormat) {
+      const value = Object.values(item);
 
-    const val = [uuidv4(), session?.session.userId, ...value];
+      const val = [uuidv4(), session?.session.userId, ...value];
 
-    values.push(val);
+      values.push(val);
+    }
+
+    await client.query("COMMIT");
+
+    return await client.query(queryCmd, values.flat());
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
   }
-
-  return await db.query(queryCmd, values.flat());
 }
 
 /**
@@ -138,28 +162,39 @@ async function addJobApplication(
   userID: string,
   jobApplicationColumns: string
 ) {
-  // needs to convert it into JSON format to avoid JSON type error in postgres
+  const client = await db.getClient();
 
-  const valueString: string[] = Object.values(data).map((_, index) => {
-    let prefix = "";
+  try {
+    // needs to convert it into JSON format to avoid JSON type error in postgres
+    const valueString: string[] = Object.values(data).map((_, index) => {
+      let prefix = "";
 
-    // index starts at 3 since 2 of them at the start needs a custom value
-    if (index + 1 !== Object.values(data).length) {
-      prefix = `$${index + 3}, `;
-    } else {
-      prefix = `$${index + 3}`;
-    }
+      // index starts at 3 since 2 of them at the start needs a custom value
+      if (index + 1 !== Object.values(data).length) {
+        prefix = `$${index + 3}, `;
+      } else {
+        prefix = `$${index + 3}`;
+      }
 
-    return prefix;
-  });
+      return prefix;
+    });
 
-  const queryCmd = `INSERT INTO job_applications (${jobApplicationColumns}) VALUES ($1, $2, ${valueString.join(
-    ""
-  )}) RETURNING *`;
+    const queryCmd = `INSERT INTO job_applications (${jobApplicationColumns}) VALUES ($1, $2, ${valueString.join(
+      ""
+    )}) RETURNING *`;
 
-  const values = [uuidv4(), userID, ...Object.values(data)];
+    const values = [uuidv4(), userID, ...Object.values(data)];
 
-  return await db.query(queryCmd, values);
+    await client.query("COMMIT");
+
+    return await client.query(queryCmd, values);
+  } catch (error) {
+    await client.query("ROLLBACK");
+
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 /**
@@ -177,7 +212,11 @@ async function updateJobApplicationStatus(
   selectedRows: JobApplicationTypes.UpdateStatusRequestBody["rows"],
   values: (JobApplicationStatus | string)[]
 ) {
-  const queryCmd = `
+  const client = await db.getClient();
+  try {
+    await client.query("BEGIN");
+
+    const queryCmd = `
       UPDATE job_applications as job_app
       SET status = job_app_val.status
       FROM
@@ -195,23 +234,36 @@ async function updateJobApplicationStatus(
       job_app_val.job_app_id = job_app.job_app_id
       RETURNING *`;
 
-  const results = await db.query(queryCmd, [...values]);
+    const results = await client.query(queryCmd, [...values]);
 
-  if (results.rowCount === 0) {
-    throw new ApplicationError(
-      "No matching job applications found.",
-      StatusCodes.NOT_FOUND
-    );
+    if (results.rowCount === 0) {
+      throw new ApplicationError(
+        "No matching job applications found.",
+        StatusCodes.NOT_FOUND
+      );
+    }
+
+    await client.query("COMMIT");
+
+    return results;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
   }
-
-  return results;
 }
 
 async function updateJobApplicationRow(
   data: JobApplicationTypes.UpdateRowValueRequestBody,
   values: (number | string)[]
 ) {
-  const queryCmd = `
+  const client = await db.getClient();
+
+  try {
+    await client.query("BEGIN");
+
+    const queryCmd = `
     UPDATE job_applications as job_app
     SET ${data.columnName} = job_app_val.${data.columnName}
     FROM
@@ -230,16 +282,23 @@ async function updateJobApplicationRow(
     RETURNING *
     `;
 
-  const results = await db.query(queryCmd, [...values]);
+    const results = await client.query(queryCmd, [...values]);
 
-  if (results.rowCount === 0) {
-    throw new ApplicationError(
-      "No matching job applications found.",
-      StatusCodes.NOT_FOUND
-    );
+    if (results.rowCount === 0) {
+      throw new ApplicationError(
+        "No matching job applications found.",
+        StatusCodes.NOT_FOUND
+      );
+    }
+
+    await client.query("COMMIT");
+    return results;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
   }
-
-  return results;
 }
 
 /**

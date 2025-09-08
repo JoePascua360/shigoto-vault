@@ -112,7 +112,7 @@ export function DataTable<TData, TValue>({
 
       <main className="space-y-4">
         <Table
-          className="[&_td]:border-border [&_th]:border-border table-fixed border-separate border-spacing-0 [&_tfoot_td]:border-t [&_th]:border-b [&_tr]:border-none [&_tr:not(:last-child)_td]:border-b "
+          className="[&_td]:border-border [&_th]:border-border table-fixed border-separate border-spacing-0 [&_tfoot_td]:border-t [&_th]:border-b [&_tr]:border-none [&_tr:not(:last-child)_td]:border-b"
           style={{
             width: table.getTotalSize(),
           }}

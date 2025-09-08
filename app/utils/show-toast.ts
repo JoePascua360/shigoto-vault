@@ -2,7 +2,7 @@ import { toast } from "sonner";
 
 type ToastType = "success" | "info" | "warning" | "error" | "message";
 
-type showToastParams = {
+export type showToastParams = {
   label: string;
   onClick: () => void;
 };
