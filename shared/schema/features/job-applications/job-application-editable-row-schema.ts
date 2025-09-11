@@ -2,8 +2,8 @@ import { z } from "zod/v4";
 
 export const jobApplicationEditableRowSchema = z.object({
   newValue: z.union([
-    z.string().min(1, "New value is required!"),
     z.number().gte(1, "Salary cannot be lower than 1!"),
+    z.string().min(1, "New value is required!"),
   ]),
   columnName: z.string().min(1, "Column name must be provided!"),
   rows: z

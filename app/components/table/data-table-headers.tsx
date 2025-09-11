@@ -170,9 +170,23 @@ export default function DataTableHeaders<TData>({
                     key={column.id}
                     className="capitalize"
                     checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
+                    onCheckedChange={(value) => {
+                      column.toggleVisibility(!!value);
+
+                      const visibleColumns = JSON.parse(
+                        localStorage.getItem("visibleColumns") || "{}"
+                      );
+
+                      localStorage.setItem(
+                        "visibleColumns",
+                        JSON.stringify({
+                          jobApplication: {
+                            ...(visibleColumns.jobApplication || {}),
+                            [column.id]: !!value,
+                          },
+                        })
+                      );
+                    }}
                     onSelect={(event) => event.preventDefault()}
                   >
                     {column.id}

@@ -6,20 +6,9 @@ import { useDialog } from "@/hooks/use-dialog";
 import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import type { Tag } from "emblor";
-import {
-  ArrowDownAZ,
-  ArrowUpAz,
-  ArrowUpDown,
-  ArrowUpZA,
-  ArrowUpZa,
-  CircleXIcon,
-  Edit2Icon,
-  SaveIcon,
-} from "lucide-react";
+import { ArrowDownAZ, ArrowUpDown, ArrowUpZA } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import UpdateMultipleJobApplication from "./update-multiple-job-application";
-import { Input } from "@/components/ui/input";
-import { useRef, useState } from "react";
 import EditTableRow from "@/components/form/edit-table-row";
 import type { JobApplicationStatus } from "#/types/types";
 

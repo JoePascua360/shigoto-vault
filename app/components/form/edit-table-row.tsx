@@ -46,15 +46,15 @@ export default function EditTableRow({
 }: EditTableRowProps) {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
-  const isSalaryColumn =
-    ["min_salary", "max_salary"].includes(columnName) && rowValue !== undefined;
+  const isSalaryColumn = ["min_salary", "max_salary"].includes(columnName);
 
-  const salaryValue = isSalaryColumn
-    ? new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "PHP",
-      }).format(typeof rowValue === "string" ? parseInt(rowValue) : rowValue)
-    : "";
+  const salaryValue =
+    isSalaryColumn && rowValue !== undefined
+      ? new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "PHP",
+        }).format(typeof rowValue === "string" ? parseInt(rowValue) : rowValue)
+      : "";
 
   const defaultRowValue = rowValue === undefined ? "Not Specified" : rowValue;
 
@@ -67,7 +67,7 @@ export default function EditTableRow({
   } = useForm({
     resolver: zodResolver(jobApplicationEditableRowSchema),
     defaultValues: {
-      newValue: defaultRowValue,
+      newValue: isSalaryColumn && rowValue === undefined ? 0 : defaultRowValue,
       rows: [row.id],
       isSalaryColumn,
       columnName,
@@ -154,6 +154,7 @@ export default function EditTableRow({
       await queryClient.invalidateQueries({ queryKey: ["job-applications"] });
     },
     onError: (error: Error) => {
+      console.log(error);
       return showToast("error", error.message);
     },
   });
@@ -166,6 +167,7 @@ export default function EditTableRow({
 
   useEffect(() => {
     if (errors.newValue?.message) {
+      console.log(errors.newValue?.message);
       showToast("error", errors.newValue.message || "", 1500);
     }
   }, [errors]);
@@ -179,8 +181,8 @@ export default function EditTableRow({
               {...register("newValue", {
                 valueAsNumber: isSalaryColumn,
                 onChange(e) {
-                  setValue("newValue", e.target.value);
                   const val = e.target.value;
+                  setValue("newValue", val);
 
                   if (val !== "Not Specified" && val !== rowValue) {
                     setIsEditing(true);
@@ -218,7 +220,12 @@ export default function EditTableRow({
                       className="cursor-pointer"
                       aria-label="Cancel"
                       onClick={() => {
-                        setValue("newValue", defaultRowValue);
+                        setValue(
+                          "newValue",
+                          isSalaryColumn && rowValue === undefined
+                            ? 0
+                            : defaultRowValue
+                        );
                         setIsEditing(false);
                       }}
                     />
@@ -230,25 +237,23 @@ export default function EditTableRow({
         ) : (
           <>
             <p className="truncate">
-              {isSalaryColumn ? salaryValue : defaultRowValue}
+              {isSalaryColumn && rowValue !== undefined
+                ? salaryValue
+                : defaultRowValue}
             </p>
-            <TooltipWrapper
-              content={`Edit ${capitalizeFirstLetter(columnName)}`}
-              delay={1500}
+
+            <Button
+              size="icon"
+              variant="link"
+              className="hidden group-hover:flex cursor-pointer hover:bg-primary hover:text-white dark:hover:text-black rounded-full"
+              onClick={() => {
+                setIsEditing(true);
+              }}
+              title={`Edit ${capitalizeFirstLetter(columnName)}`}
+              type="button"
             >
-              <Button
-                size="icon"
-                variant="link"
-                className="hidden group-hover:flex cursor-pointer hover:bg-primary hover:text-white dark:hover:text-black rounded-full"
-                onClick={() => {
-                  setIsEditing(true);
-                }}
-                title={`Edit ${capitalizeFirstLetter(columnName)}`}
-                type="button"
-              >
-                <Edit2Icon />
-              </Button>
-            </TooltipWrapper>
+              <Edit2Icon />
+            </Button>
           </>
         )}
       </div>

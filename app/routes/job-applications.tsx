@@ -67,15 +67,6 @@ export default function JobApplication({ loaderData }: Route.ComponentProps) {
     staleTime: 60 * 1000, // will not refetch until 1 minute passed after initial fetch
   });
 
-  const initialHiddenColumns = {
-    min_salary: false,
-    max_salary: false,
-    tag: false,
-    rounds: false,
-    created_at: false,
-    applied_at: false,
-  };
-
   const searchableColumns = [
     "company_name",
     "role",
@@ -100,7 +91,6 @@ export default function JobApplication({ loaderData }: Route.ComponentProps) {
           <DataTable
             getRowId={(row) => row.job_app_id}
             searchableColumns={searchableColumns}
-            initialHiddenColumns={initialHiddenColumns}
             columns={jobApplicationColumns}
             data={query?.data || []}
             dropdownChildButton={
