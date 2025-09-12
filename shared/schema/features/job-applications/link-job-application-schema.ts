@@ -5,11 +5,12 @@ import { z } from "zod/v4";
  * **Examples:**
  * - my.jobstreet.com/job/85943897
  * - jobstreet.vn/job/85943897?
+ * - https://ph.jobstreet.com/expiredjob/86180157?ref=applied
  * - linkedin.com/jobs/view/8594389721
  * - ph.jobstreet.com/job/85943897?type=standard&ref=search-standalone&origin=jobCard#sol=68447aae473348604d56b3b9d2efae167c26c6a7
  */
 const hostNameRegex =
-  /https:\/\/id\.jobstreet\.com\/id\/job\/[0-9]{8}(\?.*)?(\#.*)?$|https:\/\/(?:my|sg|ph)\.jobstreet\.com\/job\/[0-9]{8}(\?.*)?(\#.*)?$|https:\/\/linkedin\.com\/jobs\/view\/[0-9]{10}/;
+  /https:\/\/id\.jobstreet\.com\/id\/job\/[0-9]{8}(\?.*)?(\#.*)?$|https:\/\/(?:my|sg|ph)\.jobstreet\.com\/job\/[0-9]{8}(\?.*)?(\#.*)?$||https:\/\/(?:my|sg|ph)\.jobstreet\.com\/expiredjob\/[0-9]{8}(\?.*)?(\#.*)?$|https:\/\/linkedin\.com\/jobs\/view\/[0-9]{10}/;
 
 /**
  * @openapi
@@ -28,7 +29,7 @@ const hostNameRegex =
  *          properties:
  *            jobList:
  *              type: string
- *              pattern: '/https:\/\/id\.jobstreet\.com\/id\/job\/[0-9]{8}(\?.*)?(\#.*)?$|https:\/\/(?:my|sg|ph)\.jobstreet\.com\/job\/[0-9]{8}(\?.*)?(\#.*)?$|https:\/\/linkedin\.com\/jobs\/view\/[0-9]{10}/'
+ *              pattern: '/https:\/\/id\.jobstreet\.com\/id\/job\/[0-9]{8}(\?.*)?(\#.*)?$|https:\/\/(?:my|sg|ph)\.jobstreet\.com\/job\/[0-9]{8}(\?.*)?(\#.*)?$||https:\/\/(?:my|sg|ph)\.jobstreet\.com\/expiredjob\/[0-9]{8}(\?.*)?(\#.*)?$|https:\/\/linkedin\.com\/jobs\/view\/[0-9]{10}/'
  *          minItems: 1
  *          maxItems: 5
  *      example:

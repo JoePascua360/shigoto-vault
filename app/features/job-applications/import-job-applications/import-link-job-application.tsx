@@ -58,7 +58,8 @@ export default function ImportLinkJobApplication({
     setIsLoading(true);
     try {
       const response = await fetchRequestComponent(
-        "/importLinkJobApplication",
+        "/job-applications",
+        "/importLink",
         "POST",
         values
       );

@@ -1,9 +1,15 @@
 /**
- * @param endpoint - request endpoint. only provide the router endpoint (ex. /loadJobApplicationData)
+ * @param module - part of request endpoint. Select which module. Only valid ones can be selected. (ex. /job-applications)
+ * @param endpoint - part of request endpoint. only provide the router endpoint (ex. /loadJobApplicationData)
  * @param method - request method
  * @param body - request body. null if method is GET. **Always** pass an object, will be invalid JSON if not.
+ * @example
+ * const response = await fetchRequestComponent("/job-applications", "/addManually", "POST", { data });
+ * // console.log(response.message)
+ * // Job Application Added Successfully!
  */
 export async function fetchRequestComponent(
+  module: "/job-applications",
   endpoint: string,
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
   body?: {}
@@ -11,7 +17,7 @@ export async function fetchRequestComponent(
   const apiVersion = import.meta.env.VITE_API_VERSION;
 
   try {
-    const response = await fetch(`/api/${apiVersion}${endpoint}`, {
+    const response = await fetch(`/api/${apiVersion}${module}${endpoint}`, {
       headers: {
         "Content-Type": "application/json",
       },

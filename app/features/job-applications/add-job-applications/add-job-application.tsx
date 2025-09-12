@@ -60,7 +60,8 @@ export default function AddJobApplication({ dialog }: AddJobApplicationProps) {
 
     try {
       const response = await fetchRequestComponent(
-        "/addJobApplication",
+        "/job-applications",
+        "/addManually",
         "POST",
         values
       );

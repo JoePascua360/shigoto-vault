@@ -28,7 +28,8 @@ export default function DeleteJobApplication({
             : table.getSelectedRowModel().rows.map((row) => row.id);
 
         const result = await fetchRequestComponent(
-          "/deleteJobApplication",
+          "/job-applications",
+          "/delete",
           "DELETE",
           {
             rows,

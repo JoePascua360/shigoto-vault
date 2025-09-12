@@ -46,7 +46,7 @@ app.use(express.json());
 
 // call routes before request handler to avoid pending errors
 app.use(
-  `/api/${apiVersion}/`,
+  `/api/${apiVersion}/job-applications`,
   morgan("dev"),
   checkUserSession,
   jobApplicationRoute

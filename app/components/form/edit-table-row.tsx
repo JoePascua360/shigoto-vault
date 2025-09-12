@@ -80,9 +80,14 @@ export default function EditTableRow({
           rows,
         };
 
-        await fetchRequestComponent("/updateJobApplicationRow", "PATCH", {
-          ...formData,
-        });
+        await fetchRequestComponent(
+          "/job-applications",
+          "/updateRow",
+          "PATCH",
+          {
+            ...formData,
+          }
+        );
 
         setIsEditing(false);
 
@@ -110,12 +115,17 @@ export default function EditTableRow({
             const { columnName, isSalaryColumn } = data;
 
             // revert back to old row value.
-            await fetchRequestComponent("/updateJobApplicationRow", "PATCH", {
-              newValue: defaultRowValue,
-              columnName,
-              isSalaryColumn,
-              rows,
-            });
+            await fetchRequestComponent(
+              "/job-applications",
+              "/updateRow",
+              "PATCH",
+              {
+                newValue: defaultRowValue,
+                columnName,
+                isSalaryColumn,
+                rows,
+              }
+            );
 
             await queryClient.invalidateQueries({
               queryKey: ["job-applications"],

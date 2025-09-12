@@ -57,7 +57,8 @@ export default function UpdateJobApplicationStatus({
             : table.getSelectedRowModel().rows.map((row) => row.id);
 
         const response = await fetchRequestComponent(
-          "/updateJobApplicationStatus",
+          "/job-applications",
+          "/updateStatus",
           "PATCH",
           { status: data.status, rows }
         );

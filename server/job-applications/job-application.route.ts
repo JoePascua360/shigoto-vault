@@ -11,7 +11,7 @@ import { z } from "zod/v4";
 
 /**
  * @openapi
- * /loadJobApplicationData:
+ * /loadData:
  *   get:
  *     parameters:
  *       - in: query
@@ -82,13 +82,13 @@ import { z } from "zod/v4";
  *                  description: Error message details
  */
 jobApplicationRoute.get(
-  "/loadJobApplicationData",
+  "/loadData",
   asyncHandler(jobApplicationController.get)
 );
 
 /**
  * @openapi
- * /addJobApplication:
+ * /addManually:
  *   post:
  *     tags:
  *       - Job Applications Page
@@ -142,13 +142,13 @@ jobApplicationRoute.get(
  *                  description: Error message details
  */
 jobApplicationRoute.post(
-  "/addJobApplication",
+  "/addManually",
   schemaValidation(backendJobApplicationSchema),
   asyncHandler(jobApplicationController.add)
 );
 /**
  * @openapi
- * /importLinkJobApplication:
+ * /importLink:
  *   post:
  *     tags:
  *       - Job Applications Page
@@ -202,14 +202,14 @@ jobApplicationRoute.post(
  *                  description: Error message details
  */
 jobApplicationRoute.post(
-  "/importLinkJobApplication",
+  "/importLink",
   schemaValidation(linkJobApplicationSchema),
   asyncHandler(jobApplicationController.importLink)
 );
 
 /**
  * @openapi
- * /updateJobApplicationStatus:
+ * /updateStatus:
  *  patch:
  *     tags:
  *       - Job Applications Page
@@ -301,14 +301,14 @@ jobApplicationRoute.post(
  *             format: uuid
  */
 jobApplicationRoute.patch(
-  "/updateJobApplicationStatus",
+  "/updateStatus",
   schemaValidation(jobApplicationUpdateStatusSchema),
   asyncHandler(jobApplicationController.updateStatus)
 );
 
 /**
  * @openapi
- * /updateJobApplicationRow:
+ * /updateRow:
  *  patch:
  *     tags:
  *       - Job Applications Page
@@ -407,14 +407,14 @@ jobApplicationRoute.patch(
  *            format: uuid
  */
 jobApplicationRoute.patch(
-  "/updateJobApplicationRow",
+  "/updateRow",
   schemaValidation(jobApplicationEditableRowSchema),
   asyncHandler(jobApplicationController.updateRowValue)
 );
 
 /**
  * @openapi
- * /deleteJobApplication:
+ * /delete:
  *  delete:
  *     tags:
  *       - Job Applications Page
@@ -512,7 +512,7 @@ jobApplicationRoute.patch(
  *          format: date-time
  */
 jobApplicationRoute.delete(
-  "/deleteJobApplication",
+  "/delete",
   schemaValidation(
     z.object({
       rows: z
