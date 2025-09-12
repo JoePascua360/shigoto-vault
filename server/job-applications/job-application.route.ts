@@ -7,6 +7,7 @@ import { linkJobApplicationSchema } from "#/schema/features/job-applications/lin
 import { jobApplicationEditableRowSchema } from "#/schema/features/job-applications/job-application-editable-row-schema";
 import { jobApplicationUpdateStatusSchema } from "#/schema/features/job-applications/job-application-update-status-schema";
 const jobApplicationRoute = express.Router();
+import { z } from "zod/v4";
 
 /**
  * @openapi
@@ -409,6 +410,117 @@ jobApplicationRoute.patch(
   "/updateJobApplicationRow",
   schemaValidation(jobApplicationEditableRowSchema),
   asyncHandler(jobApplicationController.updateRowValue)
+);
+
+/**
+ * @openapi
+ * /deleteJobApplication:
+ *  delete:
+ *     tags:
+ *       - Job Applications Page
+ *     summary: Delete one or more job application.
+ *     description: Delete one or more job applications from database permanently
+ *     requestBody:
+ *       required: true
+ *       content:
+ *        application/json:
+ *          schema:
+ *              $ref: '#/components/schemas/JobApplicationDeleteRequestBody'
+ *          examples:
+ *            deleteSingleRowExample:
+ *              summary: Delete one job application
+ *              value:
+ *                rows: ['279be88e-b2a8-4083-9095-f241b8a5c79a']
+ *            deleteMultipleRowExample:
+ *              summary: Delete multiple job applications
+ *              value:
+ *                rows: ['3fa85f64-5717-4562-b3fc-2c963f66afa6', '279be88e-b2a8-4083-9095-f241b8a5c79a']
+
+ *     responses:
+ *       200:
+ *         description: Successful Request. Status OK. View the newly added job-application [here](http://localhost:3000/app/job-applications).
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Successful message details
+ *                data:
+ *                  $ref: '#/components/schemas/JobApplicationDeleteResponseBody'
+ *       400:
+ *         description: Invalid data. Please check the value of the provided details carefully.
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Error message details
+ *       401:
+ *         description: Unauthorized Access. User needs to login or visit anything inside [`/app`](http://localhost:3000/app/dashboard) route to perform this action.
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Error message details
+ *       404:
+ *         description: Job Application ID does not exist. Make sure that the ID is correct.
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Error message details
+ *       500:
+ *         description: Internal Server Error. An unexpected error occurred on the server while processing the request.
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Error message details
+ * components:
+ *   schemas:
+ *     JobApplicationDeleteRequestBody:
+ *       type: object
+ *       properties:
+ *        rows:
+ *          type: array
+ *          items:
+ *            type: string
+ *            format: uuid
+ *     JobApplicationDeleteResponseBody:
+ *      type: object
+ *      allOf:
+ *        - $ref: '#/components/schemas/JobApplicationManualRequest'
+ *      properties: 
+ *        job_app_id: 
+ *          type: string
+ *          format: uuid
+ *        created_at: 
+ *          type: string
+ *          format: date-time
+ */
+jobApplicationRoute.delete(
+  "/deleteJobApplication",
+  schemaValidation(
+    z.object({
+      rows: z
+        .array(z.string().min(1, "Job application ID is required!"))
+        .min(1, "Must select at least one row!"),
+    })
+  ),
+  asyncHandler(jobApplicationController.delete)
 );
 
 export default jobApplicationRoute;

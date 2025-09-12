@@ -5,7 +5,11 @@ import {
 import type { Row, Table } from "@tanstack/react-table";
 import { fetchRequestComponent } from "@/utils/fetch-request-component";
 import { showToast } from "@/utils/show-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   statusColors,
   type JobApplicationsColumn,
@@ -16,18 +20,17 @@ import {
   jobApplicationUpdateStatusSchema,
   type UpdateStatus,
 } from "#/schema/features/job-applications/job-application-update-status-schema";
+import type { UpdateAndDeleteInterface } from "@/types/features/job-application/update-and-delete-interface";
 
-interface UpdateJobApplicationStatusProps {
-  row: Row<JobApplicationsColumn>;
-  table: Table<JobApplicationsColumn>;
+interface UpdateJobApplicationStatusProps extends UpdateAndDeleteInterface {
+  queryClient: QueryClient;
 }
 
 export default function UpdateJobApplicationStatus({
   row,
   table,
+  queryClient,
 }: UpdateJobApplicationStatusProps) {
-  const queryClient = useQueryClient();
-
   const form = useForm({
     resolver: zodResolver(jobApplicationUpdateStatusSchema),
     defaultValues: {

@@ -30,6 +30,4 @@ export function useDialog() {
   };
 }
 
-export type DialogType = {
-  dialog: ReturnType<typeof useDialog>;
-};
+export type DialogType = ReturnType<typeof useDialog>;

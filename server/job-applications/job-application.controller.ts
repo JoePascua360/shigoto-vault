@@ -175,4 +175,25 @@ export const jobApplicationController = {
       .json({ message: `Job Application Status updated successfully!` });
     return;
   },
+  /**
+   * /deleteJobApplication route | DELETE
+   */
+  delete: async (req: Request, res: Response) => {
+    const data: { rows: JobApplicationTypes.SelectedRows } = req.body;
+
+    const { session } = req.context.session;
+
+    const userID = session.userId;
+
+    const result = await jobApplicationService.deleteJobApplication(
+      data.rows,
+      userID
+    );
+
+    res.status(StatusCodes.OK).json({
+      message: `Job Application Status deleted successfully!`,
+      data: result.rows,
+    });
+    return;
+  },
 };

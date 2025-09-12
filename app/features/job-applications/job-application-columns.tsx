@@ -8,9 +8,10 @@ import { format } from "date-fns";
 import type { Tag } from "emblor";
 import { ArrowDownAZ, ArrowUpDown, ArrowUpZA } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import UpdateMultipleJobApplication from "./update-multiple-job-application";
+import JobApplicationActions from "./job-application-actions";
 import EditTableRow from "@/components/form/edit-table-row";
 import type { JobApplicationStatus } from "#/types/types";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type JobApplicationsColumn = {
   job_app_id: string;
@@ -387,7 +388,15 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ table, row }) => {
-      return <UpdateMultipleJobApplication table={table} row={row} />;
+      const queryClient = useQueryClient();
+
+      return (
+        <JobApplicationActions
+          table={table}
+          row={row}
+          queryClient={queryClient}
+        />
+      );
     },
     enableHiding: false,
     maxSize: 150,

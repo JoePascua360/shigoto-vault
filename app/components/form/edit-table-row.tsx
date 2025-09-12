@@ -16,8 +16,9 @@ import { fetchRequestComponent } from "@/utils/fetch-request-component";
 import { showToast, type showToastParams } from "@/utils/show-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { capitalizeFirstLetter } from "better-auth/react";
+import type { UpdateAndDeleteInterface } from "@/types/features/job-application/update-and-delete-interface";
 
-interface EditTableRowProps {
+interface EditTableRowProps extends UpdateAndDeleteInterface {
   /**
    * @param rowValue - the value from `row.getValue` or `row.original`
    */
@@ -26,14 +27,6 @@ interface EditTableRowProps {
    * @param columnName - column to be updated in the server
    */
   columnName: keyof JobApplicationsColumn;
-  /**
-   * @param table - used to get the selected rows in the table
-   */
-  table: Table<JobApplicationsColumn>;
-  /**
-   * @param row - used to get the row id
-   */
-  row: Row<JobApplicationsColumn>;
 }
 /**
  * Component for editing the table rows

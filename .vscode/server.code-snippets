@@ -36,5 +36,56 @@
       "export default ${1:router};"
     ],
     "description": "Template for server Router using ES6 (POST)"
+  },
+
+  "Service Layer Template": {
+    "prefix": "slt",
+    "body": [
+      "async function ${1:functionName}(",
+      "data: JobApplicationTypes${2:},",
+      "values: ${3:}",
+      ") {",
+      "const client = await db.getClient();",
+      "",
+      "try {",
+      "await client.query('BEGIN');",
+      " const queryCmd = `",
+      "  $0",
+      "`",
+      "",
+      "const results = await client.query(queryCmd, [...values]);",
+      "",
+      "if (results.rowCount === 0) {",
+      "throw new ApplicationError('No matching job applications found.',StatusCodes.NOT_FOUND);",
+      "}",
+      "",
+      "",
+      "await client.query('COMMIT');",
+      "",
+      "return results;",
+      "} catch (error) {",
+      "await client.query('ROLLBACK');",
+      "throw error;",
+      "} finally {",
+      "client.release();",
+      "}",
+      "}"
+    ],
+    "description": "Template for server's .service.ts layer"
+  },
+
+  "Controller Layer Template": {
+    "prefix": "clt",
+    "body": [
+      "${1:delete}: async (req: Request, res: Response) => {",
+      "const data: JobApplicationTypes${2:} = req.body;",
+      "",
+      "const { session } = req.context.session",
+      "",
+      "$0",
+      "res.status(StatusCodes.OK).json({ message: `${3:Job Application Status updated successfully!}` });return;",
+      "}"
+    ],
+    "description": "Template for server's .controller.ts layer"
   }
 }

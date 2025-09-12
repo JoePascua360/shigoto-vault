@@ -199,7 +199,9 @@ async function addJobApplication(
 
 /**
  *
- * @param selectedRows - list of job application IDs
+ * Service logic for updating job application status
+ * 
+ * @param rows - array of job application IDs
  * @param values - array containing status, userID and job application ID
  * @example
  * const values: (JobApplicationStatus | string)[] = [
@@ -209,7 +211,7 @@ async function addJobApplication(
 ]
  */
 async function updateJobApplicationStatus(
-  selectedRows: JobApplicationTypes.UpdateStatusRequestBody["rows"],
+  rows: JobApplicationTypes.UpdateStatusRequestBody["rows"],
   values: (JobApplicationStatus | string)[]
 ) {
   const client = await db.getClient();
@@ -223,7 +225,7 @@ async function updateJobApplicationStatus(
       (SELECT status, user_id, job_app_id::uuid
       FROM
       (VALUES ${queryInputArgumentSymbol(
-        selectedRows.length,
+        rows.length,
         3,
         1
       )}) as t(status, user_id, job_app_id)
@@ -253,7 +255,13 @@ async function updateJobApplicationStatus(
     client.release();
   }
 }
-
+/**
+ *
+ * Service logic for deleting job applications
+ *
+ * @param data - array of job application IDs
+ * @param values- array containing the row value, userID and job application ID
+ */
 async function updateJobApplicationRow(
   data: JobApplicationTypes.UpdateRowValueRequestBody,
   values: (number | string)[]
@@ -302,6 +310,46 @@ async function updateJobApplicationRow(
 }
 
 /**
+ *
+ * @param rows - array containing the job_app_id
+ * @param userID - current user's id from the session object
+ */
+async function deleteJobApplication(
+  rows: JobApplicationTypes.SelectedRows,
+  userID: string
+) {
+  const client = await db.getClient();
+
+  try {
+    await client.query("BEGIN");
+    const queryCmd = `
+    DELETE FROM job_applications
+    WHERE user_id = $1
+    AND
+    job_app_id IN ${queryInputArgumentSymbol(1, rows.length, 2)}
+    RETURNING *`;
+
+    const results = await client.query(queryCmd, [userID, ...rows]);
+
+    if (results.rowCount === 0) {
+      throw new ApplicationError(
+        "No matching job applications found.",
+        StatusCodes.NOT_FOUND
+      );
+    }
+
+    await client.query("COMMIT");
+
+    return results;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+/**
  * Service layer for executing queries and other logic in job-applications page
  */
 export const jobApplicationService = {
@@ -310,4 +358,5 @@ export const jobApplicationService = {
   loadJobApplicationData,
   updateJobApplicationStatus,
   updateJobApplicationRow,
+  deleteJobApplication,
 };

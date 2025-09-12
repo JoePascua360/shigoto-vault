@@ -17,7 +17,11 @@ import type { DialogType, useDialog } from "@/hooks/use-dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { Form } from "@/components/ui/form";
 
-export default function AddJobApplication({ dialog }: DialogType) {
+interface AddJobApplicationProps {
+  dialog: DialogType;
+}
+
+export default function AddJobApplication({ dialog }: AddJobApplicationProps) {
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
 

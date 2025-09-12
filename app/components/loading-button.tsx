@@ -5,20 +5,22 @@ import { FaSpinner } from "react-icons/fa";
 
 interface LoadingButtonProps {
   isLoading: boolean;
-  size?: VariantProps<typeof buttonVariants>;
-  variant?: VariantProps<typeof buttonVariants>;
+  buttonConfig?: VariantProps<typeof buttonVariants>;
+  icon?: React.ReactElement;
   type?: "submit" | "button";
   text?: string;
   className?: string;
+  fn?: () => void;
 }
 
 export default function LoadingButton({
   isLoading,
-  size,
-  variant,
+  buttonConfig,
   type = "submit",
   text = "Submit",
   className = "",
+  fn,
+  icon,
 }: LoadingButtonProps) {
   return (
     <>
@@ -28,11 +30,14 @@ export default function LoadingButton({
         className={`font-content ${
           isLoading ? "cursor-not-allowed" : "cursor-pointer"
         } ${className}`}
-        size={size?.size}
-        variant={variant?.variant}
+        size={buttonConfig?.size}
+        variant={buttonConfig?.variant}
+        onClick={fn ? () => fn() : undefined}
       >
-        {isLoading && (
+        {isLoading ? (
           <FaSpinner className={`${isLoading ? "animate-spin" : ""}`} />
+        ) : (
+          icon
         )}
         {text}
       </Button>

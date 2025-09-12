@@ -6,13 +6,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import type { useDialog } from "@/hooks/use-dialog";
+import type { DialogType } from "@/hooks/use-dialog";
 import type React from "react";
 
 interface DynamicDialogProps {
   children: React.ReactElement;
   triggerElement?: React.ReactElement;
-  dialog: ReturnType<typeof useDialog>;
+  dialog: DialogType;
   title?: string;
   description?: string;
   className?: string;
