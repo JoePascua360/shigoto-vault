@@ -15,7 +15,7 @@ services:
     depends_on:
       - db
     container_name: pgAdmin
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:latest
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}

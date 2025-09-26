@@ -9,10 +9,11 @@ import { ApplicationError } from "~/errors/ApplicationError";
 import { jobApplicationService } from "~/job-applications/job-application.service";
 import { jobStreetScrape } from "~/scraping/jobstreet-scrape";
 import type { JobApplicationTypes } from "./types/job-application.types";
+import type { Tag } from "emblor";
 
 export const jobApplicationController = {
   /**
-   * /loadJobApplicationData route | GET
+   * /loadData route | GET
    */
   get: async (req: Request, res: Response) => {
     const query = req.query;
@@ -34,7 +35,7 @@ export const jobApplicationController = {
     return;
   },
   /**
-   * /addJobApplication route | POST
+   * /addManually route | POST
    */
   add: async (req: Request, res: Response) => {
     const jobApplicationColumns = `
@@ -70,7 +71,7 @@ export const jobApplicationController = {
     return;
   },
   /**
-   * /importLinkJobApplication route | POST
+   * /importLink route | POST
    */
   importLink: async (req: Request, res: Response) => {
     const data: linkJobApplicationData = req.body;
@@ -119,7 +120,7 @@ export const jobApplicationController = {
     return;
   },
   /**
-   * /updateJobApplicationStatus route | PATCH
+   * /updateStatus route | PATCH
    */
   updateStatus: async (req: Request, res: Response) => {
     const data: JobApplicationTypes.UpdateStatusRequestBody = req.body;
@@ -154,14 +155,14 @@ export const jobApplicationController = {
     return;
   },
   /**
-   * /updateJobApplicationRow route | PATCH
+   * /updateRow route | PATCH
    */
   updateRowValue: async (req: Request, res: Response) => {
     const data: JobApplicationTypes.UpdateRowValueRequestBody = req.body;
 
     const { session } = req.context.session;
 
-    const values: (number | string)[] = [];
+    const values: (string | number)[] = [];
     for (const jobAppID of data.rows) {
       const userID = session.userId || "";
 
@@ -175,8 +176,37 @@ export const jobApplicationController = {
       .json({ message: `Job Application Status updated successfully!` });
     return;
   },
+
   /**
-   * /deleteJobApplication route | DELETE
+   * /updateRow route | PATCH
+   */
+  updateDialogRowValue: async (req: Request, res: Response) => {
+    const data: JobApplicationTypes.UpdateDialogRowRequestBody = req.body;
+    const convertedNewValue =
+      typeof data.newValue === "string"
+        ? data.newValue
+        : JSON.stringify(data.newValue as Tag[]);
+
+    const { session } = req.context.session;
+
+    const values: (Tag[] | string)[] = [];
+
+    for (const jobAppID of data.rows) {
+      const userID = session.userId || "";
+
+      values.push(convertedNewValue, userID, jobAppID);
+    }
+
+    await jobApplicationService.updateJobApplicationDialogRow(data, values);
+
+    res
+      .status(StatusCodes.OK)
+      .json({ message: `Job Application Status updated successfully!` });
+    return;
+  },
+
+  /**
+   * /delete route | DELETE
    */
   delete: async (req: Request, res: Response) => {
     const data: { rows: JobApplicationTypes.SelectedRows } = req.body;

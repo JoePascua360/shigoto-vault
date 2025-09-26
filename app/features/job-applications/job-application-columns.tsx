@@ -6,12 +6,13 @@ import { useDialog } from "@/hooks/use-dialog";
 import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import type { Tag } from "emblor";
-import { ArrowDownAZ, ArrowUpDown, ArrowUpZA } from "lucide-react";
+import { ArrowDownAZ, ArrowUpDown, ArrowUpZA, Edit2Icon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import JobApplicationActions from "./job-application-actions";
 import EditTableRow from "@/components/form/edit-table-row";
 import type { JobApplicationStatus } from "#/types/types";
 import { useQueryClient } from "@tanstack/react-query";
+import EditTableDialogRow from "@/components/form/edit-table-dialog-row";
 
 export type JobApplicationsColumn = {
   job_app_id: string;
@@ -77,7 +78,9 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
         <div className=" font-medium flex gap-2 items-center p-0.5">
           <Checkbox
             checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            onCheckedChange={(value) => {
+              row.toggleSelected(!!value);
+            }}
             aria-label="Select row"
             className="size-4.5"
           />
@@ -134,25 +137,16 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
   {
     header: "Job Description",
     accessorKey: "job_description",
-    cell: ({ row }) => {
-      const description = row.original.job_description;
-
-      const jobDescDialog = useDialog();
-
+    cell: ({ row, table }) => {
       return (
-        <div className="flex justify-center">
-          <DynamicDialog
-            dialog={jobDescDialog}
-            title="Job Description"
-            triggerElement={<Button variant="outline">View Details</Button>}
-          >
-            <div className="overflow-y-auto h-88">
-              <p className="whitespace-pre-line font-sub-text break-normal text-left">
-                {description}
-              </p>
-            </div>
-          </DynamicDialog>
-        </div>
+        <EditTableDialogRow
+          key={`${row.id}-${row.original.job_description}`}
+          currentRowValue={row.original.job_description}
+          columnName="job_description"
+          row={row}
+          table={table}
+          title="Details"
+        />
       );
     },
   },
@@ -277,35 +271,15 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
   {
     header: "Tags",
     accessorKey: "tag",
-    cell: ({ row }) => {
-      const tags = row.original.tag;
-
-      const tagDialog = useDialog();
-
+    cell: ({ row, table }) => {
       return (
-        <div className="flex justify-center">
-          <DynamicDialog
-            dialog={tagDialog}
-            title="Job Application Tags"
-            triggerElement={<Button variant="outline">View Tags</Button>}
-          >
-            <div className="flex gap-2">
-              {tags?.length > 0 ? (
-                <>
-                  {tags?.map((item, index) => (
-                    <div key={index}>
-                      <Badge className="bg-secondary border border-primary text-primary w-full">
-                        {item.text}
-                      </Badge>
-                    </div>
-                  ))}{" "}
-                </>
-              ) : (
-                <p>No tags input.</p>
-              )}
-            </div>
-          </DynamicDialog>
-        </div>
+        <EditTableDialogRow
+          currentRowValue={row.original.tag}
+          columnName="tag"
+          row={row}
+          table={table}
+          title="Tags"
+        />
       );
     },
   },
@@ -332,35 +306,15 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
   {
     header: "Rounds",
     accessorKey: "rounds",
-    cell: ({ row }) => {
-      const rounds = row.original.rounds;
-
-      const roundDialog = useDialog();
-
+    cell: ({ row, table }) => {
       return (
-        <div className="flex justify-center">
-          <DynamicDialog
-            dialog={roundDialog}
-            title="Job Application Tags"
-            triggerElement={<Button variant="outline">View Rounds</Button>}
-          >
-            <div className="flex gap-2">
-              {rounds?.length > 0 ? (
-                <>
-                  {rounds?.map((item, index) => (
-                    <div key={index}>
-                      <Badge className="bg-secondary border border-primary text-primary w-full">
-                        {item.text}
-                      </Badge>
-                    </div>
-                  ))}{" "}
-                </>
-              ) : (
-                <p>No rounds input.</p>
-              )}
-            </div>
-          </DynamicDialog>
-        </div>
+        <EditTableDialogRow
+          currentRowValue={row.original.rounds}
+          columnName="rounds"
+          row={row}
+          table={table}
+          title="Rounds"
+        />
       );
     },
   },

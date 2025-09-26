@@ -4,7 +4,10 @@ import { asyncHandler } from "~/utils/asyncHandler";
 import { schemaValidation } from "~/middlewares/schema-validation";
 import { backendJobApplicationSchema } from "#/schema/features/job-applications/job-application-schema";
 import { linkJobApplicationSchema } from "#/schema/features/job-applications/link-job-application-schema";
-import { jobApplicationEditableRowSchema } from "#/schema/features/job-applications/job-application-editable-row-schema";
+import {
+  jobApplicationBaseEditSchema,
+  jobApplicationEditableRowSchema,
+} from "#/schema/features/job-applications/job-application-editable-row-schema";
 import { jobApplicationUpdateStatusSchema } from "#/schema/features/job-applications/job-application-update-status-schema";
 const jobApplicationRoute = express.Router();
 import { z } from "zod/v4";
@@ -410,6 +413,128 @@ jobApplicationRoute.patch(
   "/updateRow",
   schemaValidation(jobApplicationEditableRowSchema),
   asyncHandler(jobApplicationController.updateRowValue)
+);
+
+/**
+ * @openapi
+ * /updateDialogRow:
+ *  patch:
+ *     tags:
+ *       - Job Applications Page
+ *     summary: Update one or more job application row value inside the dialog button.
+ *     description: Update the row value of one or more job applications based on the provided column name.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *        application/json:
+ *          schema:
+ *              $ref: '#/components/schemas/JobApplicationUpdateDialogRow'
+ *          examples:
+ *            singleRowExample:
+ *              summary: Update one row value
+ *              value:
+ *                newValue: 'We are looking for talented individuals...'
+ *                columnName: job_description
+ *                rows: ['279be88e-b2a8-4083-9095-f241b8a5c79a']
+ *            multipleRowExample:
+ *              summary: Update multiple row value
+ *              value:
+ *                newValue: [ {id: '1', text: "Ideal Job"}, {id: '2', text: "Good company"}, ]
+ *                columnName: tag
+ *                rows: ['3fa85f64-5717-4562-b3fc-2c963f66afa6', '279be88e-b2a8-4083-9095-f241b8a5c79a']
+ *     responses:
+ *       200:
+ *         description: Successful Request. Status OK. View the newly added job-application [here](http://localhost:3000/app/job-applications).
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Successful message details
+ *       400:
+ *         description: Invalid data. Please check the value of the provided details carefully.
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Error message details
+ *       401:
+ *         description: Unauthorized Access. User needs to login or visit anything inside [`/app`](http://localhost:3000/app/dashboard) route to perform this action.
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Error message details
+ *       404:
+ *         description: Job Application ID does not exist. Make sure that the ID is correct.
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Error message details
+ *       500:
+ *         description: Internal Server Error. An unexpected error occurred on the server while processing the request.
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Error message details
+ * components:
+ *   schemas:
+ *     JobApplicationUpdateDialogRow:
+ *       type: object
+ *       properties:
+ *        newValue:
+ *          oneOf:
+ *            - type: array
+ *              items:
+ *                type: object
+ *                properties:
+ *                  id:
+ *                    type: string
+ *                  text:
+ *                    type: string
+ *            - type: string
+ *        columnName:
+ *          type: string
+ *        rows:
+ *          type: array
+ *          items:
+ *            type: string
+ *            format: uuid
+ */
+jobApplicationRoute.patch(
+  "/updateDialogRow",
+  schemaValidation(
+    jobApplicationBaseEditSchema.extend({
+      newValue: z.union([
+        z
+          .array(
+            z.object({
+              id: z.string().min(1, "ID should be provided!"),
+              text: z.string().min(1, "Text should be provided!"),
+            })
+          )
+          .min(1, "Array must contain at least one item!"),
+        z.string().min(1, "New value is required!"),
+      ]),
+    })
+  ),
+  asyncHandler(jobApplicationController.updateDialogRowValue)
 );
 
 /**

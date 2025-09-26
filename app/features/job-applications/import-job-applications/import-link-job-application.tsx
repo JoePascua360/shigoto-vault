@@ -68,6 +68,8 @@ export default function ImportLinkJobApplication({
         queryKey: ["job-applications"],
       });
 
+      form.reset();
+
       dialog.dismiss();
 
       return showToast(
