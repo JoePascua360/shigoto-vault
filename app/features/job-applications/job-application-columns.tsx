@@ -27,6 +27,7 @@ export type JobApplicationsColumn = {
   tag: Tag[];
   status: JobApplicationStatus["status"];
   rounds: Tag[];
+  job_url: string;
   created_at: Date;
   applied_at: Date;
 };
@@ -314,6 +315,22 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
           row={row}
           table={table}
           title="Rounds"
+        />
+      );
+    },
+  },
+  {
+    header: "Job URL",
+    accessorKey: "job_url",
+    cell: ({ row, table }) => {
+      return (
+        <EditTableRow
+          // component remounts when  value changes
+          key={`${row.id}-${row.original.job_url}`}
+          rowValue={row.original.job_url}
+          columnName="job_url"
+          table={table}
+          row={row}
         />
       );
     },

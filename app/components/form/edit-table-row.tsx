@@ -49,7 +49,8 @@ export default function EditTableRow({
         }).format(typeof rowValue === "string" ? parseInt(rowValue) : rowValue)
       : "";
 
-  const defaultRowValue = rowValue === undefined ? "Not Specified" : rowValue;
+  const defaultRowValue =
+    rowValue === undefined || rowValue === null ? "Not Specified" : rowValue;
 
   const {
     handleSubmit,

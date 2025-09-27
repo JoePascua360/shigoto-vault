@@ -10,6 +10,7 @@ import { jobApplicationService } from "~/job-applications/job-application.servic
 import { jobStreetScrape } from "~/scraping/jobstreet-scrape";
 import type { JobApplicationTypes } from "./types/job-application.types";
 import type { Tag } from "emblor";
+import { linkedInScrape } from "~/scraping/linkedIn-scrape";
 
 export const jobApplicationController = {
   /**
@@ -76,19 +77,39 @@ export const jobApplicationController = {
   importLink: async (req: Request, res: Response) => {
     const data: linkJobApplicationData = req.body;
 
-    const jobListArray: string[] = [];
+    const jobstreetArrayList: string[] = [];
+    const linkedInArrayList: string[] = [];
 
     for (const item of data.url) {
-      jobListArray.push(item.jobList);
+      const url = item.jobList;
+
+      if (url.includes("linkedin.com")) {
+        linkedInArrayList.push(url);
+      } else {
+        jobstreetArrayList.push(url);
+      }
     }
 
-    const jobDetailObject = await jobStreetScrape(
-      jobListArray,
+    // get both scraping function results first
+    const jobStreetResult = await jobStreetScrape(
+      jobstreetArrayList,
+      req.context.session
+    );
+    const linkedInResult = await linkedInScrape(
+      linkedInArrayList,
       req.context.session
     );
 
-    const jobDetailsArray = jobDetailObject?.jobDetailList || [];
-    const skippedLinks = jobDetailObject?.skippedLinks || [];
+    // combine both jobstreet and linkedin result into array
+    const jobDetailsArray = [
+      ...(jobStreetResult?.jobDetailList || []),
+      ...(linkedInResult?.jobDetailList || []),
+    ];
+
+    const skippedLinks = [
+      ...(jobStreetResult?.skippedLinks || []),
+      ...(linkedInResult?.skippedLinks || []),
+    ];
 
     const skipLinksMessage =
       skippedLinks.length > 0
