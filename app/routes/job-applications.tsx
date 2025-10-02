@@ -15,13 +15,13 @@ async function getJobApplications(searchParams: string, columnName: string) {
     const formattedParams = encodeURIComponent(searchParams);
     const searchEnabled = searchParams !== "" ? true : false;
 
-    const response = await fetchRequestComponent(
+    const response = await fetchRequestComponent<{ rows: [] }>(
       "/job-applications",
       `/loadData?searchEnabled=${searchEnabled}&colName=${columnName}&queryParam=${formattedParams}`,
       "GET"
     );
 
-    return response.rows || [];
+    return response.data?.rows || [];
   } catch (error) {
     if (error instanceof Error) {
       const errorMsg = error.message;

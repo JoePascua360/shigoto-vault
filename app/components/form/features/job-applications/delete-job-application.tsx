@@ -27,7 +27,7 @@ export default function DeleteJobApplication({
             ? [row.id]
             : table.getSelectedRowModel().rows.map((row) => row.id);
 
-        const result = await fetchRequestComponent(
+        const result = await fetchRequestComponent<[]>(
           "/job-applications",
           "/delete",
           "DELETE",
@@ -46,7 +46,7 @@ export default function DeleteJobApplication({
       }
     },
     async onSuccess(data) {
-      const length = data.length;
+      const length = data?.length || 0;
       showToast(
         "success",
         `${length} ${length > 1 ? "rows" : "row"} deleted successfully!`

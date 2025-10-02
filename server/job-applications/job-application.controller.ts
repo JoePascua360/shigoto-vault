@@ -32,7 +32,7 @@ export const jobApplicationController = {
 
     res
       .status(StatusCodes.OK)
-      .json({ message: "Loaded successfully!", rows: data });
+      .json({ message: "Loaded successfully!", data: { rows: data } });
     return;
   },
   /**
@@ -136,7 +136,9 @@ export const jobApplicationController = {
 
     res.status(StatusCodes.OK).json({
       message: `Job application/s saved successfully! ${skipLinksMessage}`,
-      hasSkippedLinks: skippedLinks.length > 0,
+      data: {
+        hasSkippedLinks: skippedLinks.length > 0,
+      },
     });
     return;
   },

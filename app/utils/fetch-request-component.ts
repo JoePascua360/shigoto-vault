@@ -8,12 +8,12 @@
  * // console.log(response.message)
  * // Job Application Added Successfully!
  */
-export async function fetchRequestComponent(
+export async function fetchRequestComponent<T>(
   module: "/job-applications",
   endpoint: string,
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
   body?: {}
-) {
+): Promise<{ message: string; data?: T }> {
   const apiVersion = import.meta.env.VITE_API_VERSION;
 
   // FormData is only used for file uploads. Do not use it unless it's for that purpose
@@ -31,10 +31,10 @@ export async function fetchRequestComponent(
         method !== "GET" ? (isFormData ? body : JSON.stringify(body)) : null,
     });
 
-    const result = await response.json();
+    const result: { message: string; data?: T } = await response.json();
 
     if (!response.ok) {
-      throw new Error(result?.message);
+      throw new Error(result.message);
     }
 
     return result;
@@ -43,5 +43,6 @@ export async function fetchRequestComponent(
       console.error(error);
       throw new Error(error.message || `Internal Server Error!`);
     }
+    throw new Error(`Unknown Error!}`);
   }
 }

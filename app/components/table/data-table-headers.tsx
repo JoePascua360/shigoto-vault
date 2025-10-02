@@ -37,6 +37,8 @@ export default function DataTableHeaders<TData>({
   const currentPath = location.pathname.replace("/app/", "");
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const newParams = new URLSearchParams(searchParams);
+
   const [searchValue, setSearchValue] = useState("");
 
   const [column, setColumn] = useState(
@@ -83,18 +85,16 @@ export default function DataTableHeaders<TData>({
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   if (searchValue) {
-                    setSearchParams(
-                      new URLSearchParams({
-                        [`${currentPath}SearchParams`]: searchValue,
-                      })
-                    );
+                    newParams.set(`${currentPath}SearchParams`, searchValue);
+                    setSearchParams(newParams);
                   }
                 }
               }}
               onChange={(e) => {
                 // used to specify whether search is enabled since searchParams is empty.
                 if (e.target.value === "") {
-                  setSearchParams("");
+                  newParams.delete(`${currentPath}SearchParams`);
+                  setSearchParams(newParams);
                   setSearchValue(e.target.value);
                 } else {
                   setSearchValue(e.target.value);
@@ -111,7 +111,8 @@ export default function DataTableHeaders<TData>({
               aria-label="Submit search"
               title="Click or press enter to search"
               onClick={() => {
-                setSearchParams("");
+                newParams.delete(`${currentPath}SearchParams`);
+                setSearchParams(newParams);
                 setSearchValue("");
               }}
             >
@@ -123,11 +124,9 @@ export default function DataTableHeaders<TData>({
               title="Click or press enter to search"
               onClick={() => {
                 if (searchValue) {
-                  setSearchParams(
-                    new URLSearchParams({
-                      [`${currentPath}SearchParams`]: searchValue,
-                    })
-                  );
+                  newParams.set(`${currentPath}SearchParams`, searchValue);
+
+                  setSearchParams(newParams);
                 }
               }}
             >

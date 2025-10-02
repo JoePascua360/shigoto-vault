@@ -57,12 +57,10 @@ export default function ImportLinkJobApplication({
   const handleSubmit = async (values: linkJobApplicationData) => {
     setIsLoading(true);
     try {
-      const response = await fetchRequestComponent(
-        "/job-applications",
-        "/importLink",
-        "POST",
-        values
-      );
+      // custom type for the generics is needed to get ts support
+      const response = await fetchRequestComponent<{
+        hasSkippedLinks: boolean;
+      }>("/job-applications", "/importLink", "POST", values);
 
       await queryClient.invalidateQueries({
         queryKey: ["job-applications"],
@@ -75,7 +73,7 @@ export default function ImportLinkJobApplication({
       return showToast(
         "success",
         response.message,
-        response.hasSkippedLinks ? Infinity : 4000
+        response.data?.hasSkippedLinks ? Infinity : 4000
       );
     } catch (error) {
       if (error instanceof Error) {

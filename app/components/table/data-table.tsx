@@ -18,12 +18,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 
 import DataTableHeaders from "./data-table-headers";
 import DataTableFooter from "./data-table-footer";
 import TableSkeletonLoader from "../loaders/table-skeleton-loader";
 import TableHeaderOperations from "./table-header-operations";
+import { useSearchParams } from "react-router";
 
 export function getPinningStyles<TData>(column: Column<TData>): CSSProperties {
   const isPinned = column.getIsPinned();
@@ -53,6 +54,8 @@ export function DataTable<TData, TValue>({
   searchableColumns,
   getRowId,
 }: DataTableProps<TData, TValue>) {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const visibleColumns = JSON.parse(
     localStorage.getItem("visibleColumns") || "{}"
   );
@@ -69,9 +72,10 @@ export function DataTable<TData, TValue>({
   );
 
   const [rowSelection, setRowSelection] = useState({});
+  const pageNumber = searchParams.get("page") || "1";
 
   const [pagination, setPagination] = useState({
-    pageIndex: 0, //initial page index
+    pageIndex: parseInt(pageNumber) - 1, //initial page index
     pageSize: parseInt(localStorage.getItem("rowsPerPage") || "5") || 5, //default page size
   });
 

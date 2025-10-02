@@ -55,17 +55,13 @@ export default function ImportCsvFileJobApplication({
       form.reset();
       dialog.dismiss();
 
-      return showToast("success", data.message);
+      return showToast("success", data.message || "");
     },
     onError(error) {
       console.error(error);
       return showToast("error", error.message);
     },
   });
-
-  useEffect(() => {
-    console.log(form.watch("file"));
-  }, [form.watch("file")]);
 
   return (
     <DynamicDialog
