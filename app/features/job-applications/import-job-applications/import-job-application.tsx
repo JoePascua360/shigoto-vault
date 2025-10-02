@@ -7,14 +7,17 @@ import { Import, ImportIcon, Link } from "lucide-react";
 import { useState } from "react";
 import { BsFiletypeCsv } from "react-icons/bs";
 import ImportLinkJobApplication from "./import-link-job-application";
+import ImportCsvFileJobApplication from "./import-csv-file-job-application";
 
 export default function ImportJobApplication() {
   const importLinkDialog = useDialog();
+  const importCsvDialog = useDialog();
 
   return (
     <>
       {/* declare dialogs at top level */}
       <ImportLinkJobApplication dialog={importLinkDialog} />
+      <ImportCsvFileJobApplication dialog={importCsvDialog} />
 
       <DropdownMenuComponent
         contentAlignment="start"
@@ -30,7 +33,7 @@ export default function ImportJobApplication() {
             <Link />
             Link
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => importCsvDialog.trigger()}>
             <BsFiletypeCsv className="text-green-500" />
             CSV
           </DropdownMenuItem>

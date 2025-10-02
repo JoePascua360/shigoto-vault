@@ -11,6 +11,10 @@ import {
 import { jobApplicationUpdateStatusSchema } from "#/schema/features/job-applications/job-application-update-status-schema";
 const jobApplicationRoute = express.Router();
 import { z } from "zod/v4";
+import multer from "multer";
+
+const upload = multer({ dest: "uploads/" });
+const memoryStorageUpload = multer({ storage: multer.memoryStorage() });
 
 /**
  * @openapi
@@ -208,6 +212,86 @@ jobApplicationRoute.post(
   "/importLink",
   schemaValidation(linkJobApplicationSchema),
   asyncHandler(jobApplicationController.importLink)
+);
+
+/**
+ * @openapi
+ * /importCsv:
+ *   post:
+ *     tags:
+ *       - Job Applications Page
+ *     summary: Import job applications by providing a CSV file.
+ *     description: Add job application data from CSV file and reading the data inside. Gemini AI handles the structured output here.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *        multipart/form-data:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              csvFile:
+ *                type: string
+ *                format: binary
+ *
+ *     responses:
+ *       200:
+ *         description: Successful Request. Status OK. View the newly added job-application [here](http://localhost:3000/app/job-applications).
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Successful message details
+ *       400:
+ *         description: Invalid data. Please check the value of the provided details carefully.
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Error message details
+ *       401:
+ *         description: Unauthorized Access. User needs to login or visit anything inside [`/app`](http://localhost:3000/app/dashboard) route to perform this action.
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Error message details
+ *       500:
+ *         description: Internal Server Error. An unexpected error occurred on the server while processing the request.
+ *         content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Error message details
+ */
+jobApplicationRoute.post(
+  "/importCsv",
+  memoryStorageUpload.single("csvFile"),
+  schemaValidation(
+    z.object({
+      fieldname: z.literal("csvFile"),
+      originalname: z.string().min(1, "File name is needed!"),
+      encoding: z.string(),
+      mimetype: z.literal("text/csv"),
+      buffer: z.instanceof(Buffer),
+      size: z
+        .number()
+        .min(1, "Invalid file size! Either the file is empty or corrupted!"),
+    }),
+    true
+  ),
+  asyncHandler(jobApplicationController.importCsv)
 );
 
 /**

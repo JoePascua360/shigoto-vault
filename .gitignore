@@ -2,6 +2,7 @@
 /node_modules/
 *.tsbuildinfo
 .env
+/uploads
 
 # React Router
 /.react-router/

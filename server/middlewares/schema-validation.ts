@@ -3,10 +3,20 @@ import { z, ZodError } from "zod/v4";
 import { StatusCodes } from "http-status-codes";
 import { ApplicationError } from "~/errors/ApplicationError";
 
-export const schemaValidation = (schema: z.ZodObject) => {
+/**
+ *
+ * Middleware for validating the request body schema using zod before reaching the endpoint.
+ *
+ * @param schema - zod object schema
+ * @param isFileUpload - Default value is false. Change to true for endpoint that requires file upload for validation
+ */
+export const schemaValidation = (
+  schema: z.ZodObject,
+  isFileUpload: boolean = false
+) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
-      schema.parse(req.body);
+      schema.parse(isFileUpload ? req.file : req.body);
       next();
     } catch (error) {
       if (error instanceof ZodError) {

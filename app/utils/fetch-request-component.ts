@@ -16,13 +16,19 @@ export async function fetchRequestComponent(
 ) {
   const apiVersion = import.meta.env.VITE_API_VERSION;
 
+  // FormData is only used for file uploads. Do not use it unless it's for that purpose
+  const isFormData = body instanceof FormData;
+
   try {
     const response = await fetch(`/api/${apiVersion}${module}${endpoint}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: isFormData
+        ? {}
+        : {
+            "Content-Type": "application/json",
+          },
       method,
-      body: method !== "GET" ? JSON.stringify(body) : null,
+      body:
+        method !== "GET" ? (isFormData ? body : JSON.stringify(body)) : null,
     });
 
     const result = await response.json();

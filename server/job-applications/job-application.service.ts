@@ -6,10 +6,12 @@ import { ApplicationError } from "~/errors/ApplicationError";
 import { StatusCodes } from "http-status-codes";
 import { queryInputArgumentSymbol } from "~/utils/query-input-argument-symbol";
 import { ai } from "~/config/gemini-ai";
+import { Type } from "@google/genai";
 import type { BackendJobApplicationData } from "#/schema/features/job-applications/job-application-schema";
 import type { JobApplicationStatus } from "#/types/types";
 import type { JobApplicationTypes } from "./types/job-application.types";
 import type { Tag } from "emblor";
+import { jobApplicationModel } from "./job-application.model";
 
 /**
  * Loads the job-applications table data.
@@ -143,6 +145,96 @@ async function importLinkJobApplication(
     await client.query("COMMIT");
 
     return await client.query(queryCmd, values.flat());
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+/**
+ *
+ * Imports job applications from the data inside the CSV file.
+ *
+ * @param file - Comes from req.file which Multer handles
+ * @param session - user's current session object
+ */
+async function importCsvJobApplication(
+  file: Express.Multer.File,
+  session: Session
+) {
+  const client = await db.getClient();
+
+  await client.query("BEGIN");
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash-lite",
+      contents: [
+        {
+          text: "Extract the data from this CSV file and follow the structured output.",
+        },
+        {
+          inlineData: {
+            mimeType: "text/csv",
+            data: Buffer.from(file.buffer).toString("base64"),
+          },
+        },
+      ],
+      config: {
+        systemInstruction: `
+          - Only make a response if the csv file is about job application and send a null output if it's not about job applications. 
+          - If there are fields in the responseSchema that does not exist in the csv file, just make the output null.
+          - Two objects like job_type and work_schedule is not included in the null instruction. For job_type, make it "Full-time" and work_schedule, make it "Not Specified".
+          `,
+        responseMimeType: "application/json",
+        responseSchema:
+          jobApplicationModel.importJobApplications.structuredAIResponse,
+      },
+    });
+
+    if (response.text) {
+      const parsedResult: { isValid: boolean; schema: {}[] } = JSON.parse(
+        response.text
+      );
+
+      if (!parsedResult.isValid) {
+        throw new ApplicationError(
+          "The CSV file is not about job applications. Please send a proper file.",
+          StatusCodes.BAD_REQUEST
+        );
+      }
+
+      await client.query("COMMIT");
+
+      const queryCmd = `
+      INSERT INTO job_applications
+      (
+        job_app_id, user_id, applied_at, company_name, job_description, job_type,
+        job_url, location, max_salary, min_salary, role, status, work_schedule
+      )
+      VALUES ${queryInputArgumentSymbol(parsedResult.schema.length, 13, 1)}
+      RETURNING *
+      `;
+
+      // loop through the result before saving to database
+      const formattedValues = [];
+      for (const item of parsedResult.schema) {
+        formattedValues.push({
+          job_app_id: uuidv4(),
+          user_id: session.session.userId,
+          ...item,
+        });
+      }
+
+      // convert and only takes the values from the object, making it to ["uuid", "user_id", 2024-07-15...]
+      const value = formattedValues.flatMap((obj) => Object.values(obj));
+
+      await client.query(queryCmd, value);
+
+      return parsedResult.schema;
+    }
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;
@@ -412,6 +504,7 @@ async function deleteJobApplication(
  */
 export const jobApplicationService = {
   importLinkJobApplication,
+  importCsvJobApplication,
   addJobApplication,
   loadJobApplicationData,
   updateJobApplicationStatus,

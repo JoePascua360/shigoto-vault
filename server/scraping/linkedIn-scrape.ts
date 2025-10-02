@@ -24,15 +24,15 @@ export async function linkedInScrape(
         // add a custom script to be used inside page.evaluate()
         await page.addInitScript(
           `window.jobPostDetailsArray = function(querySelector) {
-       const arr = [];
-        for (const selector of querySelector) {
-          const details = document.querySelector(selector).innerText.trim();
+            const arr = [];
+                for (const selector of querySelector) {
+                const details = document.querySelector(selector).innerText.trim();
 
-          arr.push(details);
-        }
+                arr.push(details);
+                }
 
-        return arr;
-      }`
+                return arr;
+           }`
         );
 
         await page.goto(link);

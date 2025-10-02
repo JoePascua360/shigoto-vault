@@ -93,6 +93,7 @@ export default function ImportLinkJobApplication({
         dialog={dialog}
         title="Import Through Links"
         description="Please paste the direct link of the job post URLs here."
+        closeOnClickOutside={false}
       >
         <Form {...form}>
           <form

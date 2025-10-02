@@ -141,6 +141,26 @@ export const jobApplicationController = {
     return;
   },
   /**
+   * /importCsv route | POST
+   */
+  importCsv: async (req: Request, res: Response) => {
+    const file = req.file;
+
+    if (!file) {
+      throw new ApplicationError("File is missing!", StatusCodes.NOT_FOUND);
+    }
+
+    const data = await jobApplicationService.importCsvJobApplication(
+      file,
+      req.context.session
+    );
+
+    res.status(StatusCodes.OK).json({
+      message: `Success! ${data?.length} inserted successfully!`,
+    });
+    return;
+  },
+  /**
    * /updateStatus route | PATCH
    */
   updateStatus: async (req: Request, res: Response) => {
