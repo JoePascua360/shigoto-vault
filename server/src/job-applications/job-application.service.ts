@@ -211,10 +211,10 @@ async function importCsvJobApplication(
       const queryCmd = `
       INSERT INTO job_applications
       (
-        job_app_id, user_id, applied_at, company_name, job_description, job_type,
-        job_url, location, max_salary, min_salary, role, status, work_schedule
+        job_app_id, user_id, applied_at, company_name, currency, job_description, 
+        job_type, job_url, location, max_salary, min_salary, role, status, work_schedule
       )
-      VALUES ${queryInputArgumentSymbol(parsedResult.schema.length, 13, 1)}
+      VALUES ${queryInputArgumentSymbol(parsedResult.schema.length, 14, 1)}
       RETURNING *
       `;
 

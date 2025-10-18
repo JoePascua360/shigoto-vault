@@ -97,6 +97,11 @@ export const jobApplicationModel = {
                 type: Type.STRING,
                 nullable: true,
               },
+              currency: {
+                type: Type.STRING,
+                description:
+                  "Use the correct currency here. Ex. USD, PHP, EUR. Only use acronyms",
+              },
             },
           },
           propertyOrdering: objectOrder,

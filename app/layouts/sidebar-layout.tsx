@@ -24,11 +24,8 @@ import { formatPathName } from "@/utils/format-pathname";
  */
 const validPaths: string[] = [
   "/app/dashboard",
-  // "/vault-tutorial",
+  "/app/settings",
   "/app/job-applications",
-  // "/company-list",
-  // "/charts/job-applications",
-  // "/charts/company",
 ];
 
 export default function SidebarLayout() {

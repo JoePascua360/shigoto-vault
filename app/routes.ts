@@ -16,6 +16,9 @@ export default [
   layout("./layouts/sidebar-layout.tsx", [
     ...prefix("app", [
       route("dashboard", "./routes/dashboard.tsx"),
+      route("settings", "./routes/settings.tsx", [
+        route("account", "./routes/settings/account.tsx"),
+      ]),
       route("job-applications", "./routes/job-applications.tsx"),
       route("*", "./components/missing-page.tsx", { id: "missing-page-app" }),
     ]),

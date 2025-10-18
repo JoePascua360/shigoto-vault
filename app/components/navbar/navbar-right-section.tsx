@@ -22,14 +22,12 @@ import DynamicDialog from "../dynamic-dialog";
 import { Input } from "../ui/input";
 import { DialogClose } from "../ui/dialog";
 
-interface NavbarRightSectionProps {}
-
 const formSchema = z.object({
   email: z.email().min(1, "Email is required!"),
   password: z.string().min(8, "Must be 8 characters minimum!"),
 });
 
-export default function NavbarRightSection({}: NavbarRightSectionProps) {
+export default function NavbarRightSection() {
   const signInDialog = useDialog();
 
   const { data: session } = authClient.useSession();

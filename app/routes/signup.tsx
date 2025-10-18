@@ -3,7 +3,9 @@ import type { Route } from "./+types/signup";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FaFacebook, FaGithub, FaGoogle, FaSpinner } from "react-icons/fa";
+import { FaFacebook, FaGithub, FaSpinner } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
+
 import {
   Form,
   FormControl,
@@ -22,6 +24,7 @@ import { userSignUp } from "@/utils/user-signup";
 
 import { isRouteErrorResponse } from "react-router";
 import ErrorPage from "@/components/error-page";
+import { authClient } from "@/config/auth-client";
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   if (isRouteErrorResponse(error)) {
@@ -87,15 +90,18 @@ export default function SignUp({ loaderData }: Route.ComponentProps) {
   const socialProviders = [
     {
       provider: "Google",
-      icon: <FaGoogle />,
-    },
-    {
-      provider: "Facebook",
-      icon: <FaFacebook />,
+      icon: <FcGoogle />,
+      fn: async () => {
+        await authClient.signIn.social({
+          provider: "google",
+          callbackURL: "/app/dashboard",
+        });
+      },
     },
     {
       provider: "Github",
       icon: <FaGithub />,
+      fn: async () => {},
     },
   ];
 
@@ -166,6 +172,7 @@ export default function SignUp({ loaderData }: Route.ComponentProps) {
                     type="button"
                     className="w-[250px] h-12 cursor-pointer"
                     variant="outline"
+                    onClick={item.fn}
                   >
                     {item.icon}
                     Continue with {item.provider}

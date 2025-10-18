@@ -1,12 +1,10 @@
 import type { linkJobApplicationData } from "#/schema/features/job-applications/link-job-application-schema";
 import type { JobApplicationStatus } from "#/types/types";
-import type { JobApplicationsColumn } from "@/features/job-applications/job-application-columns";
-import type { Row } from "@tanstack/react-table";
 import { format } from "date-fns";
 import type { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { ApplicationError } from "~/errors/ApplicationError";
-import { jobApplicationService } from "~/job-applications/job-application.service";
+import { jobApplicationService } from "~/src/job-applications/job-application.service";
 import { jobStreetScrape } from "~/scraping/jobstreet-scrape";
 import type { JobApplicationTypes } from "./types/job-application.types";
 import type { Tag } from "emblor";

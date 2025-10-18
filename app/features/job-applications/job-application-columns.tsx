@@ -28,6 +28,7 @@ export type JobApplicationsColumn = {
   status: JobApplicationStatus["status"];
   rounds: Tag[];
   job_url: string;
+  currency: string;
   created_at: Date;
   applied_at: Date;
 };
@@ -76,7 +77,7 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
     accessorKey: "company_name",
     cell: ({ row, table }) => {
       return (
-        <div className=" font-medium flex gap-2 items-center p-0.5">
+        <div className="font-medium flex gap-2 items-center">
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => {
@@ -329,6 +330,22 @@ export const jobApplicationColumns: ColumnDef<JobApplicationsColumn>[] = [
           key={`${row.id}-${row.original.job_url}`}
           rowValue={row.original.job_url}
           columnName="job_url"
+          table={table}
+          row={row}
+        />
+      );
+    },
+  },
+  {
+    header: "Currency",
+    accessorKey: "currency",
+    cell: ({ row, table }) => {
+      return (
+        <EditTableRow
+          // component remounts when  value changes
+          key={`${row.id}-${row.original.currency}`}
+          rowValue={row.original.currency}
+          columnName="currency"
           table={table}
           row={row}
         />

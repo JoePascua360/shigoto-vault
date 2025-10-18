@@ -1,6 +1,5 @@
 import type { JobApplicationStatus } from "#/types/types";
 import type { JobApplicationsColumn } from "@/features/job-applications/job-application-columns";
-import type { Row } from "@tanstack/react-table";
 import type { Tag } from "emblor";
 
 /**

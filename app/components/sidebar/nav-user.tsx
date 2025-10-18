@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/config/auth-client";
 import { showToast } from "@/utils/show-toast";
+import { Link, useNavigate } from "react-router";
 
 export function NavUser({
   user,
@@ -36,6 +37,8 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+
+  const navigate = useNavigate();
 
   return (
     <SidebarMenu>
@@ -84,10 +87,12 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
+              <Link to="/app/settings">
+                <DropdownMenuItem>
+                  <BadgeCheck />
+                  Account
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuItem>
                 <CreditCard />
                 Billing
@@ -102,6 +107,7 @@ export function NavUser({
               onClick={async () => {
                 await authClient.signOut();
                 showToast("success", "Successfully logged out!");
+                return navigate("/");
               }}
             >
               <LogOut />

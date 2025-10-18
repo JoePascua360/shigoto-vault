@@ -8,7 +8,7 @@ import express, {
 import * as db from "~/db/index";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "#/lib/auth";
-import jobApplicationRoute from "./job-applications/job-application.route";
+import jobApplicationRoute from "./src/job-applications/job-application.route";
 import { handleError } from "~/errors/handleError";
 import { GlobalConfigs } from "./config/global-config";
 import morgan from "morgan";
@@ -42,9 +42,10 @@ app.all("/api/auth/{*any}", toNodeHandler(auth));
 
 app.use(express.json());
 
-// setupRouters();
-
 // call routes before request handler to avoid pending errors
+
+app.use(`/api/${apiVersion}/account`, morgan("dev"), checkUserSession);
+
 app.use(
   `/api/${apiVersion}/job-applications`,
   morgan("dev"),

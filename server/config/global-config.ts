@@ -22,4 +22,8 @@ export class GlobalConfigs {
       apiKey: process.env.GEMINI_API_KEY,
     }),
   };
+  static resendConfig = {
+    apiKey: process.env.RESEND_API_KEY,
+    referenceEmail: process.env.REFERENCE_EMAIL,
+  };
 }
