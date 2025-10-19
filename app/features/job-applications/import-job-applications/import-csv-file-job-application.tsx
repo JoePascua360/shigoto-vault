@@ -83,7 +83,13 @@ export default function ImportCsvFileJobApplication({
           )}
         />
 
-        <ErrorMessage name="file" errors={form.formState.errors} />
+        <ErrorMessage
+          name="file"
+          errors={form.formState.errors}
+          render={({ message }) => {
+            return <p className="text-red-500 font-sub-text mt-2">{message}</p>;
+          }}
+        />
         <LoadingButton
           isLoading={mutation.isPending}
           className="flex justify-end mt-5"

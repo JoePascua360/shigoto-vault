@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import { Resend } from "resend";
+import { Resend, type ErrorResponse } from "resend";
 import { GlobalConfigs } from "~/config/global-config";
 import { ApplicationError } from "~/errors/ApplicationError";
 
@@ -9,6 +9,11 @@ type sendEmailData = {
   to: string;
   subject: string;
 };
+
+// error object from resend has a 'statusCode' property which is not registered in the ErrorResponse type.
+interface ExtendedErrorResponse extends ErrorResponse {
+  statusCode: number;
+}
 
 export async function sendEmail(
   emailConfig: sendEmailData,
@@ -25,9 +30,7 @@ export async function sendEmail(
   });
 
   if (error) {
-    throw new ApplicationError(
-      error.message,
-      StatusCodes.INTERNAL_SERVER_ERROR
-    );
+    const err = error as ExtendedErrorResponse;
+    throw new ApplicationError(err.message, err.statusCode);
   }
 }

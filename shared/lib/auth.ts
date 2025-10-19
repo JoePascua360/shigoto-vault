@@ -5,6 +5,17 @@ import * as db from "~/db/index";
 import { sendEmail } from "~/utils/send-email";
 
 export const auth = betterAuth({
+  user: {
+    changeEmail: {
+      enabled: true,
+      sendChangeEmailVerification: async ({ user, newEmail, token, url }) => {
+        await sendEmail(
+          { subject: "Shigoto Vault: Email change", to: user.email },
+          url
+        );
+      },
+    },
+  },
   account: {
     accountLinking: {
       enabled: true,
@@ -18,7 +29,6 @@ export const auth = betterAuth({
   emailVerification: {
     sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url, token }) => {
-      console.log(url);
       await sendEmail(
         { subject: "Your Email Verification", to: user.email },
         url
