@@ -17,6 +17,7 @@ export default [
     ...prefix("app", [
       route("dashboard", "./routes/dashboard.tsx"),
       route("settings", "./routes/settings.tsx", [
+        index("routes/settings/profile.tsx"),
         route("account", "./routes/settings/account.tsx"),
       ]),
       route("job-applications", "./routes/job-applications.tsx"),

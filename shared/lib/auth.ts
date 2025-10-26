@@ -25,6 +25,9 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    sendResetPassword: async ({ user, url, token }, request) => {
+      await sendEmail({ subject: "Reset your password", to: user.email }, url);
+    },
   },
   emailVerification: {
     sendOnSignUp: true,
@@ -76,6 +79,10 @@ export const auth = betterAuth({
           // Send the OTP for email verification
         } else {
           // Send the OTP for password reset
+          await sendEmail(
+            { subject: "Password Change Verification", to: email },
+            `Here is your One Time Pin: ${otp} for ${type}`
+          );
         }
       },
     }),

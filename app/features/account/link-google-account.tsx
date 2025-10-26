@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardAction,
@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Link, List } from "lucide-react";
+import { Link, List, Unlink, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { SiGmail, SiGooglecalendar } from "react-icons/si";
@@ -15,13 +15,53 @@ import DropdownMenuComponent from "@/components/dropdown-component";
 import { Badge } from "@/components/ui/badge";
 import { MdPending } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
-import { authClient } from "@/config/auth-client";
+import { authClient, type User } from "@/config/auth-client";
+import LoadingButton from "@/components/loading-button";
+import { showToast } from "@/utils/show-toast";
 
 export default function LinkGoogleAccount({
   isGoogleLinked,
+  setIsGoogleLinked,
+  user,
+  listOfAccounts,
 }: {
   isGoogleLinked: boolean;
+  setIsGoogleLinked: React.Dispatch<React.SetStateAction<boolean>>;
+  user: User | undefined;
+  listOfAccounts: {}[];
 }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const isAnonymous = user?.isAnonymous || false;
+
+  const linkAccount = async () => {
+    setIsLoading(true);
+    try {
+      if (!isGoogleLinked) {
+        await authClient.linkSocial({
+          provider: "google",
+          callbackURL: "/app/settings/account",
+          errorCallbackURL: "/app/settings/account",
+        });
+      }
+      // allow unlinking if user has two accounts (credential and google account)
+      else if (isGoogleLinked && listOfAccounts.length > 1) {
+        await authClient.unlinkAccount({
+          providerId: "google",
+        });
+        setIsGoogleLinked(false);
+
+        return showToast("success", "Google account unlinked successfully!");
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error);
+        return showToast("error", error.message);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -71,22 +111,26 @@ export default function LinkGoogleAccount({
                 </>
               </DropdownMenuComponent>
 
-              <Button
-                className="cursor-pointer"
-                disabled={isGoogleLinked}
-                onClick={async () => {
-                  if (!isGoogleLinked) {
-                    await authClient.linkSocial({
-                      provider: "google",
-                      callbackURL: "/app/settings/account",
-                      errorCallbackURL: "/app/settings/account",
-                    });
-                  }
-                }}
-              >
-                <Link />
-                Link
-              </Button>
+              {isAnonymous ? (
+                <LoadingButton
+                  isLoading={false}
+                  buttonConfig={{ variant: "destructive" }}
+                  text="Sign in required"
+                  isDisabled={true}
+                  icon={<X />}
+                />
+              ) : (
+                <LoadingButton
+                  isLoading={isLoading}
+                  isDisabled={listOfAccounts.length === 1}
+                  buttonConfig={{
+                    variant: !isGoogleLinked ? "default" : "destructive",
+                  }}
+                  icon={!isGoogleLinked ? <Link /> : <Unlink />}
+                  text={!isGoogleLinked ? "Link" : "Unlink"}
+                  fn={linkAccount}
+                />
+              )}
             </section>
           </CardHeader>
         </Card>

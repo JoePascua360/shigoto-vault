@@ -44,6 +44,7 @@
       "",
       "return showToast('error', error.message)",
       "};",
+      "}",
       ""
     ],
     "description": "Create a helper function with export and try-catch block"

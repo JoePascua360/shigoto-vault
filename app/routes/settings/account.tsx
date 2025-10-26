@@ -4,22 +4,18 @@ import Spinner from "@/components/spinner";
 import ManageEmail from "@/features/account/manage-email";
 import LinkGoogleAccount from "@/features/account/link-google-account";
 import ManageSessions from "@/features/account/manage-sessions";
+import { useState } from "react";
+import { getUserAccounts } from "@/utils/get-user-accounts";
 
 export async function clientLoader({ context }: Route.ClientLoaderArgs) {
   const sessions = await authClient.listSessions();
-  const accounts = await authClient.listAccounts();
+  const { googleAccountInfo, listOfAccounts } = await getUserAccounts();
 
-  const listOfAccounts = accounts.data || [];
-
-  const googleAccount = listOfAccounts.find((acc) => acc.provider === "google");
-
-  const result = await authClient.accountInfo({
-    accountId: googleAccount?.accountId || "",
-  });
-
-  const googleData = result.data;
-
-  return { sessions: sessions.data, accounts: listOfAccounts, googleData };
+  return {
+    sessions: sessions.data,
+    accounts: listOfAccounts,
+    googleAccountInfo,
+  };
 }
 
 export function HydrateFallback() {
@@ -28,9 +24,13 @@ export function HydrateFallback() {
 
 export default function Account({ loaderData }: Route.ComponentProps) {
   const listOfSessions = loaderData.sessions || [];
+
   const { data: currentSession } = authClient.useSession();
   const isEmailVerified = currentSession?.user.emailVerified || false;
-  const isGoogleLinked = loaderData.googleData !== null;
+
+  const [isGoogleLinked, setIsGoogleLinked] = useState(
+    loaderData.googleAccountInfo !== null
+  );
 
   return (
     <>
@@ -47,7 +47,12 @@ export default function Account({ loaderData }: Route.ComponentProps) {
           isEmailVerified={isEmailVerified}
         />
 
-        <LinkGoogleAccount isGoogleLinked={isGoogleLinked} />
+        <LinkGoogleAccount
+          isGoogleLinked={isGoogleLinked}
+          setIsGoogleLinked={setIsGoogleLinked}
+          user={currentSession?.user}
+          listOfAccounts={loaderData.accounts}
+        />
 
         <ManageSessions
           currentSession={currentSession}

@@ -5,17 +5,10 @@ import { FaSpinner } from "react-icons/fa6";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Separator } from "./ui/separator";
 import { Check } from "lucide-react";
+import type { MultiStepFormArray } from "@/types/multi-step-form-array";
 
 interface MultiStepFormWrapperProps<T> {
-  formArray: Array<{
-    element: React.ReactElement;
-    title: {
-      text: string;
-      className: string;
-    };
-    contentClassName: string;
-    fieldNameArray: Array<T>;
-  }>;
+  formArray: Array<MultiStepFormArray<T>>;
   isLoading: boolean;
   validateStep: (step: number) => Promise<boolean>;
 }

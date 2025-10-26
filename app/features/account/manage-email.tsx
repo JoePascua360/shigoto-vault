@@ -41,7 +41,7 @@ export default function ManageEmail({
   const form = useForm({
     resolver: zodResolver(formData),
     defaultValues: {
-      email: isAnonymous ? "" : currentSession?.user.email || "",
+      email: currentSession?.user.email || "",
     },
   });
 
@@ -70,108 +70,106 @@ export default function ManageEmail({
   };
 
   return (
-    <Card>
-      <CardHeader
-        className={`${
-          isMobile
-            ? "flex flex-col flex-wrap  sm:flex-nowrap justify-between"
-            : ""
-        }`}
-      >
-        <CardTitle className="flex gap-2 items-center flex-wrap">
-          <p>Manage Email Address</p>
-          {isEmailVerified ? (
-            <Badge className="bg-emerald-600/10 dark:bg-emerald-600/20 hover:bg-emerald-600/10 text-emerald-500 border-emerald-600/60 shadow-none rounded-full">
-              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Email
-              Verified
-            </Badge>
-          ) : (
-            <Badge className="bg-amber-600/10 dark:bg-amber-600/20 hover:bg-amber-600/10 text-amber-500 border-amber-600/60 shadow-none rounded-full">
-              {" "}
-              <MdWarning />
-              Email Not Verified
-            </Badge>
-          )}
-        </CardTitle>
-        <CardDescription>
-          You can verify or change your email address in this section.
-        </CardDescription>
-        <CardAction>
-          <div className="flex gap-2 items-center">
-            <LoadingButton
-              isDisabled={isEmailVerified || isAnonymous}
-              isLoading={isLoading}
-              fn={async () => {
-                setIsLoading(true);
-                try {
-                  if (!isEmailVerified && !isAnonymous) {
-                    await authClient.sendVerificationEmail({
-                      email: currentSession?.user.email || "",
-                      callbackURL: "/app/settings/account",
-                    });
-
-                    return showToast("success", "Email verification sent!");
-                  }
-                } catch (error) {
-                  if (error instanceof Error) {
-                    console.error(error);
-                    return showToast("error", error.message);
-                  }
-                } finally {
-                  setIsLoading(false);
-                }
-              }}
-              icon={<Verified />}
-              text={isEmailVerified ? "Email Verified" : "Verify Email"}
-              type="button"
-              buttonConfig={{ variant: "secondary" }}
-            />
-          </div>
-        </CardAction>
-      </CardHeader>
-      <CardContent>
-        <Card className="py-3.5">
-          <form onSubmit={form.handleSubmit(handleSubmit)}>
-            <CardHeader className="flex flex-wrap gap-3 justify-between items-center">
-              <CardTitle>
-                <div className="flex flex-col gap-3 justify-center">
-                  <Label>Email Address: </Label>
-                  <Input
-                    placeholder={
-                      currentSession?.user.isAnonymous
-                        ? "You need to sign up for an account first."
-                        : currentSession?.user.email
-                    }
-                    {...form.register("email")}
-                    disabled={currentSession?.user.isAnonymous || false}
-                    className="truncate w-full lg:w-96"
-                  />
-                </div>
-                <ErrorMessage
-                  name="email"
-                  errors={form.formState.errors}
-                  render={({ message }) => {
-                    return (
-                      <p className="flex justify-center text-red-500 font-sub-text mt-2">
-                        {message}
-                      </p>
-                    );
-                  }}
-                />
-              </CardTitle>
-
-              <section className="flex gap-2">
+    <>
+      {!isAnonymous && (
+        <Card>
+          <CardHeader
+            className={`${
+              isMobile
+                ? "flex flex-col flex-wrap  sm:flex-nowrap justify-between"
+                : ""
+            }`}
+          >
+            <CardTitle className="flex gap-2 items-center flex-wrap">
+              <p>Manage Email Address</p>
+              {isEmailVerified ? (
+                <Badge className="bg-emerald-600/10 dark:bg-emerald-600/20 hover:bg-emerald-600/10 text-emerald-500 border-emerald-600/60 shadow-none rounded-full">
+                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />{" "}
+                  Email Verified
+                </Badge>
+              ) : (
+                <Badge className="bg-amber-600/10 dark:bg-amber-600/20 hover:bg-amber-600/10 text-amber-500 border-amber-600/60 shadow-none rounded-full">
+                  {" "}
+                  <MdWarning />
+                  Email Not Verified
+                </Badge>
+              )}
+            </CardTitle>
+            <CardDescription>
+              You can verify or change your email address in this section.
+            </CardDescription>
+            <CardAction>
+              <div className="flex gap-2 items-center">
                 <LoadingButton
-                  isLoading={form.formState.isSubmitting}
-                  // isDisabled={isAnonymous}
-                  icon={<MdEmail />}
-                  text="Change"
+                  isDisabled={isEmailVerified}
+                  isLoading={isLoading}
+                  fn={async () => {
+                    setIsLoading(true);
+                    try {
+                      if (!isEmailVerified) {
+                        await authClient.sendVerificationEmail({
+                          email: currentSession?.user.email || "",
+                          callbackURL: "/app/settings/account",
+                        });
+
+                        return showToast("success", "Email verification sent!");
+                      }
+                    } catch (error) {
+                      if (error instanceof Error) {
+                        console.error(error);
+                        return showToast("error", error.message);
+                      }
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  }}
+                  icon={<Verified />}
+                  text={isEmailVerified ? "Email Verified" : "Verify Email"}
+                  type="button"
+                  buttonConfig={{ variant: "secondary" }}
                 />
-              </section>
-            </CardHeader>
-          </form>
+              </div>
+            </CardAction>
+          </CardHeader>
+          <CardContent>
+            <Card className="py-3.5">
+              <form onSubmit={form.handleSubmit(handleSubmit)}>
+                <CardHeader className="flex flex-wrap gap-3 justify-between items-center">
+                  <CardTitle>
+                    <div className="flex flex-col gap-3 justify-center">
+                      <Label>Email Address: </Label>
+                      <Input
+                        placeholder={currentSession?.user.email}
+                        {...form.register("email")}
+                        className="truncate w-full lg:w-96"
+                      />
+                    </div>
+                    <ErrorMessage
+                      name="email"
+                      errors={form.formState.errors}
+                      render={({ message }) => {
+                        return (
+                          <p className="flex justify-center text-red-500 font-sub-text mt-2">
+                            {message}
+                          </p>
+                        );
+                      }}
+                    />
+                  </CardTitle>
+
+                  <section className="flex gap-2">
+                    <LoadingButton
+                      isLoading={form.formState.isSubmitting}
+                      icon={<MdEmail />}
+                      text="Change"
+                    />
+                  </section>
+                </CardHeader>
+              </form>
+            </Card>
+          </CardContent>
         </Card>
-      </CardContent>
-    </Card>
+      )}
+    </>
   );
 }
