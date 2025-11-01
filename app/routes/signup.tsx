@@ -95,6 +95,7 @@ export default function SignUp({ loaderData }: Route.ComponentProps) {
         await authClient.signIn.social({
           provider: "google",
           callbackURL: "/app/dashboard",
+          errorCallbackURL: "/signup",
         });
       },
     },

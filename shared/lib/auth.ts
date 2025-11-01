@@ -15,6 +15,13 @@ export const auth = betterAuth({
         );
       },
     },
+    additionalFields: {
+      twofactor: {
+        type: "boolean",
+        input: false,
+        defaultValue: false,
+      },
+    },
   },
   account: {
     accountLinking: {

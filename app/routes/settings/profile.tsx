@@ -39,7 +39,7 @@ export default function Profile({ loaderData }: Route.ComponentProps) {
         <main className="grid gap-2">
           <section className="space-y-5">
             <article>
-              <ChangeUsername defaultUsername={accountData?.user.name || ""} />
+              <ChangeUsername user={accountData?.user} />
             </article>
             <article className="flex flex-col gap-2">
               <ChangePassword

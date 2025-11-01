@@ -43,6 +43,7 @@ export default function ProfileHeader({
                 // if previewUrl is provided, image is already changed.
                 previewUrl ? previewUrl : imageSrc
               }
+              referrerPolicy="no-referrer"
               alt="@shadcn"
             />
             <AvatarFallback className="text-2xl">CN</AvatarFallback>

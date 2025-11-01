@@ -15,21 +15,29 @@ import DropdownMenuComponent from "@/components/dropdown-component";
 import { Badge } from "@/components/ui/badge";
 import { MdPending } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
-import { authClient, type User } from "@/config/auth-client";
+import { authClient, type ListAccount, type User } from "@/config/auth-client";
 import LoadingButton from "@/components/loading-button";
 import { showToast } from "@/utils/show-toast";
+import type { Account, OAuth2UserInfo } from "better-auth";
+import { useNavigate } from "react-router";
+
+interface LinkGoogleAccountProps {
+  isGoogleLinked: boolean;
+  setIsGoogleLinked: React.Dispatch<React.SetStateAction<boolean>>;
+  user: User | undefined;
+  account: {
+    listOfAccounts: ListAccount[];
+    googleAccount: { user: OAuth2UserInfo; data: Record<string, any> } | null;
+    credentialAccount: ListAccount | undefined;
+  };
+}
 
 export default function LinkGoogleAccount({
   isGoogleLinked,
   setIsGoogleLinked,
   user,
-  listOfAccounts,
-}: {
-  isGoogleLinked: boolean;
-  setIsGoogleLinked: React.Dispatch<React.SetStateAction<boolean>>;
-  user: User | undefined;
-  listOfAccounts: {}[];
-}) {
+  account,
+}: LinkGoogleAccountProps) {
   const [isLoading, setIsLoading] = useState(false);
   const isAnonymous = user?.isAnonymous || false;
 
@@ -44,12 +52,11 @@ export default function LinkGoogleAccount({
         });
       }
       // allow unlinking if user has two accounts (credential and google account)
-      else if (isGoogleLinked && listOfAccounts.length > 1) {
+      else if (isGoogleLinked && account.listOfAccounts.length > 1) {
         await authClient.unlinkAccount({
           providerId: "google",
         });
         setIsGoogleLinked(false);
-
         return showToast("success", "Google account unlinked successfully!");
       }
     } catch (error) {
@@ -122,7 +129,10 @@ export default function LinkGoogleAccount({
               ) : (
                 <LoadingButton
                   isLoading={isLoading}
-                  isDisabled={listOfAccounts.length === 1}
+                  isDisabled={
+                    // if user has google account but not credential account, it's disabled.
+                    isGoogleLinked && !account.credentialAccount
+                  }
                   buttonConfig={{
                     variant: !isGoogleLinked ? "default" : "destructive",
                   }}

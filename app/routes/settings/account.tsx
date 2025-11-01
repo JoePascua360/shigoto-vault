@@ -9,12 +9,11 @@ import { getUserAccounts } from "@/utils/get-user-accounts";
 
 export async function clientLoader({ context }: Route.ClientLoaderArgs) {
   const sessions = await authClient.listSessions();
-  const { googleAccountInfo, listOfAccounts } = await getUserAccounts();
+  const data = await getUserAccounts();
 
   return {
     sessions: sessions.data,
-    accounts: listOfAccounts,
-    googleAccountInfo,
+    ...data,
   };
 }
 
@@ -23,13 +22,14 @@ export function HydrateFallback() {
 }
 
 export default function Account({ loaderData }: Route.ComponentProps) {
-  const listOfSessions = loaderData.sessions || [];
+  const { sessions, ...accountData } = loaderData;
+  const listOfSessions = sessions || [];
 
   const { data: currentSession } = authClient.useSession();
   const isEmailVerified = currentSession?.user.emailVerified || false;
 
   const [isGoogleLinked, setIsGoogleLinked] = useState(
-    loaderData.googleAccountInfo !== null
+    accountData.googleAccountInfo !== null
   );
 
   return (
@@ -51,7 +51,10 @@ export default function Account({ loaderData }: Route.ComponentProps) {
           isGoogleLinked={isGoogleLinked}
           setIsGoogleLinked={setIsGoogleLinked}
           user={currentSession?.user}
-          listOfAccounts={loaderData.accounts}
+          account={{
+            ...accountData,
+            googleAccount: accountData.googleAccountInfo,
+          }}
         />
 
         <ManageSessions
